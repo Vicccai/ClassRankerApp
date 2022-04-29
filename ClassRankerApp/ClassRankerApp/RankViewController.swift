@@ -82,7 +82,6 @@ class RankViewController: UIViewController {
     }
     
     func setupConstraints() {
-        
         NSLayoutConstraint.activate([
             applyButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
             applyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
