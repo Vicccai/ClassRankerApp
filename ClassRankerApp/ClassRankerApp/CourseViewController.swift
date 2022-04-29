@@ -13,7 +13,7 @@ class CourseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemBlue
         
         if let course = course {
             self.title = course.number
