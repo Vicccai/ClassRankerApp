@@ -8,7 +8,8 @@
 import Foundation
 
 struct Course: Codable {
-    var number: String?
-    var name: String?
-    var rating: Double?
+    var number: String
+    var name: String
+    var rating: Double
+    var distribution: [String]
 }

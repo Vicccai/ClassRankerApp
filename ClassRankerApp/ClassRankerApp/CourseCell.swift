@@ -64,14 +64,14 @@ class CourseCell: UITableViewCell {
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -cellPadding),
             
             ratingLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -cellPadding),
-            ratingLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: cellPadding)
+            ratingLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
     
     func configure(course: Course, index: Int) {
         numberLabel.text = course.number
         nameLabel.text = course.name
-        ratingLabel.text = String(course.rating!)
+        ratingLabel.text = String(course.rating)
         rankingLabel.text = String(index) + "."
     }
     

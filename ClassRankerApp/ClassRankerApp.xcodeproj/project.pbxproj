@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,8 @@
 		DF48F8CA281B68320017372B /* CourseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8C9281B68320017372B /* CourseCell.swift */; };
 		DF48F8CC281B69740017372B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8CB281B69740017372B /* Models.swift */; };
 		DF48F8D0281B72B00017372B /* CourseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8CF281B72B00017372B /* CourseViewController.swift */; };
+		DF48F8D2281BA24F0017372B /* DropDownContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8D1281BA24F0017372B /* DropDownContainer.swift */; };
+		DF48F8D5281BA58B0017372B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DF48F8D4281BA58B0017372B /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,7 @@
 		DF48F8C9281B68320017372B /* CourseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCell.swift; sourceTree = "<group>"; };
 		DF48F8CB281B69740017372B /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		DF48F8CF281B72B00017372B /* CourseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseViewController.swift; sourceTree = "<group>"; };
+		DF48F8D1281BA24F0017372B /* DropDownContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +43,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7ACA278655D92EB329B5B9B7 /* Pods_ClassRankerApp.framework in Frameworks */,
+				DF48F8D5281BA58B0017372B /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +91,7 @@
 				DF48F8B3281B5B100017372B /* AppDelegate.swift */,
 				DF48F8B5281B5B100017372B /* SceneDelegate.swift */,
 				DF48F8B7281B5B100017372B /* RankViewController.swift */,
+				DF48F8D1281BA24F0017372B /* DropDownContainer.swift */,
 				DF48F8CF281B72B00017372B /* CourseViewController.swift */,
 				DF48F8C9281B68320017372B /* CourseCell.swift */,
 				DF48F8CB281B69740017372B /* Models.swift */,
@@ -115,6 +120,9 @@
 			dependencies = (
 			);
 			name = ClassRankerApp;
+			packageProductDependencies = (
+				DF48F8D4281BA58B0017372B /* SnapKit */,
+			);
 			productName = ClassRankerApp;
 			productReference = DF48F8B0281B5B100017372B /* ClassRankerApp.app */;
 			productType = "com.apple.product-type.application";
@@ -142,6 +150,9 @@
 				Base,
 			);
 			mainGroup = DF48F8A7281B5B100017372B;
+			packageReferences = (
+				DF48F8D3281BA58B0017372B /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			productRefGroup = DF48F8B1281B5B100017372B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -214,6 +225,7 @@
 				DF48F8B8281B5B100017372B /* RankViewController.swift in Sources */,
 				DF48F8B4281B5B100017372B /* AppDelegate.swift in Sources */,
 				DF48F8B6281B5B100017372B /* SceneDelegate.swift in Sources */,
+				DF48F8D2281BA24F0017372B /* DropDownContainer.swift in Sources */,
 				DF48F8CC281B69740017372B /* Models.swift in Sources */,
 				DF48F8D0281B72B00017372B /* CourseViewController.swift in Sources */,
 			);
@@ -411,6 +423,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DF48F8D3281BA58B0017372B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DF48F8D4281BA58B0017372B /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF48F8D3281BA58B0017372B /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DF48F8A8281B5B100017372B /* Project object */;
 }

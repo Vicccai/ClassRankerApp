@@ -15,8 +15,8 @@ class CourseViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        if let course = course, let title = course.number {
-            self.title = title
+        if let course = course {
+            self.title = course.number
         }
         
 
