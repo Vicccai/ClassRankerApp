@@ -43,6 +43,13 @@ class DropDownContainer: UIView {
         layer.borderColor = UIColor.gray.cgColor
         layer.cornerRadius = 10
         
+        setAnimations(for: dropDown)
+        
+        setupConstraints()
+        
+    }
+    
+    func setAnimations(for: DropDown) {
         // set animations for little arrow
         dropDown.listWillAppear {
             UIView.animate(withDuration: 0.5) {
@@ -54,7 +61,9 @@ class DropDownContainer: UIView {
                 self.image.transform = self.image.transform.rotated(by: .pi)
             }
         }
-        
+    }
+    
+    func setupConstraints() {
         NSLayoutConstraint.activate([
             dropDown.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2*padding),
             dropDown.topAnchor.constraint(equalTo: topAnchor, constant: padding),
