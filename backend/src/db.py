@@ -29,17 +29,50 @@ class Course(db.Model):
         self.description = kwargs.get("description", "")
         self.professors = kwargs.get("professors", "")
 
-     def serialize(self):
-        """
-        Serialize Course object
-        """
+    def serialize(self):
+    """
+    Serialize Course object
+    """
+    return {
+        "id": self.id,
+        "catalognbr": self.catalognbr,
+        "subject":self.subject,
+        "title": self.title,
+        "description": self.description,
+        "breadth":self.breadth,
+        "distribution": self.distribution,
+        "professors": self.professors,
+        "users": [c.simple_serialize() for c in self.users
+
+    }
+    
+class User(db.Model):
+    """
+    User model 
+    """
+    __tablename__="users"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name =db.Column(db.String, nullable = False)
+    username = db.Column(db.String, nullable = False)
+    courses = db.relationship("Course", secondary = association_table, back_populates="users")
+    
+    def __init__(self, **kwargs):
+        """initializes a User object"""
+        self.name = kwargs.get("name", "")
+        self.username = kwargs.get("username", "")
+
+    def serialize(self):
+        """serializes a user object"""
         return {
             "id": self.id,
-            "": self.code,
-            "name":self.name,
-            "assignments": [a.serialize() for a in self.assignments],
-            "instructors": [c.simple_serialize() for c in self.users if c.sori =="instructor"],
-            "students": [c.simple_serialize() for c in self.users if c.sori == "student"]
+            "name": self.name,
+            "username": self.username,
+            "courses":self.courses
         }
-
-    
+    def simple_serialize(self):
+        """simple serializes a user object"""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "username": self.username
+        }
