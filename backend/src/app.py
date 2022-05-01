@@ -39,6 +39,21 @@ def get_professor_rating(first_name, last_name):
     }
     return json.dumps(prof_json), 200
 
+def get_professor(course):
+    """
+    Helper function that returns list of professors given course.
+    """
+    meetings = course["enrollGroups"][0]["classSections"][0]["meetings"]
+    if len(meetings) == 0:
+        return []
+    instructors = meetings[0]["instructors"]
+    if len(instructors) == 0:
+        return []
+    prof_list = []
+    for prof in instructors:
+        prof_list.append([prof["firstName"], prof["lastName"]])
+    return prof_list
+
 @app.route("/courses/<string:roster>/<string:subject>/")
 def get_courses_by_subject(roster, subject):
     """
@@ -55,7 +70,8 @@ def get_courses_by_subject(roster, subject):
                 "number": course["catalogNbr"],
                 "title": course["titleLong"],
                 "breadth": course["catalogBreadth"],
-                "distr": course["catalogDistr"]
+                "distr": course["catalogDistr"],
+                "prof": get_professor(course)
             }
         )
 
