@@ -153,7 +153,6 @@ def set_up_all_courses():
                         difficulty = rating["difficulty"],
                         rating = rating["rating"]
                         )
-                    ### The part that doesn't work starts here"
                     for prof in course["professors"]:
                         prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
                         if(prev_prof == None):
@@ -161,7 +160,6 @@ def set_up_all_courses():
                                         last_name=prof[1],
                                         rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
                         new_course.professors.append(prev_prof) 
-                    ### Ends here
                     db.session.add(new_course)
                     db.session.commit()
 

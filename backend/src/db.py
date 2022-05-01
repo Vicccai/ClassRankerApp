@@ -111,7 +111,7 @@ class Professor(db.Model):
 
     def __init__(self, **kwargs):
         """Initializes a Professor object"""
-        self.first_name = kwargs.get("first_name", ""),
+        self.first_name = kwargs.get("first_name", "")
         self.last_name = kwargs.get("last_name", "")
         self.rating = kwargs.get("rating", "")
 
