@@ -4,14 +4,14 @@ db = SQLAlchemy()
 
 associate_users = db.Table(
     "associate_users",
-    db.Column("course_id", db.Integer, db.ForeignKey("courses.id")),
-    db.Column("user_id", db.Integer, db.ForeignKey("users.id"))
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
 associate_professors = db.Table(
     "associate_professors",
-    db.Column("course_id", db.Integer, db.ForeignKey("courses.id")),
-    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id"))
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
 class Course(db.Model):
@@ -106,14 +106,14 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable = False)
     last_name = db.Column(db.String, nullable = False)
-    rating = db.Column(db.Integer, nullable = False)
+    rating = db.Column(db.Float, nullable = False)
     courses = db.relationship("Course", secondary = associate_professors, back_populates="professors")
 
     def __init__(self, **kwargs):
         """Initializes a Professor object"""
-        self.first_name = db.Column(db.String, nullable = False),
-        self.last_name = db.Column(db.String, nullable = False),
-        self.rating = db.Column(db.Integer, nullable = False)
+        self.first_name = kwargs.get("first_name", ""),
+        self.last_name = kwargs.get("last_name", "")
+        self.rating = kwargs.get("rating", "")
 
     def simple_serialize(self):
         """simple serializes a professor object"""

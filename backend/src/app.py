@@ -18,7 +18,7 @@ app.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(app)
 with app.app_context():
-    db.drop_all() ## remove it later
+    # find a way to update the courses but still keep users
     db.create_all()
 
 def failure_response(message, code=404):
@@ -79,21 +79,16 @@ def get_course_rating(subject, number):
     }
     return ratings
 
-
 def get_professor_rating(Cornell_University, first_name, last_name):
     """
     Given first and last name, gives professor name and rating
     """
     prof = Cornell_University.get_professor_by_name(first_name, last_name)
     if prof == None:
-        rating = 0
+        rating = 0.0
     else:
         rating = prof.overall_rating
-    return {
-        "first_name": first_name,
-        "last_name": last_name,
-        "rating": rating
-    }
+    return rating
 
 def get_professor(course):
     """
@@ -136,7 +131,7 @@ def set_up_all_courses():
     """
     Adds all of the courses of the last four years to the Course table
     """
-    #Cornell_University = ratemyprof_api.RateMyProfApi(298) 
+    Cornell_University = ratemyprof_api.RateMyProfApi(298) 
     rosters = get_rosters()
     for count in range(len(rosters)-1, 0, -1):
         roster = rosters[count]
@@ -158,15 +153,17 @@ def set_up_all_courses():
                         difficulty = rating["difficulty"],
                         rating = rating["rating"]
                         )
-                    #for prof in course["professors"]:
-                    #    prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
-                    #    if(prev_prof == None):
-                    #        prev_prof = Professor(first_name=prof[0],
-                    #                    last_name=prof[1],
-                    #                    rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
-                    #    new_course.professors.append(prev_prof) ### Does this add prof????
+                    ### The part that doesn't work starts here"
+                    for prof in course["professors"]:
+                        prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
+                        if(prev_prof == None):
+                            prev_prof = Professor(first_name=prof[0],
+                                        last_name=prof[1],
+                                        rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
+                        new_course.professors.append(prev_prof) 
+                    ### Ends here
                     db.session.add(new_course)
-    db.session.commit()
+                    db.session.commit()
 
 @app.route("/courses/")
 def get_all_courses():
