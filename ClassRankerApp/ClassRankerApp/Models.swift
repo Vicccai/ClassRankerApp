@@ -12,4 +12,5 @@ struct Course: Codable {
     var name: String
     var rating: Double
     var distribution: [String]
+    var favNumber: Int
 }
