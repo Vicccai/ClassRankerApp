@@ -1,17 +1,17 @@
 //
-//  ClassCell.swift
+//  CoursesTableViewCell.swift
 //  ClassRankerApp
 //
-//  Created by Victor Cai on 4/28/22.
+//  Created by Mariana Meriles on 5/1/22.
 //
 
 import UIKit
 
-class CourseCell: UICollectionViewCell {
+class CoursesTableViewCell: UITableViewCell {
     
     static let id = "CourseCellId"
     
-    let cellPadding: CGFloat = 20
+    let cellPadding: CGFloat = 30
     
 //    var rankingLabel: UILabel = {
 //        let label = UILabel()
@@ -19,6 +19,14 @@ class CourseCell: UICollectionViewCell {
 //        label.font = .systemFont(ofSize: 30)
 //        return label
 //    }()
+    
+    var backView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 50
+        return view
+    }()
     
     var numberLabel: UILabel = {
         let label = UILabel()
@@ -60,11 +68,12 @@ class CourseCell: UICollectionViewCell {
         return label
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 40
-        for subView in [numberLabel, nameLabel, ratingLabel, favButton, favNumber] {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        contentView.backgroundColor = UIColor(red: 0.6, green: 0, blue: 0, alpha: 1.0)
+    
+        for subView in [backView, numberLabel, nameLabel, ratingLabel, favButton, favNumber] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
         }
@@ -73,25 +82,31 @@ class CourseCell: UICollectionViewCell {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            ratingLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: cellPadding),
-            ratingLabel.bottomAnchor.constraint(equalTo: contentView.centerYAnchor),
+            backView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            backView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            backView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: cellPadding),
+            backView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -cellPadding),
             
-            favButton.topAnchor.constraint(equalTo: contentView.centerYAnchor),
-            favButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: cellPadding),
-            favButton.trailingAnchor.constraint(equalTo: ratingLabel.trailingAnchor),
+            ratingLabel.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: cellPadding),
+            ratingLabel.bottomAnchor.constraint(equalTo: numberLabel.bottomAnchor),
+            
+            favButton.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: cellPadding),
+            favButton.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: cellPadding),
+            favButton.widthAnchor.constraint(equalToConstant: 30),
             favButton.heightAnchor.constraint(equalToConstant: 30),
             
             favNumber.topAnchor.constraint(equalTo: favButton.bottomAnchor),
             favNumber.centerXAnchor.constraint(equalTo: favButton.centerXAnchor),
+            favNumber.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -cellPadding),
             
             numberLabel.leadingAnchor.constraint(equalTo: ratingLabel.trailingAnchor, constant: cellPadding),
-            numberLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -cellPadding),
-            numberLabel.bottomAnchor.constraint(equalTo: contentView.centerYAnchor),
+            numberLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -cellPadding),
+            numberLabel.topAnchor.constraint(equalTo: backView.topAnchor, constant: cellPadding),
             
             nameLabel.leadingAnchor.constraint(equalTo: ratingLabel.trailingAnchor, constant: cellPadding),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -cellPadding),
+            nameLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -cellPadding),
             nameLabel.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 10),
-            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -cellPadding)
+            nameLabel.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -cellPadding)
         ])
     }
     
@@ -108,3 +123,4 @@ class CourseCell: UICollectionViewCell {
     }
 
 }
+
