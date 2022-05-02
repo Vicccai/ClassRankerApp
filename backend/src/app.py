@@ -5,6 +5,7 @@ from db import db
 from db import Course
 from db import User
 from db import Professor
+from db import Comment
 from ratemyprof_api import ratemyprof_api 
 import requests
 

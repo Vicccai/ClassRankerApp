@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from requests import delete
 
 db = SQLAlchemy()
 
@@ -33,6 +34,7 @@ class Course(db.Model):
     rating = db.Column(db.Float)
     users = db.relationship("User", secondary = associate_users, back_populates="courses")
     professors = db.relationship("Professor", secondary = associate_professors, back_populates="courses")
+    comments = db.relationship("Comment", cascade = "delete")
 
     def __init__(self, **kwargs): 
         """
@@ -64,7 +66,8 @@ class Course(db.Model):
             "difficulty": self.difficulty,
             "rating": self.rating,
             "users": [c.simple_serialize() for c in self.users],
-            "professors": [d.simple_serialize() for d in self.professors]
+            "professors": [d.simple_serialize() for d in self.professors],
+            "comments": [m.serialize() for m in self.comments]
             }
 
 class User(db.Model):
@@ -76,7 +79,8 @@ class User(db.Model):
     name =db.Column(db.String, nullable = False)
     username = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_users, back_populates="users")
-    
+    comments = db.relationship("Comment", cascade = "delete")
+
     def __init__(self, **kwargs):
         """initializes a User object"""
         self.name = kwargs.get("name", "")
@@ -88,7 +92,8 @@ class User(db.Model):
             "id": self.id,
             "name": self.name,
             "username": self.username,
-            "courses":self.courses
+            "courses":self.courses,
+            "comments": [m.serialize() for m in self.comments]
         }
     def simple_serialize(self):
         """simple serializes a user object"""
@@ -121,4 +126,35 @@ class Professor(db.Model):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "rating": self.rating
+        }
+class Comment(db.Model):
+    """
+    Comment Model
+
+    has a many to one relationship with Course 
+    and has a many to one relationship with users
+    """
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    description = db.Column(db.String, nullable = False)
+
+    def __init__(self, **kwargs):
+        """ 
+        Initializes an Comment object
+        """
+        self.course_id= kwargs.get("course_id")
+        self.user_id= kwargs.get("user_id")
+        self.description= kwargs.get("description")
+
+    def serialize(self):
+        """
+        serialize an Comment object
+        """
+        return {
+            "id": self.id,
+            "course_id": self.course_id,
+            "user_id":self.user_id,
+            "description": self.description
         }
