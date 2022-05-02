@@ -34,7 +34,7 @@ class Course(db.Model):
     rating = db.Column(db.Float)
     users = db.relationship("User", secondary = associate_users, back_populates="courses")
     professors = db.relationship("Professor", secondary = associate_professors, back_populates="courses")
-    comments = db.relationship("Comment", cascade = delete)
+    comments = db.relationship("Comment", cascade = "delete")
 
     def __init__(self, **kwargs): 
         """
@@ -79,7 +79,7 @@ class User(db.Model):
     name =db.Column(db.String, nullable = False)
     username = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_users, back_populates="users")
-    comments = db.relationship("Comment", cascade = delete)
+    comments = db.relationship("Comment", cascade = "delete")
 
     def __init__(self, **kwargs):
         """initializes a User object"""
