@@ -6,17 +6,12 @@
 //
 
 import UIKit
-import DropDown
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        UINavigationBar.appearance().titleTextAttributes.ali
         // Override point for customization after application launch.
-        DropDown.startListeningToKeyboard()
         return true
     }
 

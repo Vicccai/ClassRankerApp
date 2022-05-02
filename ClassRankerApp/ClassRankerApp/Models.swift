@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Course: Codable {
+struct Course: Codable, Hashable {
     var number: String
     var name: String
     var rating: Double
