@@ -92,3 +92,4 @@ iOSInjectionProject/
 
 venv
 __pycache__
+data.db

@@ -61,20 +61,20 @@ def get_course_rating(subject, number):
     uri = "https://www.cureviews.org/v2/getCourseByInfo"
     reqResponse = requests.post(url=uri, json=body)
     results = reqResponse.json()["result"]
-    if results == None:
+    if results is None:
         return {
             "difficulty": 0.0,
             "rating": 0.0,
             "workload": 0.0
         }
     difficulty = results.get("classDifficulty")
-    if(difficulty == None):
+    if(difficulty is None):
         difficulty = "0"
     rating = results.get("classRating")
-    if(rating == "" or rating == None):
+    if(rating == "" or rating is None):
         rating = "0"
     workload = results.get("classWorkload")
-    if(workload == None):
+    if(workload is None):
         workload = "0"
     ratings = {
         "difficulty": float(difficulty),
@@ -88,7 +88,7 @@ def get_professor_rating(Cornell_University, first_name, last_name):
     Given first and last name, gives professor name and rating
     """
     prof = Cornell_University.get_professor_by_name(first_name, last_name)
-    if prof == None:
+    if prof is None:
         rating = 0.0
     else:
         rating = prof.overall_rating
@@ -155,7 +155,7 @@ def add_professors_to_course(course, professors, Cornell_University):
                 found = True
         if(not found):
             prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
-            if(prev_prof == None):
+            if(prev_prof is None):
                 prev_prof = Professor(first_name=prof[0],
                     last_name=prof[1],
                     rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
@@ -173,7 +173,7 @@ def add_breadths_to_course(course, breadths):
                 found = True
         if(not found):
             prev_breadth = Breadth.query.filter_by(name=breadth).first()
-            if(prev_breadth == None):
+            if(prev_breadth is None):
                 prev_breadth = Breadth(name=breadth)
             course.breadths.append(prev_breadth)
 
@@ -189,7 +189,7 @@ def add_distributions_to_course(course, distributions):
                 found = True
         if(not found):
             prev_distribution = Distribution.query.filter_by(name=distribution).first()
-            if(prev_distribution == None):
+            if(prev_distribution is None):
                 prev_distribution = Distribution(name=distribution)
             course.distributions.append(prev_distribution)
 
@@ -209,34 +209,36 @@ def set_up_and_update_courses():
             courses = get_courses(roster, subject)
             for course in courses:
                 prev_course = Course.query.filter_by(title=course["title"]).first()
-                if course["description"] != None and course["breadth"] != None and course["distribution"] != None:
-                    rating = get_course_rating(course["subject"].lower(), course["number"])
-                    if prev_course == None:
-                        new_course = Course(
-                            subject = course["subject"],
-                            number = course["number"],
-                            title = course["title"],
-                            description = course["description"],
-                            workload = rating["workload"],
-                            difficulty = rating["difficulty"],
-                            rating = rating["rating"]
-                            )
-                        add_professors_to_course(new_course, course["professors"], Cornell_University)
-                        add_breadths_to_course(new_course, course["breadth"])
-                        add_distributions_to_course(new_course, course["distribution"])
-                        db.session.add(new_course)
-                    else:
-                        prev_course.description = course["description"]
-                        prev_course.workload = rating["workload"]
-                        prev_course.difficulty = rating["difficulty"]
-                        prev_course.rating = rating["rating"]
-                        add_professors_to_course(prev_course, course["professors"], Cornell_University)
-                        add_breadths_to_course(prev_course, course["breadth"])
-                        add_distributions_to_course(prev_course, course["distribution"])
-                    db.session.commit()
+                description = course["description"] if course["description"] is not None else "No Description."
+                breadth = course["breadth"] if course["breadth"] is not None else ""
+                distribution = course["distribution"] if course["distribution"] is not None else ""
+                rating = get_course_rating(course["subject"].lower(), course["number"])
+                if prev_course is None:
+                    new_course = Course(
+                        subject = course["subject"],
+                        number = course["number"],
+                        title = course["title"],
+                        description = description,
+                        workload = rating["workload"],
+                        difficulty = rating["difficulty"],
+                        rating = rating["rating"]
+                        )
+                    add_professors_to_course(new_course, course["professors"], Cornell_University)
+                    add_breadths_to_course(new_course, breadth)
+                    add_distributions_to_course(new_course, distribution)
+                    db.session.add(new_course)
+                else:
+                    prev_course.description = description
+                    prev_course.workload = rating["workload"]
+                    prev_course.difficulty = rating["difficulty"]
+                    prev_course.rating = rating["rating"]
+                    add_professors_to_course(prev_course, course["professors"], Cornell_University)
+                    add_breadths_to_course(prev_course, breadth)
+                    add_distributions_to_course(prev_course, distribution)
+                db.session.commit()
+    return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
 def list_helper(bord, c):
-
     """
     helper function for finding breadths and distributions in courses 
     """
@@ -246,18 +248,19 @@ def list_helper(bord, c):
                 return False
     return True 
 
-### add an endpoints for query course by name, distribution, breadth, prof, difficulty etc
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
     """
-    Takes in a JSON dictionary and it is an endpoint for 
-    getting courses sorted by the listed attributes. 
-    For the level attribute, it can be 0 if there is no specified level, else it will be x000
-    For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3, 4 ; 
-    1 is sorting by best to worst rating,
-    2 is sorting by least to most difficulty
-    3 is sorting by least to most workload
-    4 is sorting by most to least favorites
+    Takes in a JSON dictionary and it is an endpoint for getting courses sorted by the listed attributes.
+     
+    For the subject attribute, it can be the empty string if there is no specified subject
+    For the level attribute, it can be 0 if there is no specified level, else it will be X000
+    For the breadth and distribution attribute, it can be the empty list if there is no specified elements
+    For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3, 4:
+        1 is sorting by best to worst rating
+        2 is sorting by least to most difficulty
+        3 is sorting by least to most workload
+        4 is sorting by most to least favorites
     """
     body = json.loads(request.data)
     subject = body.get("subject")
@@ -265,20 +268,17 @@ def get_sorted_courses():
     breadth = body.get("breadth")
     distribution = body.get("distribution")
     sort = body.get("sort")
-    if not subject or not level or not breadth or not distribution or not sort:
+    if subject is None or level is None or breadth is None or distribution is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
-    if not isinstance(sort, int) or sort <1 or sort >4:
+    if not isinstance(sort, int) or sort < 1 or sort > 4:
         return failure_response("Invalid input for sort.", 400)
-    courselist = []
+    course_list = []
     for c in Course.query.all():
         if c.subject == subject or subject == "":
-            if c.number / 1000 == level /1000 or level == 0:
+            if c.number / 1000 == level / 1000 or level == 0:
                 if list_helper(breadth, c.breadths) and list_helper(distribution, c.distributions):
-                    courselist.append(c)
-                        
-
-
-
+                    course_list.append(c)
+    return json.dumps(course_list)
     
 ### add method for sorting the courses
 
