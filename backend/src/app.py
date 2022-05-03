@@ -1,4 +1,5 @@
 import json
+from re import M
 from flask import Flask
 from flask import request
 from db import db
@@ -6,6 +7,8 @@ from db import Course
 from db import User
 from db import Professor
 from db import Comment
+from db import Breadth
+from db import Distribution
 from ratemyprof_api import ratemyprof_api 
 import requests
 
@@ -18,8 +21,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 
 db.init_app(app)
-with app.app_context():
-    # find a way to update the courses but still keep users
+with app.app_context():  
     db.create_all()
 
 def failure_response(message, code=404):
@@ -93,7 +95,7 @@ def get_professor_rating(Cornell_University, first_name, last_name):
 
 def get_professor(course):
     """
-    Helper function that returns list of professors given course.
+    Given course returns a list of professors.
     """
     meetings = course["enrollGroups"][0]["classSections"][0]["meetings"]
     if len(meetings) == 0:
@@ -115,61 +117,136 @@ def get_courses(roster, subject):
     classes = reqResponse.json()["data"]["classes"]
     course_list = []
     for course in classes:
-        course_list.append(
-            {
-                "subject": course["subject"],
-                "number": int(course["catalogNbr"]),
-                "title": course["titleLong"],
-                "description": course["description"],
-                "breadth": course["catalogBreadth"],
-                "distribution": course["catalogDistr"],
-                "professors": get_professor(course)
-            }
+        if course["catalogBreadth"] != "" and course["catalogDistr"] != "":
+            course_list.append(
+                {
+                    "subject": course["subject"],
+                    "number": int(course["catalogNbr"]),
+                    "title": course["titleLong"],
+                    "description": course["description"],
+                    "breadth": course["catalogBreadth"],
+                    "distribution": course["catalogDistr"],
+                    "professors": get_professor(course)
+                }
         )
     return course_list
 
-def set_up_all_courses():
+def convert_to_list(dist):
     """
-    Adds all of the courses of the last four years to the Course table
+    Helper method to convert distribution and breadth into a list format
     """
+    i = 1
+    list = []
+    while(dist.find(",", i) != -1):
+        list += [dist[i: dist.find(",", i)].strip()]
+        i = dist.find(",", i)+1
+    list += [dist[i:-1].strip()]
+    return list
+
+def add_professors_to_course(course, professors, Cornell_University):
+    """
+    Given list of professors adds them to the course 
+    """
+    for prof in professors:
+        found = False
+        for course_prof in course.professors:
+            if(course_prof.first_name == prof[0] and course_prof.last_name == prof[1]):
+                found = True
+        if(not found):
+            prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
+            if(prev_prof == None):
+                prev_prof = Professor(first_name=prof[0],
+                    last_name=prof[1],
+                    rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
+            course.professors.append(prev_prof) 
+
+def add_breadths_to_course(course, breadths):
+    """
+    Given strings of breadths, add them to the course
+    """
+    breadth_list = convert_to_list(breadths)
+    for breadth in breadth_list:
+        found = False
+        for course_breadth in course.breadths:
+            if(course_breadth.name == breadth):
+                found = True
+        if(not found):
+            prev_breadth = Breadth.query.filter_by(name=breadth).first()
+            if(prev_breadth == None):
+                prev_breadth = Breadth(name=breadth)
+            course.breadths.append(prev_breadth)
+
+def add_distributions_to_course(course, distributions):
+    """
+    Given strings of distributions, add them to the course
+    """
+    distribution_list = convert_to_list(distributions)
+    for distribution in distribution_list:
+        found = False
+        for course_distribution in course.distributions:
+            if(course_distribution.name == distribution):
+                found = True
+        if(not found):
+            prev_distribution = Distribution.query.filter_by(name=distribution).first()
+            if(prev_distribution == None):
+                prev_distribution = Distribution(name=distribution)
+            course.distributions.append(prev_distribution)
+
+@app.route("/setup_update/")
+def set_up_and_update_courses():
+    """
+    Adds and updates all of the courses of the last four semesters to the Course table. 
+    """
+    Professor.query.delete()
+    Breadth.query.delete()
+    Distribution.query.delete()
     Cornell_University = ratemyprof_api.RateMyProfApi(298) 
     rosters = get_rosters()
-    for count in range(len(rosters)-1, 0, -1):
-        roster = rosters[count]
+    for roster in rosters:
         subjects = get_subjects(roster)
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
                 prev_course = Course.query.filter_by(title=course["title"]).first()
-                if prev_course == None and course["description"] != None and course["breadth"] != None and course["distribution"] != None:
+                if course["description"] != None and course["breadth"] != None and course["distribution"] != None:
                     rating = get_course_rating(course["subject"].lower(), course["number"])
-                    new_course = Course(
-                        subject = course["subject"],
-                        number = course["number"],
-                        title = course["title"],
-                        description = course["description"],
-                        breadth = course["breadth"],
-                        distribution = course["distribution"],
-                        workload = rating["workload"],
-                        difficulty = rating["difficulty"],
-                        rating = rating["rating"]
-                        )
-                    for prof in course["professors"]:
-                        prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
-                        if(prev_prof == None):
-                            prev_prof = Professor(first_name=prof[0],
-                                        last_name=prof[1],
-                                        rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
-                        new_course.professors.append(prev_prof) 
-                    db.session.add(new_course)
+                    if prev_course == None:
+                        new_course = Course(
+                            subject = course["subject"],
+                            number = course["number"],
+                            title = course["title"],
+                            description = course["description"],
+                            workload = rating["workload"],
+                            difficulty = rating["difficulty"],
+                            rating = rating["rating"]
+                            )
+                        add_professors_to_course(new_course, course["professors"], Cornell_University)
+                        add_breadths_to_course(new_course, course["breadth"])
+                        add_distributions_to_course(new_course, course["distribution"])
+                        db.session.add(new_course)
+                    else:
+                        prev_course.description = course["description"]
+                        prev_course.workload = rating["workload"]
+                        prev_course.difficulty = rating["difficulty"]
+                        prev_course.rating = rating["rating"]
+                        add_professors_to_course(prev_course, course["professors"], Cornell_University)
+                        add_breadths_to_course(prev_course, course["breadth"])
+                        add_distributions_to_course(prev_course, course["distribution"])
                     db.session.commit()
+
+### add an endpoints for query course by name, distribution, breadth, prof, difficulty etc
+
+### add method for sorting the courses
+
+### add endpoints for adding and deleting favorite courses and comments
+
+### add endpoints for authentication
 
 @app.route("/courses/")
 def get_all_courses():
     """
     Endpoint for getting all courses
     """
-    set_up_all_courses()
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
 if __name__ == "__main__":

@@ -15,6 +15,18 @@ associate_professors = db.Table(
     db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
+associate_breadths = db.Table(
+    "associate_breadths",
+    db.Column("breadth_id", db.Integer, db.ForeignKey("breadth.id")),
+    db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
+)
+
+associate_distributions = db.Table(
+    "associate_distributions",
+    db.Column("distribution_id", db.Integer, db.ForeignKey("distribution.id")),
+    db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
+)
+
 class Course(db.Model):
     """
     Course model 
@@ -27,12 +39,12 @@ class Course(db.Model):
     number = db.Column(db.Integer, nullable = False)
     title = db.Column(db.String, nullable = False)
     description = db.Column(db.String, nullable = False)
-    breadth = db.Column(db.String)
-    distribution = db.Column(db.String)
     workload = db.Column(db.Float)
     difficulty = db.Column(db.Float)
     rating = db.Column(db.Float)
-    users = db.relationship("User", secondary = associate_users, back_populates="courses")
+    breadths = db.relationship("Breadth", secondary = associate_breadths, back_populates = "courses")
+    distributions = db.relationship("Distribution", secondary = associate_distributions, back_populates = "courses")
+    users = db.relationship("User", secondary = associate_users, back_populates="courses") 
     professors = db.relationship("Professor", secondary = associate_professors, back_populates="courses")
     comments = db.relationship("Comment", cascade = "delete")
 
@@ -44,8 +56,6 @@ class Course(db.Model):
         self.number = kwargs.get("number", "")
         self.title = kwargs.get("title", "")
         self.description = kwargs.get("description", "")
-        self.breadth = kwargs.get("breadth", "")
-        self.distribution = kwargs.get("distribution", "")
         self.workload = kwargs.get("workload", "")
         self.difficulty = kwargs.get("difficulty", "")
         self.rating = kwargs.get("rating", "")
@@ -60,15 +70,53 @@ class Course(db.Model):
             "number": self.number,
             "title": self.title,
             "description": self.description,
-            "breadth":self.breadth,
-            "distribution": self.distribution,
             "workload": self.workload,
             "difficulty": self.difficulty,
             "rating": self.rating,
             "users": [c.simple_serialize() for c in self.users],
             "professors": [d.simple_serialize() for d in self.professors],
-            "comments": [m.serialize() for m in self.comments]
+            "comments": [m.serialize() for m in self.comments],
+            "breadths": [b.simple_serialize() for b in self.breadths],
+            "distributions": [f.simple_serialize() for f in self.distributions]
             }
+
+class Breadth(db.Model):
+    """
+    Breadth Model
+    """
+    __table_name__="breadth"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable = False)
+    courses = db.relationship("Course", secondary = associate_breadths, back_populates = "breadths")
+
+    def __init__(self, **kwargs):
+        """Initializes Breadth object"""
+        self.name = kwargs.get("name", "")
+    
+    def simple_serialize(self):
+        """Serializes a breadth object"""
+        return {
+            "name": self.name
+        }
+
+class Distribution(db.Model):
+    """
+    Distribution Model
+    """
+    __table_name__="distribution"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable = False)
+    courses = db.relationship("Course", secondary = associate_distributions, back_populates = "distributions")
+
+    def __init__(self, **kwargs):
+        """Initializes Distribution object"""
+        self.name = kwargs.get("name", "")
+    
+    def simple_serialize(self):
+        """Serializes a Distribution object"""
+        return {
+            "name": self.name
+        }
 
 class User(db.Model):
     """
