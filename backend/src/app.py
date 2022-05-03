@@ -1,4 +1,5 @@
 import json
+from msilib.schema import Error
 from re import M
 from flask import Flask
 from flask import request
@@ -234,8 +235,51 @@ def set_up_and_update_courses():
                         add_distributions_to_course(prev_course, course["distribution"])
                     db.session.commit()
 
-### add an endpoints for query course by name, distribution, breadth, prof, difficulty etc
+def list_helper(bord, c):
 
+    """
+    helper function for finding breadths and distributions in courses 
+    """
+    for b in bord: 
+        for r in c:
+            if b != r.name:
+                return False
+    return True 
+
+### add an endpoints for query course by name, distribution, breadth, prof, difficulty etc
+@app.route("/courses/attributes/", methods = ["POST"])
+def get_sorted_courses():
+    """
+    Takes in a JSON dictionary and it is an endpoint for 
+    getting courses sorted by the listed attributes. 
+    For the level attribute, it can be 0 if there is no specified level, else it will be x000
+    For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3, 4 ; 
+    1 is sorting by best to worst rating,
+    2 is sorting by least to most difficulty
+    3 is sorting by least to most workload
+    4 is sorting by most to least favorites
+    """
+    body = json.loads(request.data)
+    subject = body.get("subject")
+    level = body.get("level")
+    breadth = body.get("breadth")
+    distribution = body.get("distribution")
+    sort = body.get("sort")
+    if not subject or not level or not breadth or not distribution or not sort:
+        return failure_response("Required field(s) not supplied.", 400)
+    if not isinstance(sort, int) or sort <1 or sort >4:
+        return failure_response("Invalid input for sort.", 400)
+    courselist = []
+    for c in Course.query.all():
+        if c.subject == subject or subject == "":
+            if c.number / 1000 == level /1000 or level == 0:
+                if list_helper(breadth, c.breadths) and list_helper(distribution, c.distributions):
+                    courselist.append(c)
+                        
+
+
+
+    
 ### add method for sorting the courses
 
 ### add endpoints for adding and deleting favorite courses and comments
