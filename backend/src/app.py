@@ -342,6 +342,54 @@ def get_sorted_courses():
 ### add method for sorting the courses
 
 ### add endpoints for adding and deleting favorite courses and comments
+@app.route("/comments/<int:course_id/")
+def get_comments_by_course(course_id):
+    """
+    Endpoint for retrieving comments by course id 
+    """
+    course = Course.query.filter_by(id= course_id).first()
+    return json.dumps({"comments": [c.serialize() for c in course]})
+
+@app.route("/comments/", methods = ["POST"])
+def post_comments(): 
+    """
+    Endpoint for posting comments to a course
+    """
+    body = json.loads(request.data)
+    course_id = body.get("course_id")
+    description = body.get("description")
+    user_id = body.get("user_id")
+    if course_id is None or description is None or user_id is None:
+        return failure_response("Required field(s) not supplied.", 400)
+    if description == "":
+        return failure_response("Description must be provided.", 400)
+
+    course = Course.query.filter_by(id= course_id).first()
+    new_comment = Comment(
+        course_id= course_id, 
+        user_id = user_id,
+        description = description
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+    return json.dumps(new_comment.serialize()), 201
+
+
+@app.route("/comments/<int:comment_id>", methods = ["DELETE"])
+def delete_comments(comment_id):
+    """
+    Endpoint for deleting comments 
+    """
+    comment = Comment.query.filter_by(id= comment_id).first()
+    if comment is None:
+        return failure_response("Comment not found.", 404)
+    db.session.delete(comment)
+    db.session.commit()
+    return json.dumps(comment.serialize()), 200
+
+
+
+    
 
 ### add endpoints for authentication
 
