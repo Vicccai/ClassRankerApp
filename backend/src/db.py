@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from requests import delete
 
+import bcrypt
+
 db = SQLAlchemy()
 
 associate_users = db.Table(
@@ -128,11 +130,19 @@ class User(db.Model):
     username = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_users, back_populates="users")
     comments = db.relationship("Comment", cascade = "delete")
+    password_digest = db.Column(db.String, nullable = False)
+
+    #session info
+    session_token = db.Column(db.String, nullable = False, unique = True)
+    session_expiration = db.Column(db.DateTime, nullable = False)
+    update_token = db.Column(db.String, nullable=False, unique=True)
 
     def __init__(self, **kwargs):
         """initializes a User object"""
         self.name = kwargs.get("name", "")
         self.username = kwargs.get("username", "")
+        self.password_digest = bcrypt.hashpw(kwargs.get("password").encode("utf8"), bcrypt.gensalt(rounds=13))
+        self.renew_session()
 
     def serialize(self):
         """serializes a user object"""

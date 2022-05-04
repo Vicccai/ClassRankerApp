@@ -342,7 +342,7 @@ def get_sorted_courses():
 ### add method for sorting the courses
 
 ### add endpoints for adding and deleting favorite courses and comments
-@app.route("/comments/<int:course_id/")
+@app.route("/comments/<int:course_id>/")
 def get_comments_by_course(course_id):
     """
     Endpoint for retrieving comments by course id 
