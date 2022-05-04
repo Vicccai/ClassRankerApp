@@ -1,4 +1,5 @@
 import json
+import math
 from msilib.schema import Error
 from re import M
 from flask import Flask
@@ -118,17 +119,16 @@ def get_courses(roster, subject):
     classes = reqResponse.json()["data"]["classes"]
     course_list = []
     for course in classes:
-        if course["catalogBreadth"] != "" and course["catalogDistr"] != "":
-            course_list.append(
-                {
-                    "subject": course["subject"],
-                    "number": int(course["catalogNbr"]),
-                    "title": course["titleLong"],
-                    "description": course["description"],
-                    "breadth": course["catalogBreadth"],
-                    "distribution": course["catalogDistr"],
-                    "professors": get_professor(course)
-                }
+        course_list.append(
+            {
+                "subject": course["subject"],
+                "number": int(course["catalogNbr"]),
+                "title": course["titleLong"],
+                "description": course["description"],
+                "breadth": course["catalogBreadth"],
+                "distribution": course["catalogDistr"],
+                "professors": get_professor(course)
+            }
         )
     return course_list
 
@@ -136,6 +136,8 @@ def convert_to_list(dist):
     """
     Helper method to convert distribution and breadth into a list format
     """
+    if dist == "":
+        return []
     i = 1
     list = []
     while(dist.find(",", i) != -1):
@@ -242,11 +244,53 @@ def list_helper(bord, c):
     """
     helper function for finding breadths and distributions in courses 
     """
-    for b in bord: 
+    for b in bord:
+        if len(c) == 0:
+            return False
+        contain = False
         for r in c:
-            if b != r.name:
-                return False
+            if b == r.name:
+                contain = True
+        if not contain:
+            return False
     return True 
+
+def sort_by_rating(course):
+    rating = course.rating
+    return rating if rating > 0 else -1
+
+def sort_by_difficulty(course):
+    difficulty = course.difficulty
+    return difficulty if difficulty > 0 else 6
+
+def sort_by_workload(course):
+    workload = course.workload
+    return workload if workload > 0 else 6
+
+def sort_by_users(course):
+    return len(course.users)
+
+def sort_by_prof(course):
+    professors = course.professors
+    avg_rating = 0
+    total = 0
+    for prof in professors:
+        rating = prof.rating
+        if rating > 0:
+            avg_rating += rating
+            total += 1
+    if total == 0:
+        return -1
+    return avg_rating / total
+
+def sort_by_prof_and_rating(course):
+    rating = sort_by_rating(course)
+    if rating == -1:
+        rating = 0
+    prof_rating = sort_by_prof(course)
+    if prof_rating == -1:
+        prof_rating = 0
+    return rating + prof_rating
 
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
@@ -261,6 +305,8 @@ def get_sorted_courses():
         2 is sorting by least to most difficulty
         3 is sorting by least to most workload
         4 is sorting by most to least favorites
+        5 is sorting by best to worst overall professor rating
+        6 is sorted by professors and ratings
     """
     body = json.loads(request.data)
     subject = body.get("subject")
@@ -270,15 +316,28 @@ def get_sorted_courses():
     sort = body.get("sort")
     if subject is None or level is None or breadth is None or distribution is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
-    if not isinstance(sort, int) or sort < 1 or sort > 4:
+    if not isinstance(sort, int) or sort < 1 or sort > 6:
         return failure_response("Invalid input for sort.", 400)
     course_list = []
     for c in Course.query.all():
         if c.subject == subject or subject == "":
-            if c.number / 1000 == level / 1000 or level == 0:
+            print(c.number)
+            if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                 if list_helper(breadth, c.breadths) and list_helper(distribution, c.distributions):
                     course_list.append(c)
-    return json.dumps(course_list)
+    if sort == 6:
+        course_list.sort(reverse=True, key=sort_by_prof_and_rating)
+    elif sort == 5:
+        course_list.sort(reverse=True, key=sort_by_prof)
+    elif sort == 4:
+        course_list.sort(reverse=True, key=sort_by_users)
+    elif sort == 2:
+        course_list.sort(key=sort_by_difficulty)
+    elif sort == 3:
+        course_list.sort(key=sort_by_workload)
+    else:
+        course_list.sort(reverse=True, key=sort_by_rating)
+    return json.dumps({"courses": [c.serialize() for c in course_list]})
     
 ### add method for sorting the courses
 
