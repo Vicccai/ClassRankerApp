@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         rankViewController.navigationController?.navigationBar.prefersLargeTitles = true
         window.rootViewController = UINavigationController(rootViewController: rankViewController)
         self.window = window
-        window.tintColor = .white
+        window.tintColor = UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00)
         window.makeKeyAndVisible()
     }
 

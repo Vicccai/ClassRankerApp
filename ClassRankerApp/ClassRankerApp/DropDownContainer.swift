@@ -18,6 +18,7 @@ class DropDownContainer: UIView {
         dropdown.arrowColor = .clear
         dropdown.font = .systemFont(ofSize: 12)
         dropdown.tintColor = .systemGray
+        dropdown.selectedRowColor = UIColor(red: 0.5, green: 0, blue: 0, alpha: 0.2)
         dropdown.cornerRadius = 15
         dropdown.checkMarkEnabled = false
         return dropdown
@@ -26,7 +27,7 @@ class DropDownContainer: UIView {
     private let image: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "Triangle")
-        image.alpha = 0.6
+        image.alpha = 0.4
         return image
     }()
 
@@ -39,36 +40,36 @@ class DropDownContainer: UIView {
             addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
-        
+
         backgroundColor = .systemBackground
 
         layer.borderWidth = 0.8
-        layer.borderColor = UIColor.gray.cgColor
-        layer.cornerRadius = 10
-        
+        layer.borderColor = UIColor.white.cgColor
+        layer.cornerRadius = 15
+
         dropDown.listWillDisappear {
             self.dropDown.resignFirstResponder()
         }
 
-        //setAnimations(for: dropDown)
+        setAnimations(for: dropDown)
 
         setupConstraints()
 
     }
 
-//    func setAnimations(for: DropDown) {
-//        // set animations for little arrow
-//        dropDown.listWillAppear {
-//            UIView.animate(withDuration: 0.5) {
-//                self.image.transform = self.image.transform.rotated(by: .pi)
-//            }
-//        }
-//        dropDown.listWillDisappear {
-//            UIView.animate(withDuration: 0.5, delay: 0.2) {
-//                self.image.transform = self.image.transform.rotated(by: .pi)
-//            }
-//        }
-//    }
+    func setAnimations(for: DropDown) {
+        // set animations for little arrow
+        dropDown.listWillAppear {
+            UIView.animate(withDuration: 0.5) {
+                self.image.transform = self.image.transform.rotated(by: .pi)
+            }
+        }
+        dropDown.listWillDisappear {
+            UIView.animate(withDuration: 0.5, delay: 0.2) {
+                self.image.transform = self.image.transform.rotated(by: .pi)
+            }
+        }
+    }
 
     func setupConstraints() {
         NSLayoutConstraint.activate([

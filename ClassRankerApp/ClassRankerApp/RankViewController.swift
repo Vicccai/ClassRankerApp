@@ -15,12 +15,12 @@ class RankViewController: UIViewController {
     let padding: CGFloat = 15
     
     let courses = [
-        Course(number: "CS 1110", name: "Intro to Python", rating: 9.7, distribution: ["MQR-AS"], favNumber: 102),
-        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: ["MQR-AS"], favNumber: 201),
-        Course(number: "MATH 1110", name: "Calc 1", rating: 4.2, distribution: [
-        "MQR-AS"], favNumber: 301),
-        Course(number: "CS 1234", name: "Made up CS LA-AS", rating: 4.2, distribution: [
-        "LA-AS"], favNumber: 301)
+        Course(number: "CS 1110", name: "Intro to Python", rating: 9.7, distribution: "MQR-AS", favorite: false, descr: "pretty good course. walker white? 10/10. other teacher? literally no idea. space invaders was fun. made me like cs. not that i would admit that.", credits: 4, reqs: "be prepared to get yelled at", overallRating: 5.0, workloadRating: 5.0, difficultyRating: 2.5, professors: "Walker White, Daisy Something"),
+        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: true, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
+        Course(number: "MATH 1110", name: "Calc 1", rating: 4.2, distribution:
+            "MQR-AS", favorite: false, descr: "took calc in high school because i hated myself. probably not a terrible course.", credits: 3, reqs: "don't take in high school", overallRating: 3.5, workloadRating: 2.3, difficultyRating: 1.2, professors: "literally no clue"),
+        Course(number: "CS 1234", name: "Made up CS LA-AS", rating: 4.2, distribution:
+            "LA-AS", favorite: false, descr: "made this up so ill make this up too. idk. probably pretty fun bc its cs. probably pretty hard bc its cs. probably in duffield because again, it's cs.", credits: 3, reqs: "probably 2110 like everything else", overallRating: 3.2, workloadRating: 2.1, difficultyRating: 5.6, professors: "Victor Cai")
     ]
     
     var filteredCourses: [Course] = [] // based on SearchBar
@@ -43,12 +43,14 @@ class RankViewController: UIViewController {
         flowLayout.minimumInteritemSpacing = 10
         flowLayout.scrollDirection = .horizontal
         flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        flowLayout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.id)
+        collectionView.backgroundColor = .clear
         return collectionView
     }()
     
+    let filters = ["Subject", "Distribution", "Sort by..."]
    
     lazy var coursesView: UITableView = {
         let tableView = UITableView()
@@ -61,157 +63,186 @@ class RankViewController: UIViewController {
         return tableView
     }()
     
-    var majorDropDown: DropDownContainer = {
-        let view = DropDownContainer(placeholder: "Select Major", optionArray: ["", "CS", "MATH"])
-        return view
-    }()
-
-    var distrDropDown: DropDownContainer = {
-        let view = DropDownContainer(placeholder: "Select Distribution", optionArray:  ["", "MQR-AS", "LA-AS"])
-        return view
+    var favStar: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "Star 1")
+        return image
     }()
     
-//    let majorView: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .white
-//        view.layer.cornerRadius = 10
+    var favFilter: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(filterFavs), for: .touchUpInside)
+        return button
+    }()
+    
+//    var majorDropDown: DropDownContainer = {
+//        let view = DropDownContainer(placeholder: "Major", optionArray: ["", "CS", "MATH", "hello", "hi", "testing"])
 //        return view
 //    }()
 //
-//    let distrView: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .white
-//        view.layer.cornerRadius = 10
+//    var distrDropDown: DropDownContainer = {
+//        let view = DropDownContainer(placeholder: "Distribution", optionArray:  ["", "MQR-AS", "LA-AS"])
 //        return view
 //    }()
 //
-//    var majorDropDown: DropDown = {
-//        let dropDown = DropDown()
-//        dropDown.dataSource = ["", "CS", "MATH", "test", "hi", "bye", "hello"]
-//        dropDown.cornerRadius = 10
-//        dropDown.selectedTextColor = UIColor.red
-//        return dropDown
+//    var favDropDown: DropDownContainer = {
+//        let view = DropDownContainer(placeholder: "Filter by...", optionArray: ["", "Rating", "Favorites", "My Favorites"])
+//        return view
 //    }()
 //
-//    var distrDropDown: DropDown = {
-//        let dropDown = DropDown()
-//        dropDown.dataSource = ["MQR-AS", "LA-AS"]
-//        dropDown.cornerRadius = 10
-//        return dropDown
-//    }()
-    
-//    var applyButton: UIButton = {
-//        let button = UIButton()
-//        button.setTitle("  Apply  ", for: .normal)
-//        button.setTitleColor(.black, for: .normal)
-//        button.layer.borderWidth = 1
-//        button.backgroundColor = .white
-//        button.layer.borderColor = CGColor(red: 1, green: 1, blue: 1, alpha: 1.0)
-//        button.layer.cornerRadius = 10
-//        button.addTarget(self, action: #selector(pressApply), for: .touchDown)
-//        button.addTarget(self, action: #selector(releaseApply), for: .touchUpInside)
-//        return button
-//    }()
     
     let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        navigationController?.navigationBar.prefersLargeTitles = true
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithOpaqueBackground()
-        navigationBarAppearance.backgroundColor = UIColor(red: 0.6, green: 0, blue: 0, alpha: 1.0)
-        navigationBarAppearance.titleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.systemFont(ofSize: 30, weight: .bold)
-        ]
-        navigationController?.navigationBar.standardAppearance = navigationBarAppearance
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor.white], for: .normal)
-        
+        view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+       
+        // title stuff
         navigationItem.title = "Courses"
-        view.backgroundColor = UIColor(red: 0.6, green: 0, blue: 0, alpha: 1.0)
-        
-        // drop down stuff
-        
-//        let gesture1 = UITapGestureRecognizer(target: self, action: #selector(selectMajor))
-//        gesture1.numberOfTouchesRequired = 1
-//        gesture1.numberOfTapsRequired = 1
-//        majorView.addGestureRecognizer(gesture1)
-//        majorDropDown.anchorView = majorView
-//
-//        let gesture2 = UITapGestureRecognizer(target: self, action: #selector(selectDistr))
-//        gesture2.numberOfTouchesRequired = 1
-//        gesture2.numberOfTapsRequired = 1
-//        distrView.addGestureRecognizer(gesture2)
-//        distrDropDown.anchorView = distrView
-        
-        for subView in [coursesView, majorDropDown, distrDropDown] {
-            view.addSubview(subView)
-            subView.translatesAutoresizingMaskIntoConstraints = false
-        }
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.largeTitleTextAttributes = [
+            .foregroundColor: UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00),
+            .font: UIFont(name: "Proxima Nova Bold", size: 35)
+        ]
+        navigationItem.backButtonTitle = ""
         
         // search bar stuff
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor.white], for: .normal)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Classes"
         searchController.searchBar.autocapitalizationType = .none
-        searchController.searchBar.backgroundColor = UIColor(red: 0.6, green: 0, blue: 0, alpha: 1.0)
-        searchController.searchBar.searchTextField.backgroundColor = .systemBackground
-        searchController.searchBar.tintColor = .black
-        
+        searchController.searchBar.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        searchController.searchBar.searchTextField.backgroundColor = .white
+        searchController.searchBar.tintColor = .white
         navigationItem.searchController = searchController
-        definesPresentationContext = false
+        definesPresentationContext = true
         
-        setupDropdown()
+        // filters
+        filterCollection.dataSource = self
+        filterCollection.delegate = self
         
+        for subView in [filterCollection, coursesView, favFilter, favStar] {
+            view.addSubview(subView)
+            subView.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        navigationItem.hidesBackButton = true
+        
+//        setupDropdown()
         setupConstraints()
-        
         calculateShownCourses()
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-//            applyButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-//            applyButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-//            applyButton.heightAnchor.constraint(equalToConstant: 30),
-            
-//            majorView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-//            majorView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-//            majorView.heightAnchor.constraint(equalToConstant: 30),
-//            majorView.widthAnchor.constraint(equalToConstant: 100),
+//            majorDropDown.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+//            majorDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+//            majorDropDown.heightAnchor.constraint(equalToConstant: 30),
+//            majorDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
 //
-//            distrView.leadingAnchor.constraint(equalTo: majorView.trailingAnchor, constant: padding),
-//            distrView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-//            distrView.heightAnchor.constraint(equalToConstant: 30),
-//            distrView.widthAnchor.constraint(equalToConstant: 100),
+//            distrDropDown.leadingAnchor.constraint(equalTo: majorDropDown.trailingAnchor, constant: 10),
+//            distrDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
+//            distrDropDown.heightAnchor.constraint(equalToConstant: 30),
+//            distrDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
+//
+//            favDropDown.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+//            favDropDown.topAnchor.constraint(equalTo: distrDropDown.topAnchor),
+//            favDropDown.heightAnchor.constraint(equalToConstant: 30),
+//            favDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
             
-            majorDropDown.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            majorDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-            majorDropDown.heightAnchor.constraint(equalToConstant: 30),
-
-            distrDropDown.leadingAnchor.constraint(equalTo: majorDropDown.trailingAnchor, constant: padding),
-            distrDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-            distrDropDown.heightAnchor.constraint(equalToConstant: 30),
-        
+            favFilter.centerYAnchor.constraint(equalTo: filterCollection.centerYAnchor),
+            favFilter.heightAnchor.constraint(equalToConstant: 27.5),
+            favFilter.widthAnchor.constraint(equalToConstant: 27.5),
+            favFilter.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            
+            favStar.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
+            favStar.centerXAnchor.constraint(equalTo: favFilter.centerXAnchor),
+            favStar.heightAnchor.constraint(equalToConstant: 20),
+            favStar.widthAnchor.constraint(equalToConstant: 20),
+            
+            filterCollection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            filterCollection.leadingAnchor.constraint(equalTo: favFilter.trailingAnchor, constant: 12.5),
+            filterCollection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            filterCollection.heightAnchor.constraint(equalToConstant: 45),
+            
             coursesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            coursesView.topAnchor.constraint(equalTo: majorDropDown.bottomAnchor, constant: padding),
+            coursesView.topAnchor.constraint(equalTo: filterCollection.bottomAnchor),
             coursesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             coursesView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
         ])
     }
     
-    func setupDropdown() {
-//        majorDropDown.dropDown.listDidDisappear {
-//            self.selectedMajor = self.majorDropDown.dropDown.text!
+//    func setupDropdown() {
+////        majorDropDown.dropDown.listDidDisappear {
+////            self.selectedMajor = self.majorDropDown.dropDown.text!
+////            self.calculateShownCourses()
+////        }
+//        majorDropDown.dropDown.didSelect { major, _, _ in
+//            self.selectedMajor = major
 //            self.calculateShownCourses()
 //        }
-        majorDropDown.dropDown.didSelect { major, _, _ in
-            self.selectedMajor = major
-            self.calculateShownCourses()
-        }
-        distrDropDown.dropDown.didSelect { distr, _, _ in
-            self.selectedDistr = distr
-            self.calculateShownCourses()
+//        distrDropDown.dropDown.didSelect { distr, _, _ in
+//            self.selectedDistr = distr
+//            self.calculateShownCourses()
+//        }
+//    }
+    
+    @objc func filterFavs() {
+        // for now hard codes them as red -- I got confused with your filter system but I think we should add a field to course called "favorite" and when we click on the red star it changes it to a favorited course. when the fav filter is pressed, it appends to shownCourses all the courses that are favoritied, makes them red, and then appends the rest of the non favorites
+        
+        // storing original order
+//        let originalOrder = shownCourses
+        
+        // if you're turning on the filter
+        if favStar.image == UIImage(named: "Star 1") {
+            // changing colors
+            favStar.image = UIImage(named: "Star 2")
+            let cells = self.coursesView.visibleCells as! Array<CoursesTableViewCell>
+            for cell in cells {
+                if cell.favorite == true {
+                    cell.backView.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+                    cell.favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+                    cell.numberLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
+                    cell.nameLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
+                    cell.ratingLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
+                }
+            }
+            // sorting data
+//            var favoriteCoursesFirst: [Course] = []
+//            for course in shownCourses {
+//                if course.favorite == true {
+//                    favoriteCoursesFirst.append(course)
+//                }
+//            }
+//            for course in shownCourses {
+//                if course.favorite == false {
+//                    favoriteCoursesFirst.append(course)
+//                }
+//            }
+//            shownCourses = favoriteCoursesFirst
+//            coursesView.reloadData()
+            
+          // if youre turning off the filter
+        } else {
+            // returning the data
+//            shownCourses = originalData
+//            coursesView.reloadData()
+            
+            // changing colors back
+            favStar.image = UIImage(named: "Star 1")
+            let cells = self.coursesView.visibleCells as! Array<CoursesTableViewCell>
+            for cell in cells {
+                if cell.favorite == true {
+                    cell.backView.backgroundColor = .white
+                    cell.favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+                    cell.numberLabel.textColor = .black
+                    cell.nameLabel.textColor = .black
+                    cell.ratingLabel.textColor = .black
+                }
+            }
         }
     }
     
@@ -267,36 +298,51 @@ class RankViewController: UIViewController {
 
 extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return shownCourses.count
-        
-//        if filteredCourses.count == 0 { return courses.count }
-//        else { return filteredCourses.count }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
-        
         cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
         return cell
-        
-//        if filteredCourses.count == 0 {
-//            cell.configure(course: courses[indexPath.row], index: indexPath.row)
-//            return cell
-//        } else {
-//            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
-//            return cell
-//        }
     }
 }
 
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        _ = courses[indexPath.item]
-        let courseViewController = CourseViewController()
-//        courseViewController.configure()
-//        courseViewController.delegate = self
-        navigationController?.pushViewController(courseViewController, animated: true)
+        let course = courses[indexPath.item]
+        let descriptionViewController = DescriptionViewController()
+        descriptionViewController.configure(courseNumber: course.number, courseName: course.name, courseRating: course.rating, descr: course.descr, credits: course.credits, reqs: course.reqs, distrs: course.distribution, overall: course.overallRating, workload: course.workloadRating, difficulty: course.difficultyRating, profs: course.professors)
+        descriptionViewController.delegate = self
+        navigationController?.pushViewController(descriptionViewController, animated: true)
+    }
+}
+
+extension RankViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return filters.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.id, for: indexPath) as? FilterCollectionViewCell else { return UICollectionViewCell() }
+        cell.configure(filter: filters[indexPath.item])
+        return cell
+    }
+}
+
+extension RankViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let label = UILabel(frame: .zero)
+        label.text = filters[indexPath.item]
+        label.sizeToFit()
+        let height = filterCollection.frame.height
+        return CGSize(width: label.frame.width, height: height)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
     }
 }
 

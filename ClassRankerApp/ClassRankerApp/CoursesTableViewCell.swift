@@ -11,7 +11,7 @@ class CoursesTableViewCell: UITableViewCell {
     
     static let id = "CourseCellId"
     
-    let cellPadding: CGFloat = 30
+    let cellPadding: CGFloat = 40
     
 //    var rankingLabel: UILabel = {
 //        let label = UILabel()
@@ -24,23 +24,25 @@ class CoursesTableViewCell: UITableViewCell {
         let view = UIView()
         view.backgroundColor = .white
         view.clipsToBounds = true
-        view.layer.cornerRadius = 50
+        view.layer.cornerRadius = 40
         return view
     }()
     
     var numberLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = .systemFont(ofSize: 40)
-        label.textAlignment = .right
+        label.font = UIFont(name: "Proxima Nova Bold", size: 22.5)
+        label.textAlignment = .left
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         return label
     }()
     
     var nameLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = .systemFont(ofSize: 25)
-        label.textAlignment = .right
+        label.font = UIFont(name: "ProximaNova-Regular", size: 20)
+        label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         return label
@@ -49,72 +51,86 @@ class CoursesTableViewCell: UITableViewCell {
     var ratingLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = .systemFont(ofSize: 30)
+        label.font = UIFont(name: "Proxima Nova Bold", size: 30)
+        label.textAlignment = .right
         return label
     }()
     
     var favButton: UIButton = {
         let button = UIButton()
-        // will be changed to a star image with button.setImage()
-        button.setTitle("X", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        button.setImage(UIImage(named: "Star 1"), for: .normal)
         return button
     }()
     
-    var favNumber: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 15)
-        return label
-    }()
+//    var favNumber: UILabel = {
+//        let label = UILabel()
+//        label.textColor = .black
+//        label.font = .systemFont(ofSize: 15)
+//        return label
+//    }()
+    
+    var favorite = false
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        contentView.backgroundColor = UIColor(red: 0.6, green: 0, blue: 0, alpha: 1.0)
+        contentView.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
     
-        for subView in [backView, numberLabel, nameLabel, ratingLabel, favButton, favNumber] {
+        for subView in [backView, numberLabel, nameLabel, ratingLabel, favButton] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
         }
+        
+        favButton.addTarget(self, action: #selector(isFavorite), for: .touchUpInside)
+        
         setupConstraints()
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            backView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            backView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            backView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: cellPadding),
-            backView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -cellPadding),
+            backView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7.5),
+            backView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -7.5),
+            backView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            backView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
             
-            ratingLabel.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: cellPadding),
-            ratingLabel.bottomAnchor.constraint(equalTo: numberLabel.bottomAnchor),
+            favButton.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: 30),
+            favButton.centerYAnchor.constraint(equalTo: numberLabel.centerYAnchor),
+            favButton.widthAnchor.constraint(equalToConstant: 20),
+            favButton.heightAnchor.constraint(equalToConstant: 20),
             
-            favButton.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: cellPadding),
-            favButton.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: cellPadding),
-            favButton.widthAnchor.constraint(equalToConstant: 30),
-            favButton.heightAnchor.constraint(equalToConstant: 30),
+            numberLabel.bottomAnchor.constraint(equalTo: ratingLabel.bottomAnchor),
+            numberLabel.leadingAnchor.constraint(equalTo: favButton.trailingAnchor, constant: 10),
+            numberLabel.trailingAnchor.constraint(equalTo: ratingLabel.leadingAnchor, constant: -20),
             
-            favNumber.topAnchor.constraint(equalTo: favButton.bottomAnchor),
-            favNumber.centerXAnchor.constraint(equalTo: favButton.centerXAnchor),
-            favNumber.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -cellPadding),
+            nameLabel.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 5),
+            nameLabel.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -25),
+            nameLabel.leadingAnchor.constraint(equalTo: backView.leadingAnchor, constant: 30),
+            nameLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -30),
             
-            numberLabel.leadingAnchor.constraint(equalTo: ratingLabel.trailingAnchor, constant: cellPadding),
-            numberLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -cellPadding),
-            numberLabel.topAnchor.constraint(equalTo: backView.topAnchor, constant: cellPadding),
+            ratingLabel.topAnchor.constraint(equalTo: backView.topAnchor, constant: 15),
+            ratingLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -35)
             
-            nameLabel.leadingAnchor.constraint(equalTo: ratingLabel.trailingAnchor, constant: cellPadding),
-            nameLabel.trailingAnchor.constraint(equalTo: backView.trailingAnchor, constant: -cellPadding),
-            nameLabel.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 10),
-            nameLabel.bottomAnchor.constraint(equalTo: backView.bottomAnchor, constant: -cellPadding)
+//            favNumber.topAnchor.constraint(equalTo: favButton.bottomAnchor, constant: 5),
+//            favNumber.centerXAnchor.constraint(equalTo: favButton.centerXAnchor),
         ])
+    }
+    
+    @objc func isFavorite() {
+        if favorite == false {
+            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+            favorite = true
+        }
+        else if favorite == true {
+            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+            favorite = false
+        }
     }
     
     func configure(course: Course, index: Int) {
         numberLabel.text = course.number
         nameLabel.text = course.name
         ratingLabel.text = String(course.rating)
-        favNumber.text = String(course.favNumber)
+//        favNumber.text = String(course.favNumber)
 //        rankingLabel.text = String(index) + "."
     }
     
