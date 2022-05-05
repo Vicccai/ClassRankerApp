@@ -1,17 +1,8 @@
 import datetime
 import json
 import math
-from msilib.schema import Error
-from re import M
-from flask import Flask
-from flask import request
-from db import db
-from db import Course
-from db import User
-from db import Professor
-from db import Comment
-from db import Breadth
-from db import Distribution
+from flask import Flask, request
+from db import db, Course, User, Professor, Comment, Breadth, Distribution
 from ratemyprof_api import ratemyprof_api 
 import requests
 import users_dao
@@ -219,7 +210,7 @@ def set_up_and_update_courses():
             courses = get_courses(roster, subject)
             for course in courses:
                 prev_course = Course.query.filter_by(title=course["title"]).first()
-                description = course["description"] if course["description"] is not None else "No Description."
+                description = course["description"] if course["description"] is not None else "No Description Found."
                 breadth = course["breadth"] if course["breadth"] is not None else ""
                 distribution = course["distribution"] if course["distribution"] is not None else ""
                 rating = get_course_rating(course["subject"].lower(), course["number"])
@@ -248,11 +239,11 @@ def set_up_and_update_courses():
                 db.session.commit()
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
-def list_helper(bord, c):
+def list_helper(b_or_d, c):
     """
     helper function for finding breadths and distributions in courses 
     """
-    for b in bord:
+    for b in b_or_d:
         if len(c) == 0:
             return False
         contain = False
@@ -264,21 +255,36 @@ def list_helper(bord, c):
     return True 
 
 def sort_by_rating(course):
+    """
+    Function to specify sorting criteria for ratings
+    """
     rating = course.rating
     return rating if rating > 0 else -1
 
 def sort_by_difficulty(course):
+    """
+    Function to specify sorting criteria for difficulty
+    """
     difficulty = course.difficulty
     return difficulty if difficulty > 0 else 6
 
 def sort_by_workload(course):
+    """
+    Function to specify sorting criteria for workload
+    """
     workload = course.workload
     return workload if workload > 0 else 6
 
 def sort_by_users(course):
+    """
+    Function to specify sorting criteria for users
+    """
     return len(course.users)
 
 def sort_by_prof(course):
+    """
+    Function to specify sorting criteria for professors
+    """
     professors = course.professors
     avg_rating = 0
     total = 0
@@ -292,6 +298,9 @@ def sort_by_prof(course):
     return avg_rating / total
 
 def sort_by_prof_and_rating(course):
+    """
+    Function to specify sorting criteria for ratings and professors
+    """
     rating = sort_by_rating(course)
     if rating == -1:
         rating = 0
@@ -345,21 +354,38 @@ def get_sorted_courses():
         course_list.sort(key=sort_by_workload)
     else:
         course_list.sort(reverse=True, key=sort_by_rating)
-    return json.dumps({"courses": [c.serialize() for c in course_list]})
-    
-### add method for sorting the courses
+    return json.dumps({"courses": [c.serialize() for c in course_list]}), 200
 
-### add endpoints for adding and deleting favorite courses and comments
-@app.route("/comments/<int:course_id>/")
+@app.route("/courses/")
+def get_all_courses():
+    """
+    Endpoint for getting all courses
+    """
+    return json.dumps({"courses": [c.serialize() for c in Course.query.all()]}), 200
+
+# Endpoints related to comments
+@app.route("/courses/comments/<int:course_id>/")
 def get_comments_by_course(course_id):
     """
     Endpoint for retrieving comments by course id 
     """
     course = Course.query.filter_by(id= course_id).first()
-    return json.dumps({"comments": [c.serialize() for c in course]})
+    if course is None:
+        return failure_response("Course not found.")
+    return json.dumps({"comments": [c.serialize() for c in course.comments]}), 200
+
+@app.route("/users/comments/<int:user_id>/")
+def get_comments_by_user(user_id):
+    """
+    Endpoint for retrieving comments by user id 
+    """
+    user = User.query.filter_by(id= user_id).first()
+    if user is None:
+        return failure_response("User not found.")
+    return json.dumps({"comments": [u.serialize() for u in user.comments]}), 200
 
 @app.route("/comments/", methods = ["POST"])
-def post_comments(): 
+def post_comment(): 
     """
     Endpoint for posting comments to a course
     """
@@ -373,6 +399,8 @@ def post_comments():
         return failure_response("Description must be provided.", 400)
 
     course = Course.query.filter_by(id= course_id).first()
+    if course is None:
+        return failure_response("Course not found.")
     new_comment = Comment(
         course_id= course_id, 
         user_id = user_id,
@@ -382,25 +410,17 @@ def post_comments():
     db.session.commit()
     return json.dumps(new_comment.serialize()), 201
 
-
-@app.route("/comments/<int:comment_id>", methods = ["DELETE"])
-def delete_comments(comment_id):
+@app.route("/comments/<int:comment_id>/", methods = ["DELETE"])
+def delete_comment(comment_id):
     """
     Endpoint for deleting comments 
     """
     comment = Comment.query.filter_by(id= comment_id).first()
     if comment is None:
-        return failure_response("Comment not found.", 404)
+        return failure_response("Comment not found.")
     db.session.delete(comment)
     db.session.commit()
     return json.dumps(comment.serialize()), 200
-
-@app.route("/courses/")
-def get_all_courses():
-    """
-    Endpoint for getting all courses
-    """
-    return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
 #Endpoints for authentication
 def extract_token(request):
@@ -409,7 +429,7 @@ def extract_token(request):
     """
     auth_header = request.headers.get("Authorization")
     if auth_header is None:
-        return False, json.dumps({"Misisng authorization header"})
+        return False, json.dumps({"Missing authorization header"})
     
     bearer_token = auth_header.replace("Bearer", "").strip()
 
@@ -437,8 +457,6 @@ def register_account():
         "session_expiration": str(user.session_expiration),
         "update_token": user.update_token
     }, 201)
-
-
 
 @app.route("/login/", methods=["POST"])
 def login():
@@ -488,7 +506,6 @@ def update_session():
         }
     )
 
-
 @app.route("/secret/", methods=["GET"])
 def secret_message():
     """
@@ -527,46 +544,63 @@ def logout():
         "message": "You have successfully logged out."
     })
 
+@app.route("/users/")
+def get_users():
+    """
+    Endpoint for getting all users
+    """
+    return json.dumps({"users": [u.serialize() for u in User.query.all()]}), 200
+
+# Endpoints for favorite courses
 @app.route("/favorites/<int:user_id>/")
 def get_favorites_by_id(user_id):
     """
     Endpoint for retrieving user's favorited courses by user_id
     """
     user = User.query.filter_by(id= user_id).first()
+    if user is None:
+        return failure_response("User not found.")
     courses = user.courses
-    return json.dumps({"favorites": [f.serialize() for f in courses]})
+    return json.dumps({"favorites": [f.serialize() for f in courses]}), 200
 
-@app.route("/favorites/<int:user_id>/", methods = ["POST"])
+@app.route("/add/favorites/<int:user_id>/", methods = ["POST"])
 def add_to_favorites(user_id):
     """
     Endpoint for added to a user's favorites
     """
     user = User.query.filter_by(id= user_id).first()
+    if user is None:
+        return failure_response("User not found.")
     body = json.loads(request.data)
     course_id = body.get("course_id")
     if course_id is None:
         return failure_response("Required field(s) not provided.", 400)
     course = Course.query.filter_by(id= course_id).first()
+    if course is None:
+        return failure_response("Course not found.")
     user.courses.append(course)
     db.session.commit()
     return json.dumps(course.serialize()), 200
 
-@app.route("/favorites/<int:user_id>/", methods = ["POST"])
-def delete_from_favorites(user_id, course_id):
+@app.route("/delete/favorites/<int:user_id>/", methods = ["POST"])
+def delete_from_favorites(user_id):
     """
     Enpoint for deleting course from user's favorites
     """
     body = json.loads(request.data)
     course_id = body.get("course_id")
     user = User.query.filter_by(id= user_id).first()
-    course = user.courses.query.filter_by(id = course_id).first()
+    if user is None:
+        return failure_response("User not found.")
+    course = None
+    for c in user.courses:
+        if c.id == course_id:
+            course = c
+    if course is None:
+        return failure_response("Course not found.")
     user.courses.remove(course)
     db.session.commit()
-
-
-
-
-
+    return json.dumps(course.serialize()), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
