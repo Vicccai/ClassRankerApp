@@ -15,7 +15,6 @@
 		D18D76602823096700478DDE /* DescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18D765F2823096700478DDE /* DescriptionViewController.swift */; };
 		D18D766228232CA900478DDE /* proxima_ssv in Resources */ = {isa = PBXBuildFile; fileRef = D18D766128232CA900478DDE /* proxima_ssv */; };
 		D18D7666282349A500478DDE /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18D7665282349A500478DDE /* FilterCollectionViewCell.swift */; };
-		D18D766E282497F800478DDE /* OpeningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18D766D282497F800478DDE /* OpeningViewController.swift */; };
 		DF29B65A2824518A00C9F212 /* SelectCollegePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B6592824518A00C9F212 /* SelectCollegePresentation.swift */; };
 		DF29B65D2824573C00C9F212 /* SelectCollegeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B65C2824573C00C9F212 /* SelectCollegeController.swift */; };
 		DF29B65F28247D8000C9F212 /* SelectDistrController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B65E28247D8000C9F212 /* SelectDistrController.swift */; };
@@ -40,7 +39,6 @@
 		D18D765F2823096700478DDE /* DescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionViewController.swift; sourceTree = "<group>"; };
 		D18D766128232CA900478DDE /* proxima_ssv */ = {isa = PBXFileReference; lastKnownFileType = folder; path = proxima_ssv; sourceTree = "<group>"; };
 		D18D7665282349A500478DDE /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
-		D18D766D282497F800478DDE /* OpeningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpeningViewController.swift; sourceTree = "<group>"; };
 		DF29B6592824518A00C9F212 /* SelectCollegePresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollegePresentation.swift; sourceTree = "<group>"; };
 		DF29B65C2824573C00C9F212 /* SelectCollegeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollegeController.swift; sourceTree = "<group>"; };
 		DF29B65E28247D8000C9F212 /* SelectDistrController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectDistrController.swift; sourceTree = "<group>"; };
@@ -119,7 +117,6 @@
 				DF48F8B3281B5B100017372B /* AppDelegate.swift */,
 				DF48F8B5281B5B100017372B /* SceneDelegate.swift */,
 				D16F16712820AFC100F1DF09 /* LoginController.swift */,
-				D18D766D282497F800478DDE /* OpeningViewController.swift */,
 				D16F16732820C40700F1DF09 /* CreateAccountController.swift */,
 				DF29B65B2824519000C9F212 /* FilterControllers */,
 				DF48F8B7281B5B100017372B /* RankViewController.swift */,
@@ -258,7 +255,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF29B65F28247D8000C9F212 /* SelectDistrController.swift in Sources */,
-				D18D766E282497F800478DDE /* OpeningViewController.swift in Sources */,
 				D16F16742820C40900F1DF09 /* CreateAccountController.swift in Sources */,
 				D16F16762820CD5100F1DF09 /* TextFieldWithPadding.swift in Sources */,
 				D18D76602823096700478DDE /* DescriptionViewController.swift in Sources */,

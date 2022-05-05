@@ -4,82 +4,134 @@
 //
 //  Created by Mariana Meriles on 5/2/22.
 //
-
+ 
 import Foundation
 import UIKit
-
+ 
 class LoginController: UIViewController {
     
-    var padding = CGFloat(20)
+    lazy var delegate = UIViewController()
     
     var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Log In"
-        label.font = .boldSystemFont(ofSize: 50)
-        label.textColor = .white
+        label.font = UIFont(name: "Proxima Nova Bold", size: 30)
+        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
         return label
+    }()
+    
+    var signInLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Please sign in to continue."
+        label.font = UIFont(name: "Proxima Nova Bold", size: 20)
+        label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1.00)
+        return label
+    }()
+    
+    var usernameBackView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 5
+        return view
     }()
     
     var usernameLabel: UILabel = {
         let label = UILabel()
         label.text = "Username:"
-        label.font = .systemFont(ofSize: 15)
-        label.textColor = .white
+        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.textColor = .black
         return label
     }()
     
-    var usernameField: TextFieldWithPadding = {
-        let field = TextFieldWithPadding()
+    var usernameField: UITextField = {
+        let field = UITextField()
         field.autocapitalizationType = .none
-        field.backgroundColor = .white
-        field.layer.cornerRadius = 20
-        field.tintColor = .lightGray
+        field.backgroundColor = .clear
         field.placeholder = "username"
+        field.font = UIFont(name: "Proxima Nova Bold", size: 14)
         return field
+    }()
+    
+    var usernameImageView: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "Group 18")
+        image.contentMode = .scaleAspectFit
+        return image
+    }()
+    
+    var passwordBackView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 5
+        return view
     }()
     
     var passwordLabel: UILabel = {
         let label = UILabel()
         label.text = "Password:"
-        label.font = .systemFont(ofSize: 15)
-        label.textColor = .white
+        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.textColor = .black
         return label
     }()
     
-    var passwordField: TextFieldWithPadding = {
-        let field = TextFieldWithPadding()
+    var passwordField: UITextField = {
+        let field = UITextField()
         field.autocapitalizationType = .none
-        field.backgroundColor = .white
-        field.layer.cornerRadius = 20
-        field.tintColor = .lightGray
+        field.backgroundColor = .clear
         field.placeholder = "password"
+        field.font = UIFont(name: "Proxima Nova Bold", size: 14)
+        field.isSecureTextEntry = true
         return field
+    }()
+    
+    var passwordImageView: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "Group 19")
+        image.contentMode = .scaleAspectFit
+        return image
     }()
     
     var logInButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Log In", for: .normal)
-        button.setTitleColor(UIColor(red: 0.5, green: 0, blue: 0, alpha: 1.0), for: .normal)
-        button.backgroundColor = .white
+        button.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
         button.layer.cornerRadius = 20
         button.addTarget(self, action: #selector(logIn), for: .touchUpInside)
         return button
     }()
     
+    var logInLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Log In"
+        label.font = UIFont(name: "Proxima Nova Bold", size: 14)
+        label.textColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
     var createAccountButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Create Account", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .clear
         button.addTarget(self, action: #selector(createAccount), for: .touchUpInside)
         return button
+    }()
+    
+    var createAccountLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Don't have an account?\nCreate a new one!"
+        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        return label
     }()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 0.5, green: 0, blue: 0, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         
-        for subView in [titleLabel, usernameLabel, usernameField, passwordLabel, passwordField, logInButton, createAccountButton] {
+        for subView in [titleLabel, signInLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, logInButton, logInLabel, createAccountButton, createAccountLabel] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
@@ -91,34 +143,61 @@ class LoginController: UIViewController {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 125),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 150),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             
-            usernameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
-            usernameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            signInLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
+            signInLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             
-            usernameField.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 10),
-            usernameField.heightAnchor.constraint(equalToConstant: 40),
-            usernameField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            usernameField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            usernameBackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 50),
+            usernameBackView.bottomAnchor.constraint(equalTo: usernameField.bottomAnchor, constant: 10),
+            usernameBackView.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            usernameBackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
             
-            passwordLabel.topAnchor.constraint(equalTo: usernameField.bottomAnchor, constant: padding),
-            passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            usernameLabel.topAnchor.constraint(equalTo: usernameBackView.topAnchor, constant: 10),
+            usernameLabel.leadingAnchor.constraint(equalTo: usernameImageView.trailingAnchor, constant: 20),
             
-            passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
-            passwordField.heightAnchor.constraint(equalToConstant: 40),
-            passwordField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            usernameField.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor),
+            usernameField.leadingAnchor.constraint(equalTo: usernameImageView.trailingAnchor, constant: 20),
+            usernameField.trailingAnchor.constraint(equalTo: usernameBackView.trailingAnchor, constant: -10),
             
-            logInButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 40),
+            usernameImageView.centerYAnchor.constraint(equalTo: usernameBackView.centerYAnchor),
+            usernameImageView.heightAnchor.constraint(equalToConstant: 20),
+            usernameImageView.widthAnchor.constraint(equalToConstant: 20),
+            usernameImageView.leadingAnchor.constraint(equalTo: usernameBackView.leadingAnchor, constant: 20),
+            
+            passwordBackView.topAnchor.constraint(equalTo: usernameField.bottomAnchor, constant: 20),
+            passwordBackView.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            passwordBackView.trailingAnchor.constraint(equalTo: usernameBackView.trailingAnchor),
+            passwordBackView.bottomAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 10),
+            
+            passwordLabel.topAnchor.constraint(equalTo: passwordBackView.topAnchor, constant: 10),
+            passwordLabel.leadingAnchor.constraint(equalTo: usernameLabel.leadingAnchor),
+            
+            passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor),
+            passwordField.leadingAnchor.constraint(equalTo: passwordLabel.leadingAnchor),
+            passwordField.trailingAnchor.constraint(equalTo: passwordBackView.trailingAnchor, constant: -10),
+            
+            passwordImageView.centerYAnchor.constraint(equalTo: passwordBackView.centerYAnchor),
+            passwordImageView.heightAnchor.constraint(equalToConstant: 20),
+            passwordImageView.widthAnchor.constraint(equalToConstant: 20),
+            passwordImageView.leadingAnchor.constraint(equalTo: passwordBackView.leadingAnchor, constant: 20),
+            
+            logInButton.topAnchor.constraint(equalTo: passwordBackView.bottomAnchor, constant: 50),
             logInButton.heightAnchor.constraint(equalToConstant: 40),
-            logInButton.widthAnchor.constraint(equalToConstant: 80),
+            logInButton.widthAnchor.constraint(equalToConstant: 150),
             logInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            createAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
-            createAccountButton.heightAnchor.constraint(equalToConstant: 40),
+            logInLabel.centerYAnchor.constraint(equalTo: logInButton.centerYAnchor),
+            logInLabel.centerXAnchor.constraint(equalTo: logInButton.centerXAnchor),
+            
+            createAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            createAccountButton.heightAnchor.constraint(equalTo: createAccountLabel.heightAnchor, constant: 10),
             createAccountButton.widthAnchor.constraint(equalToConstant: 200),
-            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
+            createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor)
         ])
     }
     
@@ -142,4 +221,9 @@ class LoginController: UIViewController {
         navigationController?.pushViewController(CreateAccountController(), animated: true)
     }
     
+    func configure(username: String) {
+        usernameField.text = username
+    }
+    
 }
+
