@@ -527,7 +527,7 @@ def logout():
         "message": "You have successfully logged out."
     })
 
-@app.route("/favorites/<int:user_id>")
+@app.route("/favorites/<int:user_id>/")
 def get_favorites_by_id(user_id):
     """
     Endpoint for retrieving user's favorited courses by user_id
@@ -536,7 +536,7 @@ def get_favorites_by_id(user_id):
     courses = user.courses
     return json.dumps({"favorites": [f.serialize() for f in courses]})
 
-@app.route("/favorites/<int:user_id>", methods = ["POST"])
+@app.route("/favorites/<int:user_id>/", methods = ["POST"])
 def add_to_favorites(user_id):
     """
     Endpoint for added to a user's favorites
@@ -550,6 +550,23 @@ def add_to_favorites(user_id):
     user.courses.append(course)
     db.session.commit()
     return json.dumps(course.serialize()), 200
+
+@app.route("/favorites/<int:user_id>/", methods = ["POST"])
+def delete_from_favorites(user_id, course_id):
+    """
+    Enpoint for deleting course from user's favorites
+    """
+    body = json.loads(request.data)
+    course_id = body.get("course_id")
+    user = User.query.filter_by(id= user_id).first()
+    course = user.courses.query.filter_by(id = course_id).first()
+    user.courses.remove(course)
+    db.session.commit()
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
