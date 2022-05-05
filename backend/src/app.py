@@ -126,6 +126,8 @@ def get_courses(roster, subject):
                 "description": course["description"],
                 "breadth": course["catalogBreadth"],
                 "distribution": course["catalogDistr"],
+                "creditsMin": course["enrollGroups"][0]["unitsMinimum"],
+                "creditsMax": course["enrollGroups"][0]["unitsMaximum"],
                 "professors": get_professor(course)
             }
         )
@@ -219,6 +221,8 @@ def set_up_and_update_courses():
                         subject = course["subject"],
                         number = course["number"],
                         title = course["title"],
+                        creditsMin = course["creditsMin"],
+                        creditsMax = course["creditsMax"],
                         description = description,
                         workload = rating["workload"],
                         difficulty = rating["difficulty"],
@@ -453,10 +457,34 @@ def register_account():
         return failure_response("User already exists")
     
     return success_response({
+        "username": username,
         "session_token": user.session_token,
         "session_expiration": str(user.session_expiration),
         "update_token": user.update_token
     }, 201)
+
+@app.route("/session/", methods=["POST"])
+def update_session():
+    """
+    Endpoint for updating a user's session
+    """
+    was_successful, update_token = extract_token(request)
+
+    if not was_successful:
+        return update_token
+    
+    try:
+        user = users_dao.renew_session(update_token)
+    except Exception as e:
+        return failure_response(f"Invalid update token: {str(e)}")
+    
+    return success_response(
+        {
+            "session_token": user.session_token,
+            "session_expiration": str(user.session_expiration),
+            "update_token": user.update_token
+        }
+    )
 
 @app.route("/login/", methods=["POST"])
 def login():
@@ -474,30 +502,8 @@ def login():
 
     if not was_successfull:
         return failure_response("Incorrect username or password", 401)
-
-    return success_response(
-        {
-            "session_token": user.session_token,
-            "session_expiration": str(user.session_expiration),
-            "update_token": user.update_token
-        }
-    )
-
-@app.route("/session/", methods=["POST"])
-def update_session():
-    """
-    Endpoint for updating a user's session
-    """
-    was_successful, update_token = extract_token(request)
-
-    if not was_successful:
-        return update_token
     
-    try:
-        user = users_dao.renew_session(update_token)
-    except Exception as e:
-        return failure_response(f"Invalid update token: {str(e)}")
-    
+    update_session()
     return success_response(
         {
             "session_token": user.session_token,

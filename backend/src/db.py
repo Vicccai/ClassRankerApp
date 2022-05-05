@@ -2,7 +2,6 @@ import datetime
 import hashlib
 import os
 from flask_sqlalchemy import SQLAlchemy
-from requests import delete
 import bcrypt
 
 db = SQLAlchemy()
@@ -42,6 +41,8 @@ class Course(db.Model):
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     title = db.Column(db.String, nullable = False)
+    creditsMin = db.Column(db.Integer, nullable = False)
+    creditsMax = db.Column(db.Integer, nullable = False)
     description = db.Column(db.String, nullable = False)
     workload = db.Column(db.Float)
     difficulty = db.Column(db.Float)
@@ -57,12 +58,14 @@ class Course(db.Model):
         initialize Course object
         """
         self.subject = kwargs.get("subject", "")
-        self.number = kwargs.get("number", "")
+        self.number = kwargs.get("number", 0)
         self.title = kwargs.get("title", "")
+        self.creditsMin = kwargs.get("creditsMin", 0)
+        self.creditsMax = kwargs.get("creditsMax", 0)
         self.description = kwargs.get("description", "")
-        self.workload = kwargs.get("workload", "")
-        self.difficulty = kwargs.get("difficulty", "")
-        self.rating = kwargs.get("rating", "")
+        self.workload = kwargs.get("workload", 0)
+        self.difficulty = kwargs.get("difficulty", 0)
+        self.rating = kwargs.get("rating", 0)
 
     def serialize(self):
         """
@@ -73,6 +76,8 @@ class Course(db.Model):
             "subject": self.subject,
             "number": self.number,
             "title": self.title,
+            "creditsMin": self.creditsMin,
+            "creditsMax": self.creditsMax,
             "description": self.description,
             "workload": self.workload,
             "difficulty": self.difficulty,
@@ -213,7 +218,7 @@ class Professor(db.Model):
         """Initializes a Professor object"""
         self.first_name = kwargs.get("first_name", "")
         self.last_name = kwargs.get("last_name", "")
-        self.rating = kwargs.get("rating", "")
+        self.rating = kwargs.get("rating", 0)
 
     def simple_serialize(self):
         """simple serializes a professor object"""
