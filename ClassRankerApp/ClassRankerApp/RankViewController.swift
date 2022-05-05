@@ -58,7 +58,7 @@ class RankViewController: UIViewController {
         return button
     }
     
-    let subjectFilter: UIButton = makeFilterButton(label: "Major")
+    let subjectFilter: UIButton = makeFilterButton(label: "Subject")
     let distrFilter: UIButton = makeFilterButton(label: "Distribution")
     let sortFilter: UIButton = makeFilterButton(label: "sort")
    
