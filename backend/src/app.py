@@ -527,5 +527,29 @@ def logout():
         "message": "You have successfully logged out."
     })
 
+@app.route("/favorites/<int:user_id>")
+def get_favorites_by_id(user_id):
+    """
+    Endpoint for retrieving user's favorited courses by user_id
+    """
+    user = User.query.filter_by(id= user_id).first()
+    courses = user.courses
+    return json.dumps({"favorites": [f.serialize() for f in courses]})
+
+@app.route("/favorites/<int:user_id>", methods = ["POST"])
+def add_to_favorites(user_id):
+    """
+    Endpoint for added to a user's favorites
+    """
+    user = User.query.filter_by(id= user_id).first()
+    body = json.loads(request.data)
+    course_id = body.get("course_id")
+    if course_id is None:
+        return failure_response("Required field(s) not provided.", 400)
+    course = Course.query.filter_by(id= course_id).first()
+    user.courses.append(course)
+    db.session.commit()
+    return json.dumps(course.serialize()), 200
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
