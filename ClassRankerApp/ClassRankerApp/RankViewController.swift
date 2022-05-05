@@ -51,6 +51,16 @@ class RankViewController: UIViewController {
     }()
     
     let filters = ["Subject", "Distribution", "Sort by..."]
+    
+    static func makeFilterButton(label: String) -> UIButton {
+        let button = UIButton()
+        button.setTitle(label, for: .normal)
+        return button
+    }
+    
+    let subjectFilter: UIButton = makeFilterButton(label: "Subject")
+    let distrFilter: UIButton = makeFilterButton(label: "Distribution")
+    let sortFilter: UIButton = makeFilterButton(label: "sort")
    
     lazy var coursesView: UITableView = {
         let tableView = UITableView()
@@ -104,7 +114,7 @@ class RankViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.largeTitleTextAttributes = [
             .foregroundColor: UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00),
-            .font: UIFont(name: "Proxima Nova Bold", size: 35)
+            .font: UIFont(name: "Proxima Nova Bold", size: 35)!
         ]
         navigationItem.backButtonTitle = ""
         
@@ -114,9 +124,11 @@ class RankViewController: UIViewController {
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Classes"
         searchController.searchBar.autocapitalizationType = .none
+        searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         searchController.searchBar.searchTextField.backgroundColor = .white
-        searchController.searchBar.tintColor = .white
+        searchController.searchBar.tintColor = .systemBlue
+        navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchController
         definesPresentationContext = true
         
@@ -276,24 +288,6 @@ class RankViewController: UIViewController {
         })
         calculateShownCourses()
     }
-    
-//    @objc func pressApply(sender: UIButton) {
-//        sender.backgroundColor = .white
-//        sender.setTitleColor(.darkGray, for: .normal)
-//    }
-//
-//    @objc func releaseApply(sender: UIButton) {
-//        sender.backgroundColor = .systemBlue
-//        sender.setTitleColor(.white, for: .normal)
-//    }
-    
-//    @objc func selectMajor() {
-//        majorDropDown.show()
-//    }
-//
-//    @objc func selectDistr() {
-//        distrDropDown.show()
-//    }
 }
 
 extension RankViewController: UITableViewDataSource {
@@ -340,9 +334,12 @@ extension RankViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if indexPath.row == 1 {
+            let vc = SelectCollegeController()
+            vc.transitioningDelegate = self
+            vc.modalPresentationStyle = .custom
+            present(vc, animated: true, completion: nil)
+        }
     }
 }
 
@@ -351,4 +348,10 @@ extension RankViewController: UISearchResultsUpdating {
         let searchBar = searchController.searchBar
         filterContentForSearchText(searchText: searchBar.text!)
     }
+}
+
+extension RankViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+            return SelectCollegePresentation(presentedViewController: presented, presenting: presenting)
+        }
 }

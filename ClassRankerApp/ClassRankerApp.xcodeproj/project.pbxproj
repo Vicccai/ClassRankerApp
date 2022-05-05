@@ -15,6 +15,9 @@
 		D18D76602823096700478DDE /* DescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18D765F2823096700478DDE /* DescriptionViewController.swift */; };
 		D18D766228232CA900478DDE /* proxima_ssv in Resources */ = {isa = PBXBuildFile; fileRef = D18D766128232CA900478DDE /* proxima_ssv */; };
 		D18D7666282349A500478DDE /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18D7665282349A500478DDE /* FilterCollectionViewCell.swift */; };
+		DF29B65A2824518A00C9F212 /* SelectCollegePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B6592824518A00C9F212 /* SelectCollegePresentation.swift */; };
+		DF29B65D2824573C00C9F212 /* SelectCollegeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B65C2824573C00C9F212 /* SelectCollegeController.swift */; };
+		DF29B65F28247D8000C9F212 /* SelectDistrController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B65E28247D8000C9F212 /* SelectDistrController.swift */; };
 		DF48F8B4281B5B100017372B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8B3281B5B100017372B /* AppDelegate.swift */; };
 		DF48F8B6281B5B100017372B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8B5281B5B100017372B /* SceneDelegate.swift */; };
 		DF48F8B8281B5B100017372B /* RankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8B7281B5B100017372B /* RankViewController.swift */; };
@@ -36,6 +39,9 @@
 		D18D765F2823096700478DDE /* DescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionViewController.swift; sourceTree = "<group>"; };
 		D18D766128232CA900478DDE /* proxima_ssv */ = {isa = PBXFileReference; lastKnownFileType = folder; path = proxima_ssv; sourceTree = "<group>"; };
 		D18D7665282349A500478DDE /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
+		DF29B6592824518A00C9F212 /* SelectCollegePresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollegePresentation.swift; sourceTree = "<group>"; };
+		DF29B65C2824573C00C9F212 /* SelectCollegeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCollegeController.swift; sourceTree = "<group>"; };
+		DF29B65E28247D8000C9F212 /* SelectDistrController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectDistrController.swift; sourceTree = "<group>"; };
 		DF48F8B0281B5B100017372B /* ClassRankerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassRankerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF48F8B3281B5B100017372B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF48F8B5281B5B100017372B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -77,6 +83,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		DF29B65B2824519000C9F212 /* FilterControllers */ = {
+			isa = PBXGroup;
+			children = (
+				DF29B6592824518A00C9F212 /* SelectCollegePresentation.swift */,
+				DF29B65C2824573C00C9F212 /* SelectCollegeController.swift */,
+				DF29B65E28247D8000C9F212 /* SelectDistrController.swift */,
+			);
+			path = FilterControllers;
+			sourceTree = "<group>";
+		};
 		DF48F8A7281B5B100017372B = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +118,7 @@
 				DF48F8B5281B5B100017372B /* SceneDelegate.swift */,
 				D16F16712820AFC100F1DF09 /* LoginController.swift */,
 				D16F16732820C40700F1DF09 /* CreateAccountController.swift */,
+				DF29B65B2824519000C9F212 /* FilterControllers */,
 				DF48F8B7281B5B100017372B /* RankViewController.swift */,
 				D18D765F2823096700478DDE /* DescriptionViewController.swift */,
 				D16F166F281F145E00F1DF09 /* CoursesTableViewCell.swift */,
@@ -237,13 +254,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF29B65F28247D8000C9F212 /* SelectDistrController.swift in Sources */,
 				D16F16742820C40900F1DF09 /* CreateAccountController.swift in Sources */,
 				D16F16762820CD5100F1DF09 /* TextFieldWithPadding.swift in Sources */,
 				D18D76602823096700478DDE /* DescriptionViewController.swift in Sources */,
 				DF48F8B8281B5B100017372B /* RankViewController.swift in Sources */,
 				DF48F8B4281B5B100017372B /* AppDelegate.swift in Sources */,
+				DF29B65A2824518A00C9F212 /* SelectCollegePresentation.swift in Sources */,
 				D16F1670281F145E00F1DF09 /* CoursesTableViewCell.swift in Sources */,
 				DF48F8B6281B5B100017372B /* SceneDelegate.swift in Sources */,
+				DF29B65D2824573C00C9F212 /* SelectCollegeController.swift in Sources */,
 				DF48F8D2281BA24F0017372B /* DropDownContainer.swift in Sources */,
 				DF48F8CC281B69740017372B /* Models.swift in Sources */,
 				D18D7666282349A500478DDE /* FilterCollectionViewCell.swift in Sources */,
