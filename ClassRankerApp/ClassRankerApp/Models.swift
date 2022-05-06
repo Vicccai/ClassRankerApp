@@ -7,20 +7,38 @@
 
 import Foundation
 
-struct Course: Codable, Hashable {
+struct CourseWrapper: Codable {
+    var courses: [Course]
+}
+
+struct Course: Codable {
     // info for the table cell
-    var number: String
-    var name: String
-    var rating: Double
-    var distribution: String
-    var favorite: Bool
+    var id: Int
+    var number: Int
+    var title: String
+    var subject: String
+    var favorite: Bool?
     
     // info the the description
-    var descr: String
-    var credits: Double
-    var reqs: String
-    var overallRating: Double
-    var workloadRating: Double
-    var difficultyRating: Double
-    var professors: String
+    var description: String
+    var creditsMin: Double
+    //var reqs: String
+    var rating: Double
+    var workload: Double
+    var difficulty: Double
+    var professors: [Professor]
+    var comments: [Comment]
+    var distributions: [Distribution]
+}
+
+struct Professor: Codable {
+    var first_name: String
+    var last_name: String
+}
+
+struct Distribution: Codable {
+    var name: String
+}
+
+struct Comment: Codable {
 }
