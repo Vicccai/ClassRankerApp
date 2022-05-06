@@ -176,7 +176,7 @@ class DescriptionViewController: UIViewController {
     
     var workloadLabel: UILabel = {
         let label = UILabel()
-        label.text = "Workload Rating:"
+        label.text = "Workload:"
         label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
@@ -191,7 +191,7 @@ class DescriptionViewController: UIViewController {
     
     var difficultyLabel: UILabel = {
         let label = UILabel()
-        label.text = "Difficulty Rating:"
+        label.text = "Difficulty:"
         label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
@@ -303,8 +303,8 @@ class DescriptionViewController: UIViewController {
             ratingLabel.trailingAnchor.constraint(equalTo: nameBackView.trailingAnchor, constant: -35),
             
             restBackView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 15),
-            restBackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            restBackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant:-15),
+            restBackView.leadingAnchor.constraint(equalTo: nameBackView.leadingAnchor),
+            restBackView.trailingAnchor.constraint(equalTo: nameBackView.trailingAnchor),
             restBackView.bottomAnchor.constraint(equalTo: distrs.bottomAnchor, constant: 15),
             
             descrLabel.topAnchor.constraint(equalTo: restBackView.topAnchor, constant: 15),
@@ -327,7 +327,7 @@ class DescriptionViewController: UIViewController {
             
             reqLabel.topAnchor.constraint(equalTo: creditsLabel.bottomAnchor, constant: 15),
             reqLabel.leadingAnchor.constraint(equalTo: descrLabel.leadingAnchor),
-            reqLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.bounds.width/2-10),
+            reqLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -view.bounds.width/2-15),
             
             reqs.topAnchor.constraint(equalTo: reqLabel.bottomAnchor),
             reqs.leadingAnchor.constraint(equalTo: reqLabel.leadingAnchor),
@@ -357,13 +357,13 @@ class DescriptionViewController: UIViewController {
             workloadLabel.leadingAnchor.constraint(equalTo: overallLabel.leadingAnchor),
             
             workloadRating.topAnchor.constraint(equalTo: workloadLabel.topAnchor),
-            workloadRating.trailingAnchor.constraint(equalTo: restBackView.trailingAnchor, constant: -20),
+            workloadRating.leadingAnchor.constraint(equalTo: workloadLabel.trailingAnchor, constant: 10),
             
             difficultyLabel.topAnchor.constraint(equalTo: workloadLabel.bottomAnchor),
             difficultyLabel.leadingAnchor.constraint(equalTo: overallLabel.leadingAnchor),
             
             difficultyRating.topAnchor.constraint(equalTo: difficultyLabel.topAnchor),
-            difficultyRating.trailingAnchor.constraint(equalTo: restBackView.trailingAnchor, constant: -20),
+            difficultyRating.leadingAnchor.constraint(equalTo: difficultyLabel.trailingAnchor, constant: 10),
             
             profLabel.topAnchor.constraint(equalTo: difficultyLabel.bottomAnchor, constant: 15),
             profLabel.leadingAnchor.constraint(equalTo: overallLabel.leadingAnchor),

@@ -216,7 +216,7 @@ class RankViewController: UIViewController {
             for cell in cells {
                 if cell.favorite == true {
                     cell.backView.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
-                    cell.favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+                    cell.favButton.setImage(UIImage(named: "Star 3"), for: .normal)
                     cell.numberLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
                     cell.nameLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
                     cell.ratingLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
