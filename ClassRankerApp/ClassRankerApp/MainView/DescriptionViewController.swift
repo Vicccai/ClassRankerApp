@@ -4,7 +4,6 @@
 //
 //  Created by Mariana Meriles on 5/4/22.
 //
-
 import Foundation
 import UIKit
 
@@ -395,6 +394,6 @@ class DescriptionViewController: UIViewController {
         let profArray = course.professors
         let profNames = profArray.map { $0.first_name + " " + $0.last_name }
         self.profs.text = profNames.joined(separator: " ")
-        self.favCourse = course.favorite
+        //self.favCourse = course.favorite!
     }
 }

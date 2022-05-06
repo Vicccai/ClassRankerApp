@@ -7,6 +7,8 @@
 
 import Foundation
 
+var username = String()
+
 struct CourseWrapper: Codable {
     var courses: [Course]
 }
@@ -41,4 +43,6 @@ struct Distribution: Codable {
 }
 
 struct Comment: Codable {
+    var username: String
+    var comment: String
 }
