@@ -416,17 +416,28 @@ class DescriptionViewController: UIViewController {
 //        navigationController?.pushViewController(DiscussionViewController, animated: true)
     }
     
-    func configure(courseNumber: String, courseName: String, courseRating: Double, descr: String, credits: Double, reqs: String, distrs: String, overall: Double, workload: Double, difficulty: Double, profs: String) {
+    func configure(course: Course) {
+        let courseNumber = course.subject + " " + String(course.number)
         numberLabel.text = courseNumber
-        nameLabel.text = courseName
-        ratingLabel.text = String(courseRating)
-        self.descrText.text = descr
-        self.credits.text = String(credits)
-        self.reqs.text = reqs
-        self.distrs.text = distrs
-        overallRating.text = String(overall)
+        nameLabel.text = course.title
+        let rating = round(course.rating * 10) / 10.0
+        ratingLabel.text = String(rating)
+        self.descrText.text = course.description
+        self.credits.text = String(course.creditsMin)
+        //self.reqs.text = course.reqs
+        
+        let distrArray = course.distributions
+        let distrNames = distrArray.map { $0.name }
+        self.distrs.text = distrNames.joined(separator: ", ")
+        
+        overallRating.text = String(rating)
+        let workload = round(course.workload * 10) / 10.0
         workloadRating.text = String(workload)
+        let difficulty = round(course.difficulty * 10) / 10.0
         difficultyRating.text = String(difficulty)
-        self.profs.text = profs
+        
+        let profArray = course.professors
+        let profNames = profArray.map { $0.first_name + " " + $0.last_name }
+        self.profs.text = profNames.joined(separator: " ")
     }
 }

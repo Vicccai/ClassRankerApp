@@ -7,7 +7,8 @@
 
 import UIKit
 
-class SelectCollegePresentation: UIPresentationController {
+class SelectMenuPresentation: UIPresentationController {
+    var height: CGFloat?
     let blurEffectView: UIVisualEffectView!
     var tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var blur: CGFloat?
@@ -24,7 +25,8 @@ class SelectCollegePresentation: UIPresentationController {
         self.blurEffectView.addGestureRecognizer(tapGestureRecognizer)
     }
     override var frameOfPresentedViewInContainerView: CGRect{
-        return CGRect(origin: CGPoint(x: 0, y: self.containerView!.frame.height/2), size: CGSize(width: self.containerView!.frame.width, height: self.containerView!.frame.height/2))
+        let frameHeight = height ?? self.containerView!.frame.height/3
+        return CGRect(origin: CGPoint(x: 0, y: self.containerView!.frame.height - frameHeight), size: CGSize(width: self.containerView!.frame.width, height: frameHeight))
     }
     override func dismissalTransitionWillBegin() {
         self.presentedViewController.transitionCoordinator?.animate(alongsideTransition: { (UIViewControllerTransitionCoordinatorContext) in

@@ -127,9 +127,10 @@ class CoursesTableViewCell: UITableViewCell {
     }
     
     func configure(course: Course, index: Int) {
-        numberLabel.text = course.number
-        nameLabel.text = course.name
-        ratingLabel.text = String(course.rating)
+        numberLabel.text = course.subject + " " + String(course.number)
+        nameLabel.text = course.title
+        let rating = round(course.rating * 10) / 10.0
+        ratingLabel.text = String(rating)
 //        favNumber.text = String(course.favNumber)
 //        rankingLabel.text = String(index) + "."
     }
