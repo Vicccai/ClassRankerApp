@@ -206,8 +206,10 @@ def set_up_and_update_courses():
     Distribution.query.delete()
     Cornell_University = ratemyprof_api.RateMyProfApi(298) 
     rosters = get_rosters()
+    # rosters = ["FA22"]
     for roster in rosters:
         subjects = get_subjects(roster)
+        # subjects = ["NEPAL"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -220,6 +222,7 @@ def set_up_and_update_courses():
                     new_course = Course(
                         subject = course["subject"],
                         number = course["number"],
+                        subandnum = course["subject"] + " " + str(course["number"]),
                         title = course["title"],
                         creditsMin = course["creditsMin"],
                         creditsMax = course["creditsMax"],
@@ -378,12 +381,12 @@ def get_comments_by_course(course_id):
         return failure_response("Course not found.")
     return json.dumps({"comments": [c.serialize() for c in course.comments]}), 200
 
-@app.route("/users/comments/<int:user_id>/")
-def get_comments_by_user(user_id):
+@app.route("/users/comments/<string:username>/")
+def get_comments_by_user(username):
     """
-    Endpoint for retrieving comments by user id 
+    Endpoint for retrieving comments by username
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     return json.dumps({"comments": [u.serialize() for u in user.comments]}), 200
@@ -396,8 +399,8 @@ def post_comment():
     body = json.loads(request.data)
     course_id = body.get("course_id")
     description = body.get("description")
-    user_id = body.get("user_id")
-    if course_id is None or description is None or user_id is None:
+    username = body.get("username")
+    if course_id is None or description is None or username is None:
         return failure_response("Required field(s) not supplied.", 400)
     if description == "":
         return failure_response("Description must be provided.", 400)
@@ -407,7 +410,7 @@ def post_comment():
         return failure_response("Course not found.")
     new_comment = Comment(
         course_id= course_id, 
-        user_id = user_id,
+        username = username,
         description = description
     )
     db.session.add(new_comment)
@@ -558,23 +561,23 @@ def get_users():
     return json.dumps({"users": [u.serialize() for u in User.query.all()]}), 200
 
 # Endpoints for favorite courses
-@app.route("/favorites/<int:user_id>/")
-def get_favorites_by_id(user_id):
+@app.route("/favorites/<string:username>/")
+def get_favorites_by_username(username):
     """
-    Endpoint for retrieving user's favorited courses by user_id
+    Endpoint for retrieving user's favorited courses by username
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username=username).first()
     if user is None:
         return failure_response("User not found.")
     courses = user.courses
     return json.dumps({"favorites": [f.serialize() for f in courses]}), 200
 
-@app.route("/add/favorites/<int:user_id>/", methods = ["POST"])
-def add_to_favorites(user_id):
+@app.route("/add/favorites/<string:username>/", methods = ["POST"])
+def add_to_favorites(username):
     """
     Endpoint for added to a user's favorites
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     body = json.loads(request.data)
@@ -588,14 +591,14 @@ def add_to_favorites(user_id):
     db.session.commit()
     return json.dumps(course.serialize()), 200
 
-@app.route("/delete/favorites/<int:user_id>/", methods = ["POST"])
-def delete_from_favorites(user_id):
+@app.route("/delete/favorites/<string:username>/", methods = ["POST"])
+def delete_from_favorites(username):
     """
     Enpoint for deleting course from user's favorites
     """
     body = json.loads(request.data)
     course_id = body.get("course_id")
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     course = None
