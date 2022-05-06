@@ -1,41 +1,33 @@
 //
-//  ViewController.swift
+//  SelectSortController.swift
 //  ClassRankerApp
 //
-//  Created by Victor Cai on 5/5/22.
+//  Created by Victor Cai on 5/6/22.
 //
 
 import UIKit
 import SwiftUI
 
-class SelectCollegeController: UIViewController, ObservableObject {
+class SelectSortController: UIViewController {
     
     weak var delegate: RankViewController?
     
-    var nextFrameHeight : CGFloat = 0
-    
-    let contentView = UIHostingController(rootView: SelectCollegeView(selected: ""))
+    let contentView = UIHostingController(rootView: SelectSortView(selected: ""))
 
     override func viewDidLoad() {
         super.viewDidLoad()
         addChild(contentView)
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
         contentView.view.backgroundColor = .gray
-        contentView.rootView.present = { college in
-            let vc = SelectDistrController()
-            vc.selectedCollege = college
-            vc.delegate = self.delegate
-            vc.transitioningDelegate = self
-            vc.modalPresentationStyle = .custom
-            self.present(vc, animated: true, completion: nil)
+        contentView.rootView.sorts = FilterData.sort
+        contentView.rootView.dismiss = {
+            self.presentingViewController?.dismiss(animated: true)
         }
-        contentView.rootView.setHeight = { height in
-            self.nextFrameHeight = height
+        contentView.rootView.update = { sort in
+            self.delegate?.selectedSort = sort
         }
         view.addSubview(contentView.view)
         setupConstraints()
-        
-        // Do any additional setup after loading the view.
     }
     
     func setupConstraints() {
@@ -47,44 +39,39 @@ class SelectCollegeController: UIViewController, ObservableObject {
         ])
         
     }
+
 }
 
-extension SelectCollegeController: UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        let presenter = SelectMenuPresentation(presentedViewController: presented, presenting: presenting)
-        presenter.height = self.nextFrameHeight
-        presenter.blur = 0
-        return presenter
-    }
-}
-
-struct SelectCollegeView: View {
+struct SelectSortView: View {
+    var sorts: [String]?
     
-    var present: ((String) -> Void)?
+    var dismiss: (() -> Void)?
     
-    var setHeight: ((CGFloat) -> Void)?
-    
-    let colleges = FilterData.colleges
+    var update: ((String) -> Void)?
     
     @State var selected: String
     
     var body: some View {
         VStack {
             HStack {
-                Text("Select College")
+                Text("Sort by...")
                     .font(Font.custom("Proxima Nova Regular", size: 15))
                     .foregroundColor(.white)
                 Spacer()
+                Button {
+                    self.update!(selected)
+                    self.dismiss?()
+                } label: {
+                    Text("Done")
+                }
             }
             .padding(.horizontal)
-            ForEach(colleges, id: \.self) { college in
+            ForEach(sorts!, id: \.self) { sort in
                 HStack {
                     Button {
-                        self.selected = college
-                        self.setHeight?(FilterData.menuHeight[college]!)
-                        self.present?(college)
+                        self.selected = sort
                     } label: {
-                        if college == selected {
+                        if sort == selected {
                             Circle()
                                 .fill(Color.white)
                                 .frame(width: 10, height: 10)
@@ -94,7 +81,7 @@ struct SelectCollegeView: View {
                                 .frame(width: 10, height: 10)
                         }
                     }
-                    Text(college)
+                    Text(sort)
                         .foregroundColor(.white)
                         .font(Font.custom("Proxima Nova Regular", size: 15))
                     Spacer()
@@ -102,5 +89,7 @@ struct SelectCollegeView: View {
                 .padding(.horizontal)
             }
         }
+        .padding(.top)
+        
     }
 }

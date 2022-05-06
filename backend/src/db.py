@@ -40,6 +40,7 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
+    subandnum = db.Column(db.String, nullable = False)
     title = db.Column(db.String, nullable = False)
     creditsMin = db.Column(db.Integer, nullable = False)
     creditsMax = db.Column(db.Integer, nullable = False)
@@ -59,6 +60,7 @@ class Course(db.Model):
         """
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
+        self.subandnum = kwargs.get("subandnum", "")
         self.title = kwargs.get("title", "")
         self.creditsMin = kwargs.get("creditsMin", 0)
         self.creditsMax = kwargs.get("creditsMax", 0)
@@ -75,6 +77,7 @@ class Course(db.Model):
             "id": self.id,
             "subject": self.subject,
             "number": self.number,
+            "subandnum": self.subandnum,
             "title": self.title,
             "creditsMin": self.creditsMin,
             "creditsMax": self.creditsMax,
@@ -236,8 +239,8 @@ class Comment(db.Model):
     """
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    username = db.Column(db.String, db.ForeignKey("users.username"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     description = db.Column(db.String, nullable = False)
 
     def __init__(self, **kwargs):
@@ -245,7 +248,7 @@ class Comment(db.Model):
         Initializes an Comment object
         """
         self.course_id= kwargs.get("course_id")
-        self.user_id= kwargs.get("user_id")
+        self.username=kwargs.get("username")
         self.description= kwargs.get("description")
 
     def serialize(self):
@@ -255,6 +258,6 @@ class Comment(db.Model):
         return {
             "id": self.id,
             "course_id": self.course_id,
-            "user_id":self.user_id,
+            "username":self.username,
             "description": self.description
         }

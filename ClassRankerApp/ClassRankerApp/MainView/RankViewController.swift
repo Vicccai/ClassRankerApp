@@ -12,10 +12,11 @@ import iOSDropDown
 class RankViewController: UIViewController {
     
     let padding: CGFloat = 15
-    
-//    var courses = [
+    var popupMenuHeight: CGFloat = 0
+    var courses: [Course] = []
+//    let courses = [
 //        Course(number: "CS 1110", name: "Intro to Python", rating: 9.7, distribution: "MQR-AS", favorite: false, descr: "pretty good course. walker white? 10/10. other teacher? literally no idea. space invaders was fun. made me like cs. not that i would admit that.", credits: 4, reqs: "be prepared to get yelled at", overallRating: 5.0, workloadRating: 5.0, difficultyRating: 2.5, professors: "Walker White, Daisy Something"),
-//        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: false, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
+//        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: true, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
 //        Course(number: "MATH 1110", name: "Calc 1", rating: 4.2, distribution:
 //            "MQR-AS", favorite: false, descr: "took calc in high school because i hated myself. probably not a terrible course.", credits: 3, reqs: "don't take in high school", overallRating: 3.5, workloadRating: 2.3, difficultyRating: 1.2, professors: "literally no clue"),
 //        Course(number: "CS 1234", name: "Made up CS LA-AS", rating: 4.2, distribution:
@@ -24,8 +25,46 @@ class RankViewController: UIViewController {
     
     var filteredCourses: [Course] = [] // based on SearchBar
     
-    var selectedMajor: String = ""
-    var selectedDistr: String = ""
+    var selectedLevel: Int = 0 {
+        didSet {
+            if selectedLevel == 0 {
+                levelButton.setTitle("  Level  ", for: .normal)
+                levelButton.backgroundColor = .white
+            } else {
+                levelButton.setTitle("  \(String(selectedLevel))  ", for: .normal)
+                levelButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            }
+            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+        }
+    }
+    var selectedDistr: [String] = [] {
+        didSet {
+            if selectedDistr == [] {
+                distrButton.backgroundColor = .white
+            } else {
+                distrButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            }
+        }
+    }
+    
+    var selectedSort: String = "" {
+        didSet {
+            if selectedSort == "" {
+                sortButton.setTitle("  Sort by...  ", for: .normal)
+                sortButton.backgroundColor = .white
+            } else {
+                sortButton.setTitle("  \(selectedSort)  ", for: .normal)
+                sortButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            }
+            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+        }
+    }
+    
+    var matchAll: Bool = true {
+        didSet {
+            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+        }
+    }
     
     var shownCourses: [Course] = [] // courses that are actually shown, combo of search and dropdown
     
@@ -37,29 +76,31 @@ class RankViewController: UIViewController {
         return searchController.isActive && !isSearchBarEmpty
     }
     
-    var filterCollection: UICollectionView = {
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.minimumInteritemSpacing = 10
-        flowLayout.scrollDirection = .horizontal
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: FilterCollectionViewCell.id)
-        collectionView.backgroundColor = .clear
-        return collectionView
-    }()
-    
-    let filters = ["Subject", "Distribution", "Sort by..."]
-    
-    static func makeFilterButton(label: String) -> UIButton {
+    static func makeButton(title: String) -> UIButton {
         let button = UIButton()
-        button.setTitle(label, for: .normal)
+        button.setTitle("  \(title)  ", for: .normal)
+        button.titleLabel?.font =  UIFont(name: "Proxima Nova Regular", size: 15)
+        button.layer.cornerRadius = 10
+        button.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+        button.backgroundColor = .white
         return button
     }
     
-    let subjectFilter: UIButton = makeFilterButton(label: "Subject")
-    let distrFilter: UIButton = makeFilterButton(label: "Distribution")
-    let sortFilter: UIButton = makeFilterButton(label: "sort")
+    let levelButton: UIButton = {
+        let button = makeButton(title: "Level")
+        button.addTarget(self, action: #selector(levelButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    let distrButton: UIButton = {
+        let button = makeButton(title: "Distribution")
+        button.addTarget(self, action: #selector(distrButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    let sortButton: UIButton = {
+        let button = makeButton(title: "Sort by...")
+        button.addTarget(self, action: #selector(sortButtonTapped), for: .touchUpInside)
+        return button
+    }()
    
     lazy var coursesView: UITableView = {
         let tableView = UITableView()
@@ -102,7 +143,7 @@ class RankViewController: UIViewController {
         navigationItem.backButtonTitle = ""
         
         // search bar stuff
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor.white], for: .normal)
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)], for: .normal)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Classes"
@@ -115,20 +156,14 @@ class RankViewController: UIViewController {
         navigationItem.searchController = searchController
         definesPresentationContext = true
         
-        // filters
-        filterCollection.dataSource = self
-        filterCollection.delegate = self
-        
-        for subView in [filterCollection, coursesView, favFilter, favStar] {
+        for subView in [levelButton, sortButton, distrButton, coursesView, favFilter, favStar] {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
         
         navigationItem.hidesBackButton = true
-        
-//        setupDropdown()
         setupConstraints()
-//        calculateShownCourses()
+        getCourses()
     }
     
     func setupConstraints() {
@@ -165,6 +200,49 @@ class RankViewController: UIViewController {
         ])
     }
     
+
+    func getCourses() {
+        NetworkManager.getAllCourses { courses in
+            self.shownCourses = courses.courses
+            self.coursesView.reloadData()
+        }
+    }
+    
+    func getCoursesByAttributes(level: Int, distributions: [String], matchAll: Bool, sort: Int) {
+        NetworkManager.getCourseByAttributes(level: level, distributions: distributions, matchAll: matchAll, sort: sort) { courses in
+            self.shownCourses = courses.courses
+            self.coursesView.reloadData()
+        }
+    }
+    
+    @objc func levelButtonTapped() {
+        //print(levelButton.frame.width)
+        popupMenuHeight = FilterData.menuHeight["Levels"]!
+        let vc = SelectLevelController()
+        vc.delegate = self
+        vc.transitioningDelegate = self
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
+    
+    @objc func distrButtonTapped() {
+        //print(distrButton.frame.width)
+        popupMenuHeight = FilterData.menuHeight["Colleges"]!
+        let vc = SelectCollegeController()
+        vc.delegate = self
+        vc.transitioningDelegate = self
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
+    
+    @objc func sortButtonTapped() {
+        popupMenuHeight = FilterData.menuHeight["Sort"]!
+        let vc = SelectSortController()
+        vc.delegate = self
+        vc.transitioningDelegate = self
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
     @objc func filterFavs() {
         // for now hard codes them as red -- I got confused with your filter system but I think we should add a field to course called "favorite" and when we click on the red star it changes it to a favorited course. when the fav filter is pressed, it appends to shownCourses all the courses that are favoritied, makes them red, and then appends the rest of the non favorites
         
@@ -205,6 +283,7 @@ class RankViewController: UIViewController {
 //        if !isFiltering && selectedMajor == "" && selectedDistr == "" {
 //            shownCourses = courses
 //        } else if isFiltering && selectedMajor == "" && selectedDistr == "" {
+
 //            shownCourses = filteredCourses
 //        } else {
 //            // check if search bar is actively filtering
@@ -217,7 +296,7 @@ class RankViewController: UIViewController {
 //            })
 //            // filter based on major
 //            let finalFilteredCourses = distributionCourses.filter({ course in
-//                return selectedMajor == "" ? true : course.number.contains(selectedMajor)
+//                return selectedMajor == "" ? true : course.number.contains(selectedMajor) 90754247d7fa145307213813919e776ea25898b9:ClassRankerApp/ClassRankerApp/RankViewController.swift
 //            })
 //            shownCourses = finalFilteredCourses
 //        }
@@ -241,61 +320,49 @@ class RankViewController: UIViewController {
         courses[courseIndex].favorite = favorite
         // refilter here
         shownCourses = courses
+    func filterContentForSearchText(searchText: String) {
+        filteredCourses = shownCourses.filter({ course in
+            let courseNumber = course.subject + " " + String(course.number)
+            return (courseNumber.lowercased().contains(searchText.lowercased()) ||
+            course.title.lowercased().contains(searchText.lowercased()))
+        })
         coursesView.reloadData()
     }
 }
 
 extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shownCourses.count
+        if isFiltering {
+            return filteredCourses.count
+        } else {
+            return shownCourses.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
-        cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
         cell.delegate = self
+        if isFiltering {
+            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
+        } else {
+            cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
+        }
         return cell
     }
 }
 
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let course = courses[indexPath.item]
+        var course: Course
+        if isFiltering {
+            course = filteredCourses[indexPath.item]
+        } else {
+            course = shownCourses[indexPath.item]
+        }
         let descriptionViewController = DescriptionViewController()
         descriptionViewController.configure(course: course)
         descriptionViewController.delegate = self
         navigationController?.pushViewController(descriptionViewController, animated: true)
-    }
-}
-
-extension RankViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return filters.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterCollectionViewCell.id, for: indexPath) as? FilterCollectionViewCell else { return UICollectionViewCell() }
-        cell.configure(filter: filters[indexPath.item])
-        return cell
-    }
-}
-
-extension RankViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let label = UILabel(frame: .zero)
-        label.text = filters[indexPath.item]
-        label.sizeToFit()
-        let height = filterCollection.frame.height
-        return CGSize(width: label.frame.width, height: height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.row == 1 {
-            let vc = SelectCollegeController()
-            vc.transitioningDelegate = self
-            vc.modalPresentationStyle = .custom
-            present(vc, animated: true, completion: nil)
-        }
     }
 }
 
@@ -308,6 +375,8 @@ extension RankViewController: UISearchResultsUpdating {
 
 extension RankViewController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-            return SelectCollegePresentation(presentedViewController: presented, presenting: presenting)
-        }
+        let presenter = SelectMenuPresentation(presentedViewController: presented, presenting: presenting)
+        presenter.height = popupMenuHeight
+        return presenter
+    }
 }

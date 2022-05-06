@@ -205,9 +205,11 @@ def set_up_and_update_courses():
     Breadth.query.delete()
     Distribution.query.delete()
     Cornell_University = ratemyprof_api.RateMyProfApi(298) 
-    rosters = get_rosters()
+    # rosters = get_rosters()
+    rosters = ["FA22"]
     for roster in rosters:
-        subjects = get_subjects(roster)
+        # subjects = get_subjects(roster)
+        subjects = ["CS", "NEPAL"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -220,6 +222,7 @@ def set_up_and_update_courses():
                     new_course = Course(
                         subject = course["subject"],
                         number = course["number"],
+                        subandnum = course["subject"] + " " + str(course["number"]),
                         title = course["title"],
                         creditsMin = course["creditsMin"],
                         creditsMax = course["creditsMax"],
@@ -243,20 +246,29 @@ def set_up_and_update_courses():
                 db.session.commit()
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
-def list_helper(b_or_d, c):
+def list_helper(all, b_or_d, c):
     """
     helper function for finding breadths and distributions in courses 
     """
-    for b in b_or_d:
-        if len(c) == 0:
-            return False
-        contain = False
-        for r in c:
-            if b == r.name:
-                contain = True
-        if not contain:
-            return False
-    return True 
+    if len(b_or_d) == 0:
+        return True
+    if all:
+        for b in b_or_d:
+            if len(c) == 0:
+                return False
+            contain = False
+            for r in c:
+                if b == r.name:
+                    contain = True
+            if not contain:
+                return False
+        return True
+    else:
+        for b in b_or_d:
+            for r in c:
+                if b == r.name:
+                    return True
+        return False 
 
 def sort_by_rating(course):
     """
@@ -321,6 +333,7 @@ def get_sorted_courses():
     For the subject attribute, it can be the empty string if there is no specified subject
     For the level attribute, it can be 0 if there is no specified level, else it will be X000
     For the breadth and distribution attribute, it can be the empty list if there is no specified elements
+    For the all attribute, if it is true, it will return courses with all the dist/breadth if it is false, then it will return courses with any
     For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3, 4:
         1 is sorting by best to worst rating
         2 is sorting by least to most difficulty
@@ -334,8 +347,9 @@ def get_sorted_courses():
     level = body.get("level")
     breadth = body.get("breadth")
     distribution = body.get("distribution")
+    all = body.get("all")
     sort = body.get("sort")
-    if subject is None or level is None or breadth is None or distribution is None or sort is None:
+    if subject is None or level is None or breadth is None or distribution is None or all is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
     if not isinstance(sort, int) or sort < 1 or sort > 6:
         return failure_response("Invalid input for sort.", 400)
@@ -344,7 +358,7 @@ def get_sorted_courses():
         if c.subject == subject or subject == "":
             print(c.number)
             if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
-                if list_helper(breadth, c.breadths) and list_helper(distribution, c.distributions):
+                if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
                     course_list.append(c)
     if sort == 6:
         course_list.sort(reverse=True, key=sort_by_prof_and_rating)
@@ -378,12 +392,12 @@ def get_comments_by_course(course_id):
         return failure_response("Course not found.")
     return json.dumps({"comments": [c.serialize() for c in course.comments]}), 200
 
-@app.route("/users/comments/<int:user_id>/")
-def get_comments_by_user(user_id):
+@app.route("/users/comments/<string:username>/")
+def get_comments_by_user(username):
     """
-    Endpoint for retrieving comments by user id 
+    Endpoint for retrieving comments by username
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     return json.dumps({"comments": [u.serialize() for u in user.comments]}), 200
@@ -396,18 +410,21 @@ def post_comment():
     body = json.loads(request.data)
     course_id = body.get("course_id")
     description = body.get("description")
-    user_id = body.get("user_id")
-    if course_id is None or description is None or user_id is None:
+    username = body.get("username")
+    if course_id is None or description is None or username is None:
         return failure_response("Required field(s) not supplied.", 400)
     if description == "":
         return failure_response("Description must be provided.", 400)
+    
+    if User.query.filter_by(username= username).first() is None:
+        return failure_response("User not found.")
 
     course = Course.query.filter_by(id= course_id).first()
     if course is None:
         return failure_response("Course not found.")
     new_comment = Comment(
         course_id= course_id, 
-        user_id = user_id,
+        username = username,
         description = description
     )
     db.session.add(new_comment)
@@ -463,7 +480,6 @@ def register_account():
         "update_token": user.update_token
     }, 201)
 
-@app.route("/session/", methods=["POST"])
 def update_session():
     """
     Endpoint for updating a user's session
@@ -512,27 +528,11 @@ def login():
         }
     )
 
-@app.route("/secret/", methods=["GET"])
-def secret_message():
-    """
-    Endpoint for verifying a session token and returning a secret message
-
-    In your project, you will use the same logic for any endpoint that needs 
-    authentication
-    """
-    was_successful, session_token = extract_token(request)
-
-    if not was_successful:
-        return session_token
-    
-    user = users_dao.get_user_by_session_token(session_token)
-    if not user or not user.verify_session_token(session_token):
-        return failure_response("Invalid session token")
-    
-    return success_response({"message": "You have successfully implemented sessions!"})
-
 @app.route("/logout/", methods=["POST"])
 def logout():
+    """
+    Endpoint for logging out a user
+    """
     was_successful, session_token = extract_token(request)
 
     if not was_successful:
@@ -555,26 +555,26 @@ def get_users():
     """
     Endpoint for getting all users
     """
-    return json.dumps({"users": [u.serialize() for u in User.query.all()]}), 200
+    return json.dumps({"users": [u.simple_serialize() for u in User.query.all()]}), 200
 
 # Endpoints for favorite courses
-@app.route("/favorites/<int:user_id>/")
-def get_favorites_by_id(user_id):
+@app.route("/favorites/<string:username>/")
+def get_favorites_by_username(username):
     """
-    Endpoint for retrieving user's favorited courses by user_id
+    Endpoint for retrieving user's favorited courses by username
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username=username).first()
     if user is None:
         return failure_response("User not found.")
     courses = user.courses
     return json.dumps({"favorites": [f.serialize() for f in courses]}), 200
 
-@app.route("/add/favorites/<int:user_id>/", methods = ["POST"])
-def add_to_favorites(user_id):
+@app.route("/add/favorites/<string:username>/", methods = ["POST"])
+def add_to_favorites(username):
     """
     Endpoint for added to a user's favorites
     """
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     body = json.loads(request.data)
@@ -588,14 +588,14 @@ def add_to_favorites(user_id):
     db.session.commit()
     return json.dumps(course.serialize()), 200
 
-@app.route("/delete/favorites/<int:user_id>/", methods = ["POST"])
-def delete_from_favorites(user_id):
+@app.route("/delete/favorites/<string:username>/", methods = ["POST"])
+def delete_from_favorites(username):
     """
     Enpoint for deleting course from user's favorites
     """
     body = json.loads(request.data)
     course_id = body.get("course_id")
-    user = User.query.filter_by(id= user_id).first()
+    user = User.query.filter_by(username= username).first()
     if user is None:
         return failure_response("User not found.")
     course = None
