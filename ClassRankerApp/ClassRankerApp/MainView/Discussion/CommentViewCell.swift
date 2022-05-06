@@ -73,7 +73,7 @@ class CommentViewCell: UITableViewCell {
     
     func configure(comment: Comment) {
         username.text = comment.username
-        self.comment.text = comment.comment
+        self.comment.text = comment.description
     }
     
     @objc func deleteComment() {

@@ -42,7 +42,20 @@ struct Distribution: Codable {
     var name: String
 }
 
+struct CommentWrapper: Codable {
+    var comments: [Comment]
+}
+
 struct Comment: Codable {
+    var id: Int
     var username: String
-    var comment: String
+    var description: String
+}
+
+struct User: Codable {
+    var username: String
+}
+
+struct Favorites: Codable {
+    var favorites: [Course]
 }
