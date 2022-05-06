@@ -205,11 +205,9 @@ def set_up_and_update_courses():
     Breadth.query.delete()
     Distribution.query.delete()
     Cornell_University = ratemyprof_api.RateMyProfApi(298) 
-    # rosters = get_rosters()
-    rosters = ["FA22"]
+    rosters = get_rosters()
     for roster in rosters:
-        # subjects = get_subjects(roster)
-        subjects = ["CS", "NEPAL"]
+        subjects = get_subjects(roster)
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -381,68 +379,6 @@ def get_all_courses():
     """
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]}), 200
 
-# Endpoints related to comments
-@app.route("/courses/comments/<int:course_id>/")
-def get_comments_by_course(course_id):
-    """
-    Endpoint for retrieving comments by course id 
-    """
-    course = Course.query.filter_by(id= course_id).first()
-    if course is None:
-        return failure_response("Course not found.")
-    return json.dumps({"comments": [c.serialize() for c in course.comments]}), 200
-
-@app.route("/users/comments/<string:username>/")
-def get_comments_by_user(username):
-    """
-    Endpoint for retrieving comments by username
-    """
-    user = User.query.filter_by(username= username).first()
-    if user is None:
-        return failure_response("User not found.")
-    return json.dumps({"comments": [u.serialize() for u in user.comments]}), 200
-
-@app.route("/comments/", methods = ["POST"])
-def post_comment(): 
-    """
-    Endpoint for posting comments to a course
-    """
-    body = json.loads(request.data)
-    course_id = body.get("course_id")
-    description = body.get("description")
-    username = body.get("username")
-    if course_id is None or description is None or username is None:
-        return failure_response("Required field(s) not supplied.", 400)
-    if description == "":
-        return failure_response("Description must be provided.", 400)
-    
-    if User.query.filter_by(username= username).first() is None:
-        return failure_response("User not found.")
-
-    course = Course.query.filter_by(id= course_id).first()
-    if course is None:
-        return failure_response("Course not found.")
-    new_comment = Comment(
-        course_id= course_id, 
-        username = username,
-        description = description
-    )
-    db.session.add(new_comment)
-    db.session.commit()
-    return json.dumps(new_comment.serialize()), 201
-
-@app.route("/comments/<int:comment_id>/", methods = ["DELETE"])
-def delete_comment(comment_id):
-    """
-    Endpoint for deleting comments 
-    """
-    comment = Comment.query.filter_by(id= comment_id).first()
-    if comment is None:
-        return failure_response("Comment not found.")
-    db.session.delete(comment)
-    db.session.commit()
-    return json.dumps(comment.serialize()), 200
-
 #Endpoints for authentication
 def extract_token(request):
     """
@@ -450,7 +386,7 @@ def extract_token(request):
     """
     auth_header = request.headers.get("Authorization")
     if auth_header is None:
-        return False, json.dumps({"Missing authorization header"})
+        return False, failure_response("Missing authorization header")
     
     bearer_token = auth_header.replace("Bearer", "").strip()
 
@@ -480,28 +416,6 @@ def register_account():
         "update_token": user.update_token
     }, 201)
 
-def update_session():
-    """
-    Endpoint for updating a user's session
-    """
-    was_successful, update_token = extract_token(request)
-
-    if not was_successful:
-        return update_token
-    
-    try:
-        user = users_dao.renew_session(update_token)
-    except Exception as e:
-        return failure_response(f"Invalid update token: {str(e)}")
-    
-    return success_response(
-        {
-            "session_token": user.session_token,
-            "session_expiration": str(user.session_expiration),
-            "update_token": user.update_token
-        }
-    )
-
 @app.route("/login/", methods=["POST"])
 def login():
     """
@@ -514,14 +428,19 @@ def login():
     if username is None or password is None:
         return failure_response("Missing username or password", 400)
 
+    if User.query.filter_by(username=username).first() is None:
+        return failure_response("User does not exist")
+
     was_successfull, user = users_dao.verify_credentials(username, password)
 
     if not was_successfull:
         return failure_response("Incorrect username or password", 401)
     
-    update_session()
+    users_dao.renew_session(user.update_token)
+
     return success_response(
         {
+            "username": username,
             "session_token": user.session_token,
             "session_expiration": str(user.session_expiration),
             "update_token": user.update_token
@@ -558,25 +477,41 @@ def get_users():
     return json.dumps({"users": [u.simple_serialize() for u in User.query.all()]}), 200
 
 # Endpoints for favorite courses
-@app.route("/favorites/<string:username>/")
-def get_favorites_by_username(username):
+@app.route("/favorites/")
+def get_favorites():
     """
-    Endpoint for retrieving user's favorited courses by username
+    Endpoint for retrieving user's favorited courses by sesion_token
     """
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        return failure_response("User not found.")
+
+    was_successful, session_token = extract_token(request)
+
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
     courses = user.courses
     return json.dumps({"favorites": [f.serialize() for f in courses]}), 200
 
-@app.route("/add/favorites/<string:username>/", methods = ["POST"])
-def add_to_favorites(username):
+@app.route("/add/favorites/", methods = ["POST"])
+def add_to_favorites():
     """
-    Endpoint for added to a user's favorites
+    Endpoint for adding to a user's favorites courses
     """
-    user = User.query.filter_by(username= username).first()
-    if user is None:
-        return failure_response("User not found.")
+    print("AAAAAAAAAA")
+    was_successful, session_token = extract_token(request)
+    print("BBBBBBBBBB")
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    
     body = json.loads(request.data)
     course_id = body.get("course_id")
     if course_id is None:
@@ -588,16 +523,23 @@ def add_to_favorites(username):
     db.session.commit()
     return json.dumps(course.serialize()), 200
 
-@app.route("/delete/favorites/<string:username>/", methods = ["POST"])
-def delete_from_favorites(username):
+@app.route("/delete/favorites/", methods = ["POST"])
+def delete_from_favorites():
     """
-    Enpoint for deleting course from user's favorites
+    Enpoint for deleting a course from user's favorites
     """
+    was_successful, session_token = extract_token(request)
+
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
     body = json.loads(request.data)
     course_id = body.get("course_id")
-    user = User.query.filter_by(username= username).first()
-    if user is None:
-        return failure_response("User not found.")
     course = None
     for c in user.courses:
         if c.id == course_id:
@@ -607,6 +549,93 @@ def delete_from_favorites(username):
     user.courses.remove(course)
     db.session.commit()
     return json.dumps(course.serialize()), 200
+
+# Endpoints related to comments
+@app.route("/courses/comments/<int:course_id>/")
+def get_comments_by_course(course_id):
+    """
+    Endpoint for retrieving comments by course id 
+    """
+    course = Course.query.filter_by(id= course_id).first()
+    if course is None:
+        return failure_response("Course not found.")
+    return json.dumps({"comments": [c.serialize() for c in course.comments]}), 200
+
+@app.route("/users/comments/")
+def get_comments_by_user():
+    """
+    Endpoint for retrieving comments by session_token
+    """
+
+    was_successful, session_token = extract_token(request)
+
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    
+    return json.dumps({"comments": [u.serialize() for u in user.comments]}), 200
+
+@app.route("/comments/", methods = ["POST"])
+def post_comment(): 
+    """
+    Endpoint for posting comments to a course
+    """
+    was_successful, session_token = extract_token(request)
+
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
+    body = json.loads(request.data)
+    course_id = body.get("course_id")
+    description = body.get("description")
+    username = body.get("username")
+    if course_id is None or description is None or username is None:
+        return failure_response("Required field(s) not supplied.", 400)
+    if description == "":
+        return failure_response("Description must be provided.", 400)
+
+    course = Course.query.filter_by(id= course_id).first()
+    if course is None:
+        return failure_response("Course not found.")
+    new_comment = Comment(
+        course_id= course_id, 
+        username = username,
+        description = description
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+    return json.dumps(new_comment.serialize()), 201
+
+@app.route("/comments/<int:comment_id>/", methods = ["DELETE"])
+def delete_comment(comment_id):
+    """
+    Endpoint for deleting comments 
+    """
+    was_successful, session_token = extract_token(request)
+
+    if not was_successful:
+        return session_token
+    
+    user = users_dao.get_user_by_session_token(session_token)
+
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
+    comment = Comment.query.filter_by(id= comment_id).first()
+    if comment is None:
+        return failure_response("Comment not found.")
+    db.session.delete(comment)
+    db.session.commit()
+    return json.dumps(comment.serialize()), 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
