@@ -41,7 +41,7 @@ class OpeningViewController: UIViewController {
     
     var signInLabel: UILabel = {
         let label = UILabel()
-        label.text = "Sign in"
+        label.text = "Sign In"
         label.textColor = .white
         label.font = UIFont(name: "Proxima Nova Bold", size: 20)
         label.textAlignment = .center

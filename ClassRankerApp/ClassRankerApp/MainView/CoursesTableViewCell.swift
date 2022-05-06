@@ -10,6 +10,7 @@ import UIKit
 class CoursesTableViewCell: UITableViewCell {
     
     static let id = "CourseCellId"
+    weak var delegate: RankViewController?
     
     let cellPadding: CGFloat = 40
     
@@ -58,7 +59,6 @@ class CoursesTableViewCell: UITableViewCell {
     
     var favButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "Star 1"), for: .normal)
         return button
     }()
     
@@ -81,12 +81,18 @@ class CoursesTableViewCell: UITableViewCell {
             contentView.addSubview(subView)
         }
         
+        if favorite == true {
+            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+        }
+        
         favButton.addTarget(self, action: #selector(isFavorite), for: .touchUpInside)
         
-        setupConstraints()
+        setUpConstraints()
     }
     
-    func setupConstraints() {
+    func setUpConstraints() {
         NSLayoutConstraint.activate([
             backView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 7.5),
             backView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -7.5),
@@ -116,20 +122,20 @@ class CoursesTableViewCell: UITableViewCell {
     }
     
     @objc func isFavorite() {
-        if favorite == false {
-            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
-            favorite = true
-        }
-        else if favorite == true {
-            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
-            favorite = false
-        }
+        delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: !favorite)
     }
     
     func configure(course: Course, index: Int) {
-        numberLabel.text = course.number
-        nameLabel.text = course.name
-        ratingLabel.text = String(course.rating)
+        numberLabel.text = course.subject + " " + String(course.number)
+        nameLabel.text = course.title
+        let rating = round(course.rating * 10) / 10.0
+        ratingLabel.text = String(rating)
+        self.favorite = course.favorite
+        if course.favorite == true {
+            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+        }
 //        favNumber.text = String(course.favNumber)
 //        rankingLabel.text = String(index) + "."
     }
