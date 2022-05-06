@@ -235,6 +235,7 @@ class CreateAccountController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
+        username = usernameField.text!
         let loginViewController = LoginController()
         loginViewController.configure(username: usernameField.text!)
         loginViewController.delegate = self

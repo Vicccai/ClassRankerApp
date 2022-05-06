@@ -24,3 +24,15 @@ struct Course: Codable, Hashable {
     var difficultyRating: Double
     var professors: String
 }
+
+struct User: Codable {
+    var username: String
+    var password: String
+}
+
+struct Comment: Codable {
+    var username: String
+    var comment: String
+}
+
+var username = String()

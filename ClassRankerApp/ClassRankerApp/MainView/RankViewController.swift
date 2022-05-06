@@ -8,15 +8,14 @@
 import UIKit
 import Alamofire
 import iOSDropDown
-//import DropDown
 
 class RankViewController: UIViewController {
     
     let padding: CGFloat = 15
     
-    let courses = [
+    var courses = [
         Course(number: "CS 1110", name: "Intro to Python", rating: 9.7, distribution: "MQR-AS", favorite: false, descr: "pretty good course. walker white? 10/10. other teacher? literally no idea. space invaders was fun. made me like cs. not that i would admit that.", credits: 4, reqs: "be prepared to get yelled at", overallRating: 5.0, workloadRating: 5.0, difficultyRating: 2.5, professors: "Walker White, Daisy Something"),
-        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: true, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
+        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: false, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
         Course(number: "MATH 1110", name: "Calc 1", rating: 4.2, distribution:
             "MQR-AS", favorite: false, descr: "took calc in high school because i hated myself. probably not a terrible course.", credits: 3, reqs: "don't take in high school", overallRating: 3.5, workloadRating: 2.3, difficultyRating: 1.2, professors: "literally no clue"),
         Course(number: "CS 1234", name: "Made up CS LA-AS", rating: 4.2, distribution:
@@ -87,22 +86,6 @@ class RankViewController: UIViewController {
         return button
     }()
     
-//    var majorDropDown: DropDownContainer = {
-//        let view = DropDownContainer(placeholder: "Major", optionArray: ["", "CS", "MATH", "hello", "hi", "testing"])
-//        return view
-//    }()
-//
-//    var distrDropDown: DropDownContainer = {
-//        let view = DropDownContainer(placeholder: "Distribution", optionArray:  ["", "MQR-AS", "LA-AS"])
-//        return view
-//    }()
-//
-//    var favDropDown: DropDownContainer = {
-//        let view = DropDownContainer(placeholder: "Filter by...", optionArray: ["", "Rating", "Favorites", "My Favorites"])
-//        return view
-//    }()
-//
-    
     let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
@@ -150,20 +133,6 @@ class RankViewController: UIViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-//            majorDropDown.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-//            majorDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-//            majorDropDown.heightAnchor.constraint(equalToConstant: 30),
-//            majorDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
-//
-//            distrDropDown.leadingAnchor.constraint(equalTo: majorDropDown.trailingAnchor, constant: 10),
-//            distrDropDown.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: padding),
-//            distrDropDown.heightAnchor.constraint(equalToConstant: 30),
-//            distrDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
-//
-//            favDropDown.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-//            favDropDown.topAnchor.constraint(equalTo: distrDropDown.topAnchor),
-//            favDropDown.heightAnchor.constraint(equalToConstant: 30),
-//            favDropDown.widthAnchor.constraint(equalToConstant: (view.bounds.width-50) / 3),
             
             favFilter.centerYAnchor.constraint(equalTo: filterCollection.centerYAnchor),
             favFilter.heightAnchor.constraint(equalToConstant: 27.5),
@@ -187,26 +156,9 @@ class RankViewController: UIViewController {
         ])
     }
     
-//    func setupDropdown() {
-////        majorDropDown.dropDown.listDidDisappear {
-////            self.selectedMajor = self.majorDropDown.dropDown.text!
-////            self.calculateShownCourses()
-////        }
-//        majorDropDown.dropDown.didSelect { major, _, _ in
-//            self.selectedMajor = major
-//            self.calculateShownCourses()
-//        }
-//        distrDropDown.dropDown.didSelect { distr, _, _ in
-//            self.selectedDistr = distr
-//            self.calculateShownCourses()
-//        }
-//    }
     
     @objc func filterFavs() {
         // for now hard codes them as red -- I got confused with your filter system but I think we should add a field to course called "favorite" and when we click on the red star it changes it to a favorited course. when the fav filter is pressed, it appends to shownCourses all the courses that are favoritied, makes them red, and then appends the rest of the non favorites
-        
-        // storing original order
-//        let originalOrder = shownCourses
         
         // if you're turning on the filter
         if favStar.image == UIImage(named: "Star 1") {
@@ -222,27 +174,9 @@ class RankViewController: UIViewController {
                     cell.ratingLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
                 }
             }
-            // sorting data
-//            var favoriteCoursesFirst: [Course] = []
-//            for course in shownCourses {
-//                if course.favorite == true {
-//                    favoriteCoursesFirst.append(course)
-//                }
-//            }
-//            for course in shownCourses {
-//                if course.favorite == false {
-//                    favoriteCoursesFirst.append(course)
-//                }
-//            }
-//            shownCourses = favoriteCoursesFirst
-//            coursesView.reloadData()
             
           // if youre turning off the filter
         } else {
-            // returning the data
-//            shownCourses = originalData
-//            coursesView.reloadData()
-            
             // changing colors back
             favStar.image = UIImage(named: "Star 1")
             let cells = self.coursesView.visibleCells as! Array<CoursesTableViewCell>
@@ -256,6 +190,7 @@ class RankViewController: UIViewController {
                 }
             }
         }
+        
     }
     
     func calculateShownCourses() {
@@ -288,6 +223,18 @@ class RankViewController: UIViewController {
         })
         calculateShownCourses()
     }
+    
+    //create function that takes course name from what it is delegating from and make the change here
+    func isFavoriteCourse(courseName: String, favorite: Bool) {
+        guard let courseIndex = courses.firstIndex (where: { course in
+            course.name == courseName
+        }) else { return }
+        
+        courses[courseIndex].favorite = favorite
+        // refilter here
+        shownCourses = courses
+        coursesView.reloadData()
+    }
 }
 
 extension RankViewController: UITableViewDataSource {
@@ -298,6 +245,7 @@ extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
+        cell.delegate = self
         return cell
     }
 }
@@ -306,7 +254,7 @@ extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let course = courses[indexPath.item]
         let descriptionViewController = DescriptionViewController()
-        descriptionViewController.configure(courseNumber: course.number, courseName: course.name, courseRating: course.rating, descr: course.descr, credits: course.credits, reqs: course.reqs, distrs: course.distribution, overall: course.overallRating, workload: course.workloadRating, difficulty: course.difficultyRating, profs: course.professors)
+        descriptionViewController.configure(course: course)
         descriptionViewController.delegate = self
         navigationController?.pushViewController(descriptionViewController, animated: true)
     }

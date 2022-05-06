@@ -11,7 +11,7 @@ import UIKit
 class DescriptionViewController: UIViewController {
     
     let cellPadding = CGFloat(30)
-    lazy var delegate = UIViewController()
+    weak var delegate: RankViewController?
     
     // basic info
     var nameBackView: UIView = {
@@ -220,63 +220,40 @@ class DescriptionViewController: UIViewController {
         label.numberOfLines = 0
         return label
     }()
-    
-    // discussion button
-    var disButton: UIButton = {
-        let button = UIButton()
-        button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.borderWidth = 1
-        button.layer.backgroundColor = UIColor.white.cgColor
-        button.addTarget(self, action: #selector(pushToDiscussion), for: .touchUpInside)
-        return button
-    }()
-    
-    var disLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Discussions"
-        label.textColor = .black
-        label.font = UIFont(name: "Proxima Nova Bold", size: 30)
-        return label
-    }()
-    
-    var commentsBackView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 1.00, green: 0.44, blue: 0.57, alpha: 1.00)
-        view.clipsToBounds = true
-        view.layer.cornerRadius = 17.5
-        return view
-    }()
-    
-    var commentsNumber: UILabel = {
-        let label = UILabel()
-        label.text = "12"
-        label.textColor = .black
-        label.font = UIFont(name: "Proxima Nova Bold", size: 30)
-        return label
-    }()
-    
-    var expandLeft: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "Vector")
-        return image
-    }()
-    
-    var expandRight: UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "Vector (1)")
-        return image
+       
+    let discussionStackView: DiscussionView = {
+        let stackview = DiscussionView(frame: .zero)
+        stackview.backgroundColor = .clear
+        stackview.alignment = .center
+        stackview.axis = .vertical
+        stackview.isBaselineRelativeArrangement = true
+        stackview.distribution = .fillProportionally
+        stackview.isLayoutMarginsRelativeArrangement = true
+        stackview.spacing = 0
+        stackview.layer.cornerRadius = 5
+        stackview.layer.borderWidth = 1
+        stackview.layer.borderColor = UIColor.black.cgColor
+        return stackview
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         navigationItem.largeTitleDisplayMode = .never
-        for subView in [nameBackView, numberLabel, nameLabel, ratingLabel, favButton, restBackView, descrLabel, descrBackView, descrText, creditsLabel, credits, reqLabel, reqs, distrLabel, distrs, semsLabel, sems, overallLabel, overallRating, workloadLabel, workloadRating, difficultyLabel, difficultyRating, profLabel, profs, disButton, disLabel, commentsBackView, commentsNumber, expandLeft, expandRight] {
+        for subView in [nameBackView, numberLabel, nameLabel, ratingLabel, favButton, restBackView, descrLabel, descrBackView, descrText, creditsLabel, credits, reqLabel, reqs, distrLabel, distrs, semsLabel, sems, overallLabel, overallRating, workloadLabel, workloadRating, difficultyLabel, difficultyRating, profLabel, profs, discussionStackView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
+        if favCourse == true {
+            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+        }
         setUpConstraints()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: favCourse)
     }
     
     func setUpConstraints() {
@@ -372,32 +349,9 @@ class DescriptionViewController: UIViewController {
             profs.leadingAnchor.constraint(equalTo: profLabel.leadingAnchor),
             profs.trailingAnchor.constraint(equalTo: restBackView.trailingAnchor, constant: -10),
             
-            disButton.topAnchor.constraint(equalTo: restBackView.bottomAnchor, constant: 15),
-            disButton.leadingAnchor.constraint(equalTo: nameBackView.leadingAnchor),
-            disButton.trailingAnchor.constraint(equalTo: nameBackView.trailingAnchor),
-            disButton.heightAnchor.constraint(equalToConstant: 50),
-            
-            disLabel.centerYAnchor.constraint(equalTo: disButton.centerYAnchor),
-            disLabel.leadingAnchor.constraint(equalTo: disButton.leadingAnchor, constant: 15),
-            
-            commentsBackView.topAnchor.constraint(equalTo: disButton.topAnchor, constant: 7.5),
-            commentsBackView.bottomAnchor.constraint(equalTo: disButton.bottomAnchor, constant: -7.5),
-            commentsBackView.leadingAnchor.constraint(equalTo: disLabel.trailingAnchor, constant: 20),
-            commentsBackView.trailingAnchor.constraint(equalTo: commentsNumber.trailingAnchor, constant: 15),
-            
-            commentsNumber.centerYAnchor.constraint(equalTo: commentsBackView.centerYAnchor),
-            commentsNumber.leadingAnchor.constraint(equalTo: commentsBackView.leadingAnchor, constant: 15),
-            
-            // will probably get rid of this
-            expandRight.bottomAnchor.constraint(equalTo: disButton.centerYAnchor, constant: -1),
-            expandRight.trailingAnchor.constraint(equalTo: disButton.trailingAnchor, constant: -15),
-            expandRight.widthAnchor.constraint(equalToConstant: 10),
-            expandRight.heightAnchor.constraint(equalToConstant: 10),
-            
-            expandLeft.topAnchor.constraint(equalTo: disButton.centerYAnchor, constant: 1),
-            expandLeft.trailingAnchor.constraint(equalTo: expandRight.leadingAnchor, constant: -2),
-            expandLeft.widthAnchor.constraint(equalToConstant: 10),
-            expandLeft.heightAnchor.constraint(equalToConstant: 10)
+            discussionStackView.topAnchor.constraint(equalTo: restBackView.bottomAnchor, constant: 15),
+            discussionStackView.leadingAnchor.constraint(equalTo: restBackView.leadingAnchor),
+            discussionStackView.trailingAnchor.constraint(equalTo: restBackView.trailingAnchor)
         ])
     }
     
@@ -405,10 +359,12 @@ class DescriptionViewController: UIViewController {
         if favCourse == false {
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
             favCourse = true
+            delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: true)
         }
         else if favCourse == true {
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
             favCourse = false
+            delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: false)
         }
     }
     
@@ -416,17 +372,18 @@ class DescriptionViewController: UIViewController {
 //        navigationController?.pushViewController(DiscussionViewController, animated: true)
     }
     
-    func configure(courseNumber: String, courseName: String, courseRating: Double, descr: String, credits: Double, reqs: String, distrs: String, overall: Double, workload: Double, difficulty: Double, profs: String) {
-        numberLabel.text = courseNumber
-        nameLabel.text = courseName
-        ratingLabel.text = String(courseRating)
-        self.descrText.text = descr
-        self.credits.text = String(credits)
-        self.reqs.text = reqs
-        self.distrs.text = distrs
-        overallRating.text = String(overall)
-        workloadRating.text = String(workload)
-        difficultyRating.text = String(difficulty)
-        self.profs.text = profs
+    func configure(course: Course) {
+        numberLabel.text = course.number
+        nameLabel.text = course.name
+        ratingLabel.text = String(course.rating)
+        self.descrText.text = course.descr
+        self.credits.text = String(course.credits)
+        self.reqs.text = course.reqs
+        self.distrs.text = course.distribution
+        overallRating.text = String(course.overallRating)
+        workloadRating.text = String(course.workloadRating)
+        difficultyRating.text = String(course.difficultyRating)
+        self.profs.text = course.professors
+        self.favCourse = course.favorite
     }
 }
