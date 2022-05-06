@@ -173,7 +173,7 @@ class DiscussionView: UIStackView {
     }()
     
     // dummy comments data
-    var comments = [Comment(username: "mariana", comment: "yo check out this little star thing"), Comment(username: "victor", comment: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
+    var comments = [Comment(username: "mariana", description: "yo check out this little star thing"), Comment(username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
     
     
     // adding subviews
@@ -234,7 +234,7 @@ class DiscussionView: UIStackView {
     
     @objc func postComment() {
         if commentField.text != "" {
-            let newComment = Comment(username: username, comment: commentField.text!)
+            let newComment = Comment(username: username, description: commentField.text!)
             comments.append(newComment)
             commentsView.reloadData()
             commentField.text = ""

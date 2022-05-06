@@ -201,10 +201,7 @@ class RankViewController: UIViewController {
     
 
     func getCourses() {
-        NetworkManager.getAllCourses { courses in
-            self.shownCourses = courses.courses
-            self.coursesView.reloadData()
-        }
+        getCoursesByAttributes(level: 0, distributions: [], matchAll: true, sort: 1)
     }
     
     func getCoursesByAttributes(level: Int, distributions: [String], matchAll: Bool, sort: Int) {
@@ -319,6 +316,7 @@ class RankViewController: UIViewController {
         // refilter here
         shownCourses = courses
     }
+    
     func filterContentForSearchText(searchText: String) {
         filteredCourses = shownCourses.filter({ course in
             let courseNumber = course.subject + " " + String(course.number)
