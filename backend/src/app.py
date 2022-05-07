@@ -501,9 +501,7 @@ def add_to_favorites():
     """
     Endpoint for adding to a user's favorites courses
     """
-    print("AAAAAAAAAA")
     was_successful, session_token = extract_token(request)
-    print("BBBBBBBBBB")
     if not was_successful:
         return session_token
     
