@@ -126,12 +126,19 @@ class LoginController: UIViewController {
         return label
     }()
     
+    var roosterImageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "Roosting")
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         
-        for subView in [titleLabel, signInLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, logInButton, logInLabel, createAccountButton, createAccountLabel] {
+        for subView in [titleLabel, signInLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, logInButton, logInLabel, createAccountButton, createAccountLabel, roosterImageView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
@@ -143,7 +150,7 @@ class LoginController: UIViewController {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 150),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             
             signInLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
@@ -191,13 +198,18 @@ class LoginController: UIViewController {
             logInLabel.centerYAnchor.constraint(equalTo: logInButton.centerYAnchor),
             logInLabel.centerXAnchor.constraint(equalTo: logInButton.centerXAnchor),
             
-            createAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            createAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             createAccountButton.heightAnchor.constraint(equalTo: createAccountLabel.heightAnchor, constant: 10),
             createAccountButton.widthAnchor.constraint(equalToConstant: 200),
             createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
-            createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor)
+            createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor),
+            
+            roosterImageView.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 15),
+            roosterImageView.heightAnchor.constraint(equalToConstant: 200),
+            roosterImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            roosterImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
     

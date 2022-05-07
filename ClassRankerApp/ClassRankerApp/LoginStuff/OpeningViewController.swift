@@ -11,7 +11,7 @@ import UIKit
 class OpeningViewController: UIViewController {
     var openingLabel: UILabel = {
         let label = UILabel()
-        label.text = "Feeling lost?\nTired of swapping tabs?"
+        label.text = "Feeling lost?\nTired of swapping tabs?\nDon't wing it."
         label.textColor = .black
         label.font = UIFont(name: "Proxima Nova Bold", size: 30)
         label.textAlignment = .center
@@ -68,11 +68,18 @@ class OpeningViewController: UIViewController {
         return label
     }()
     
+    var imageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "class rooster")
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         
-        for subView in [openingLabel, openingText, signInButton, signInLabel, createAccountButton, createAccountLabel] {
+        for subView in [openingLabel, openingText, signInButton, signInLabel, createAccountButton, createAccountLabel, imageView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
@@ -88,11 +95,16 @@ class OpeningViewController: UIViewController {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            openingLabel.bottomAnchor.constraint(equalTo: openingText.topAnchor, constant: -30),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, constant: 90),
+            imageView.bottomAnchor.constraint(equalTo: openingLabel.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            openingLabel.bottomAnchor.constraint(equalTo: openingText.topAnchor, constant: -20),
             openingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             openingLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
-            openingText.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -30),
+            openingText.bottomAnchor.constraint(equalTo: signInButton.topAnchor, constant: -20),
             openingText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
             openingText.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
             
@@ -109,8 +121,8 @@ class OpeningViewController: UIViewController {
             createAccountButton.leadingAnchor.constraint(equalTo: createAccountLabel.leadingAnchor, constant: -10),
             createAccountButton.trailingAnchor.constraint(equalTo: createAccountLabel.trailingAnchor, constant: 10),
             
-            createAccountLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
-            createAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            createAccountLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            createAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
     
