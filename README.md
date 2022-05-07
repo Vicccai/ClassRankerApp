@@ -20,4 +20,4 @@ Young Zheng (Back-end)
 
 # Screenshots
 
-Credit
+Credit: tisuela for ratemyprof-api
