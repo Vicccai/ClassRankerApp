@@ -11,7 +11,7 @@ import UIKit
 class CommentViewCell: UITableViewCell {
     
     static let id = "CommentCellId"
-    weak var delegate = DiscussionView()
+    weak var delegate: DiscussionView?
     var comment: Comment?
     
     var username: UILabel = {
@@ -32,7 +32,7 @@ class CommentViewCell: UITableViewCell {
     
     var deleteButton: UIButton = {
         let button = UIButton()
-        button.addTarget(self, action: #selector(deleteComment), for: .touchUpInside)
+        
         return button
     }()
     
@@ -48,7 +48,7 @@ class CommentViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         contentView.backgroundColor = .white
-    
+        deleteButton.addTarget(self, action: #selector(deleteComment), for: .touchUpInside)
         for subView in [username, commentLabel, deleteButton, deleteLabel] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)

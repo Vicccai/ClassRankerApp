@@ -255,7 +255,9 @@ class DiscussionView: UIStackView {
 //            })
             if let index = self.comments.firstIndex(of: commentToDelete) {
                 self.comments.remove(at: index)
+                self.commentsNumber.text = String(self.comments.count)
             }
+            self.commentsView.reloadData()
         }
     }
     

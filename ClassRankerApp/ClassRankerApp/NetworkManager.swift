@@ -80,6 +80,7 @@ class NetworkManager {
         let endpoint = "\(host)/comments/"
         let params: [String : Any] = [
             "course_id": course.id,
+            "username": user.username,
             "description": description
         ]
         let header: HTTPHeaders = [
@@ -103,7 +104,7 @@ class NetworkManager {
     }
     
     static func deleteComment(comment: Comment, user:User, completion: @escaping (Comment) -> Void) {
-        let endpoint = "\(host)/comments/\(comment.id)"
+        let endpoint = "\(host)/comments/\(comment.id)/"
         let header: HTTPHeaders = [
             "authorization": user.session_token
         ]
