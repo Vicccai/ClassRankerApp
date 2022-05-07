@@ -24,7 +24,7 @@ Young Zheng (Back-end)
 * Created endpoint to routinely update tables with new data from CUReviews, RateMyProf and Corenll Course Roster API
 * Created endpoints for user addition and deletion of favorite courses and comments
 * Implemented http token authentication with bcrypt library
-* Containzerization with Docker and deployed using Google Cloud virtual machine
+* Containerization with Docker and deployed using Google Cloud virtual machine
 
 # Product Design
 
