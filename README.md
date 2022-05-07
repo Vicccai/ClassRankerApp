@@ -43,5 +43,5 @@ For typography, I decided to use Proxima Nova. It stands out from the default SF
 [Figma Link](https://www.figma.com/file/qPlbhnlE9x49FaDMPc8DeR/Hack-Challenge-SP22?node-id=2%3A3)
 
 
-Credit: 
+# Credits
 Thank you tisuela for [ratemyprof-api](https://github.com/tisuela/ratemyprof-api) and Cornell DTI for letting us scrape CUReviews
