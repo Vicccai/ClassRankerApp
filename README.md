@@ -24,7 +24,7 @@ Young Zheng (Back-end)
 * Created endpoint to routinely update tables with new data from CUReviews, RateMyProf and Cornell Course Roster API
 * Created endpoints for user addition and deletion of favorite courses and comments
 * Implemented http token authentication with bcrypt library
-* Containerization with Docker and deployed using Google Cloud virtual machine
+* Containerized with Docker and deployed using Google Cloud virtual machine
 
 # Product Design
 The main features of the app include a landing page, login and creating an account, filtering through courses, searching for classes, viewing class descriptions, favouriting classes, and participating in discussions on classes.
