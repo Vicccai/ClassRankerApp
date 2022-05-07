@@ -112,6 +112,24 @@ class CreateAccountController: UIViewController {
         return image
     }()
     
+    var loginLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Already have an account?\nLogin!"
+        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    var loginButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .clear
+        button.addTarget(self, action: #selector(login), for: .touchUpInside)
+        return button
+    }()
+    
     var createAccountButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
@@ -134,7 +152,7 @@ class CreateAccountController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         
-        for subView in [titleLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, confirmPasswordBackView, confirmPasswordLabel, confirmPasswordField, confirmPasswordImageView, createAccountButton, createAccountLabel] {
+        for subView in [titleLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, confirmPasswordBackView, confirmPasswordLabel, confirmPasswordField, confirmPasswordImageView, createAccountButton, createAccountLabel, loginLabel, loginButton] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
@@ -206,8 +224,20 @@ class CreateAccountController: UIViewController {
             createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor),
-            createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor)
+            createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
+            
+            loginButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            loginButton.heightAnchor.constraint(equalTo: createAccountLabel.heightAnchor, constant: 10),
+            loginButton.widthAnchor.constraint(equalToConstant: 200),
+            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            loginLabel.centerXAnchor.constraint(equalTo: loginButton.centerXAnchor),
+            loginLabel.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor)
         ])
+    }
+    
+    @objc func login() {
+        navigationController?.pushViewController(LoginController(), animated: true)
     }
     
     @objc func createAccount() {
@@ -235,11 +265,18 @@ class CreateAccountController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-        username = usernameField.text!
-        let loginViewController = LoginController()
-        loginViewController.configure(username: usernameField.text!)
-        loginViewController.delegate = self
-        navigationController?.pushViewController(loginViewController, animated: true)
+
+        NetworkManager.registerAccount(username: usernameField.text!, password: passwordField.text!) { user in
+            let loginViewController = LoginController()
+            loginViewController.configure(username: self.usernameField.text!)
+            loginViewController.delegate = self
+            self.navigationController?.pushViewController(loginViewController, animated: true)
+        } failureCompletion: {
+            let alert = UIAlertController(title: "Account already exists", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+        
     }
     
 }

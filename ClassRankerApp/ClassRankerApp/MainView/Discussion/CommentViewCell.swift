@@ -4,10 +4,10 @@
 //
 //  Created by Mariana Meriles on 5/6/22.
 //
-
+ 
 import Foundation
 import UIKit
-
+ 
 class CommentViewCell: UITableViewCell {
     
     static let id = "CommentCellId"
@@ -15,16 +15,18 @@ class CommentViewCell: UITableViewCell {
     
     var username: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1.00)
+        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
         label.font = UIFont(name: "Proxima Nova Bold", size: 14)
         return label
     }()
     
     var comment: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1.00)
+        label.textColor = .black
         label.font = UIFont(name: "ProximaNova-Regular", size: 14)
-        return label 
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        return label
     }()
     
     var deleteButton: UIButton = {
@@ -36,11 +38,11 @@ class CommentViewCell: UITableViewCell {
     var deleteLabel: UILabel = {
         let label = UILabel()
         label.text = "Delete"
-        label.textColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
-        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1.00)
+        label.font = UIFont(name: "ProximaNova-Regular", size: 12)
         return label
     }()
-
+ 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -55,11 +57,12 @@ class CommentViewCell: UITableViewCell {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            username.topAnchor.constraint(equalTo: contentView.topAnchor),
-            username.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            username.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
+            username.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             
             comment.topAnchor.constraint(equalTo: username.bottomAnchor),
             comment.leadingAnchor.constraint(equalTo: username.leadingAnchor),
+            comment.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
             deleteButton.topAnchor.constraint(equalTo: comment.bottomAnchor, constant: 5),
             deleteButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),

@@ -4,10 +4,10 @@
 //
 //  Created by Mariana Meriles on 5/6/22.
 //
-
+ 
 import Foundation
 import UIKit
-
+ 
 class DiscussionView: UIStackView {
     
     var collapsed = true
@@ -30,20 +30,12 @@ class DiscussionView: UIStackView {
             return view
         }()
         
-        var commentsNumber: UILabel = {
-            let label = UILabel()
-            label.text = "12"
-            label.textColor = .black
-            label.font = UIFont(name: "Proxima Nova Bold", size: 30)
-            return label
-        }()
-        
         var expandButton: UIButton = {
             let button = UIButton()
             button.addTarget(self, action: #selector(expandDiscussion), for: .touchUpInside)
             return button
         }()
-
+ 
         let view = UIView()
         view.layer.cornerRadius = 5
 //        view.layer.borderColor = UIColor.black.cgColor
@@ -58,20 +50,20 @@ class DiscussionView: UIStackView {
         NSLayoutConstraint.activate([
             disLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             disLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-
+ 
             commentNumBackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 7.5),
             commentNumBackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -7.5),
             commentNumBackView.leadingAnchor.constraint(equalTo: disLabel.trailingAnchor, constant: 20),
             commentNumBackView.trailingAnchor.constraint(equalTo: commentsNumber.trailingAnchor, constant: 15),
-
+ 
             commentsNumber.centerYAnchor.constraint(equalTo: commentNumBackView.centerYAnchor),
             commentsNumber.leadingAnchor.constraint(equalTo: commentNumBackView.leadingAnchor, constant: 15),
-
+ 
             expandRight.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -1),
             expandRight.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
             expandRight.widthAnchor.constraint(equalToConstant: 10),
             expandRight.heightAnchor.constraint(equalToConstant: 10),
-
+ 
             expandLeft.topAnchor.constraint(equalTo: view.centerYAnchor, constant: 1),
             expandLeft.trailingAnchor.constraint(equalTo: expandRight.leadingAnchor, constant: -2.7),
             expandLeft.widthAnchor.constraint(equalToConstant: 10),
@@ -95,6 +87,13 @@ class DiscussionView: UIStackView {
         let image = UIImageView()
         image.image = UIImage(named: "Vector (1)")
         return image
+    }()
+    
+    var commentsNumber: UILabel = {
+        let label = UILabel()
+        label.textColor = .black
+        label.font = UIFont(name: "Proxima Nova Bold", size: 30)
+        return label
     }()
     
     // uitable subview for comments (gets hidden)
@@ -173,13 +172,15 @@ class DiscussionView: UIStackView {
     }()
     
     // dummy comments data
-    var comments = [Comment(username: "mariana", description: "yo check out this little star thing"), Comment(username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
+    var comments = [Comment(id: 12, username: "mariana", description: "yo check out this little star thing"), Comment(id: 15, username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
     
     
     // adding subviews
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
+        commentsNumber.text = String(comments.count)
+        commentsView.isHidden = true
         yourCommentView.isHidden = true
         for subView in [disTitleView, commentsView, yourCommentView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
@@ -198,11 +199,12 @@ class DiscussionView: UIStackView {
             commentsView.topAnchor.constraint(equalTo: disTitleView.bottomAnchor),
             commentsView.leadingAnchor.constraint(equalTo: leadingAnchor),
             commentsView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            commentsView.bottomAnchor.constraint(equalTo: yourCommentView.topAnchor),
+            commentsView.heightAnchor.constraint(equalToConstant: 200),
             
             yourCommentView.topAnchor.constraint(equalTo: commentsView.bottomAnchor),
             yourCommentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             yourCommentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            yourCommentView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
@@ -215,6 +217,7 @@ class DiscussionView: UIStackView {
                 delay: 0.0,
                 options: [.transitionFlipFromTop],
                 animations: {
+                    self.commentsView.isHidden = false
                     self.yourCommentView.isHidden = false
             })
             collapsed = false
@@ -226,6 +229,7 @@ class DiscussionView: UIStackView {
                 delay: 0.0,
                 options: [.transitionFlipFromBottom],
                 animations: {
+                    self.commentsView.isHidden = true
                     self.yourCommentView.isHidden = true
             })
             collapsed = true
@@ -234,10 +238,11 @@ class DiscussionView: UIStackView {
     
     @objc func postComment() {
         if commentField.text != "" {
-            let newComment = Comment(username: username, description: commentField.text!)
-            comments.append(newComment)
+            let newComment = Comment(id: 15, username: Globals.user.username, description: commentField.text!)
+            comments.insert(newComment, at: 0)
             commentsView.reloadData()
             commentField.text = ""
+            commentsNumber.text = String(comments.count)
         }
     }
     
@@ -252,7 +257,7 @@ class DiscussionView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
+ 
 extension DiscussionView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         comments.count
@@ -264,8 +269,7 @@ extension DiscussionView: UITableViewDataSource {
         return cell
     }
 }
-
+ 
 extension DiscussionView: UITableViewDelegate {
     
 }
-

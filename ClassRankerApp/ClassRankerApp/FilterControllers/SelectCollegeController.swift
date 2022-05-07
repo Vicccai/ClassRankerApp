@@ -34,7 +34,6 @@ class SelectCollegeController: UIViewController, ObservableObject {
         }
         view.addSubview(contentView.view)
         setupConstraints()
-        
         // Do any additional setup after loading the view.
     }
     
@@ -45,7 +44,6 @@ class SelectCollegeController: UIViewController, ObservableObject {
             contentView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             contentView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-        
     }
 }
 

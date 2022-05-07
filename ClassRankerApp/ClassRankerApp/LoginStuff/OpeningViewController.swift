@@ -77,6 +77,12 @@ class OpeningViewController: UIViewController {
             view.addSubview(subView)
         }
         
+        //prefetch data
+        NetworkManager.getCourseByAttributes(level: 0, distributions: [], matchAll: true, sort: 1) { courses in
+            Globals.courses = courses.courses
+            NotificationCenter.default.post(name: Notification.Name("CoursesLoaded"), object: nil)
+        }
+        
         setUpConstraints()
     }
     

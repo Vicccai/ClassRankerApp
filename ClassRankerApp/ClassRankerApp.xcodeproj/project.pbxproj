@@ -24,6 +24,7 @@
 		DF29B6692825367D00C9F212 /* RankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B6682825367D00C9F212 /* RankViewController.swift */; };
 		DF29B66B282536EE00C9F212 /* CoursesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B66A282536EE00C9F212 /* CoursesTableViewCell.swift */; };
 		DF29B66D2825372F00C9F212 /* DescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B66C2825372F00C9F212 /* DescriptionViewController.swift */; };
+		DF29B66F2825FD5A00C9F212 /* DescriptionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF29B66E2825FD5A00C9F212 /* DescriptionTableViewCell.swift */; };
 		DF48F8B4281B5B100017372B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8B3281B5B100017372B /* AppDelegate.swift */; };
 		DF48F8B6281B5B100017372B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF48F8B5281B5B100017372B /* SceneDelegate.swift */; };
 		DF48F8BD281B5B140017372B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF48F8BC281B5B140017372B /* Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		DF29B6682825367D00C9F212 /* RankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RankViewController.swift; path = Discussion/RankViewController.swift; sourceTree = "<group>"; };
 		DF29B66A282536EE00C9F212 /* CoursesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CoursesTableViewCell.swift; path = Discussion/CoursesTableViewCell.swift; sourceTree = "<group>"; };
 		DF29B66C2825372F00C9F212 /* DescriptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionViewController.swift; sourceTree = "<group>"; };
+		DF29B66E2825FD5A00C9F212 /* DescriptionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DescriptionTableViewCell.swift; sourceTree = "<group>"; };
 		DF48F8B0281B5B100017372B /* ClassRankerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClassRankerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF48F8B3281B5B100017372B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF48F8B5281B5B100017372B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,8 +109,9 @@
 			children = (
 				DF29B66A282536EE00C9F212 /* CoursesTableViewCell.swift */,
 				DF29B6682825367D00C9F212 /* RankViewController.swift */,
-				D18D76762824E3BB00478DDE /* Discussion */,
 				DF29B66C2825372F00C9F212 /* DescriptionViewController.swift */,
+				D18D76762824E3BB00478DDE /* Discussion */,
+				DF29B66E2825FD5A00C9F212 /* DescriptionTableViewCell.swift */,
 			);
 			path = MainView;
 			sourceTree = "<group>";
@@ -312,6 +315,7 @@
 				DF29B66B282536EE00C9F212 /* CoursesTableViewCell.swift in Sources */,
 				DF29B65D2824573C00C9F212 /* SelectCollegeController.swift in Sources */,
 				D18D76702824D55C00478DDE /* DiscussionView.swift in Sources */,
+				DF29B66F2825FD5A00C9F212 /* DescriptionTableViewCell.swift in Sources */,
 				DF48F8CC281B69740017372B /* Models.swift in Sources */,
 				DF29B66D2825372F00C9F212 /* DescriptionViewController.swift in Sources */,
 				D18D76722824E30200478DDE /* CommentViewCell.swift in Sources */,
