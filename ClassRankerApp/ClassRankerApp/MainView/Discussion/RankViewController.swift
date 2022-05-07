@@ -407,13 +407,6 @@ extension RankViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.delegate = self
         cell.configure(course: getFinalCourses()[indexPath.row], index: indexPath.row)
-//        if showFavorites && Globals.favCourses.count > 1 {
-//            cell.configure(course: Globals.favCourses[indexPath.row], index: indexPath.row)
-//        }else if isFiltering {
-//            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
-//        } else {
-//            cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
-//        }
         return cell
     }
 }
@@ -421,14 +414,8 @@ extension RankViewController: UITableViewDataSource {
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let course = getFinalCourses()[indexPath.item]
-//        if showFavorites && Globals.favCourses.count > 1 {
-//            course = Globals.favCourses[indexPath.item]
-//        } else if isFiltering {
-//            course = filteredCourses[indexPath.item]
-//        } else {
-//            course = shownCourses[indexPath.item]
-//        }
         let descriptionViewController = DescriptionViewController()
+        descriptionViewController.delegate = self
         descriptionViewController.configure(course: course)
         navigationController?.pushViewController(descriptionViewController, animated: true)
     }

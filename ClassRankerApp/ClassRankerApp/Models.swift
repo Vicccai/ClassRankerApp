@@ -53,8 +53,9 @@ struct CommentWrapper: Codable {
     var comments: [Comment]
 }
 
-struct Comment: Codable {
-    var id: Int?
+struct Comment: Codable, Equatable {
+    var id: Int
+    var course_id: Int
     var username: String
     var description: String
 }

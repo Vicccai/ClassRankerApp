@@ -13,6 +13,8 @@ class DescriptionTableViewCell: UITableViewCell {
     static let id = "DescriptionTableViewCellIdentifier"
     
     weak var delegate: DescriptionViewController?
+    weak var doubleDel: RankViewController?
+    var currentCourse: Course?
     
     // basic info
     var nameBackView: UIView = {
@@ -55,7 +57,7 @@ class DescriptionTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "Star 1"), for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.addTarget(self, action: #selector(favorite), for: .touchUpInside)
+        
         return button
     }()
     
@@ -195,11 +197,7 @@ class DescriptionTableViewCell: UITableViewCell {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
         }
-        if favCourse == true {
-            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
-        } else {
-            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
-        }
+        favButton.addTarget(self, action: #selector(favorite), for: .touchUpInside)
         setUpConstraints()
     }
     
@@ -290,25 +288,28 @@ class DescriptionTableViewCell: UITableViewCell {
     
     @objc func favorite() {
         if favCourse == false {
+            print("hi")
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
             favCourse = true
-//            delegate?.delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: true)
+            doubleDel?.isFavoriteCourse(course: currentCourse!, favorite: true)
         }
         else if favCourse == true {
+            print("hello")
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
             favCourse = false
-//            delegate?.delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: false)
+            doubleDel?.isFavoriteCourse(course: currentCourse!, favorite: false)
         }
     }
     
     func configure(course: Course) {
+        currentCourse = course
         let courseNumber = course.subject + " " + String(course.number)
         numberLabel.text = courseNumber
         nameLabel.text = course.title
         let rating = round(course.rating * 10) / 10.0
         ratingLabel.text = String(rating)
-        self.descrText.text = course.description
-        self.credits.text = String(course.creditsMin)
+        descrText.text = course.description
+        credits.text = String(course.creditsMin)
         //self.reqs.text = course.reqs
         
         let distrArray = course.distributions
@@ -323,7 +324,14 @@ class DescriptionTableViewCell: UITableViewCell {
         
         let profArray = course.professors
         let profNames = profArray.map { $0.first_name + " " + $0.last_name }
-        self.profs.text = profNames.joined(separator: " ")
-        //self.favCourse = course.favorite!
+        profs.text = profNames.joined(separator: " ")
+        favCourse = course.favorite ?? false
+        if favCourse == true {
+            print("true")
+            favButton.setImage(UIImage(named: "Star 2"), for: .normal)
+        } else {
+            print("false")
+            favButton.setImage(UIImage(named: "Star 1"), for: .normal)
+        }
     }
 }

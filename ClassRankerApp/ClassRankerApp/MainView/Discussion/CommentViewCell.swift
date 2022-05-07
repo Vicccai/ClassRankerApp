@@ -12,6 +12,7 @@ class CommentViewCell: UITableViewCell {
     
     static let id = "CommentCellId"
     weak var delegate = DiscussionView()
+    var comment: Comment?
     
     var username: UILabel = {
         let label = UILabel()
@@ -20,7 +21,7 @@ class CommentViewCell: UITableViewCell {
         return label
     }()
     
-    var comment: UILabel = {
+    var commentLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.font = UIFont(name: "ProximaNova-Regular", size: 14)
@@ -48,7 +49,7 @@ class CommentViewCell: UITableViewCell {
         self.selectionStyle = .none
         contentView.backgroundColor = .white
     
-        for subView in [username, comment, deleteButton, deleteLabel] {
+        for subView in [username, commentLabel, deleteButton, deleteLabel] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
         }
@@ -60,11 +61,11 @@ class CommentViewCell: UITableViewCell {
             username.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15),
             username.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
             
-            comment.topAnchor.constraint(equalTo: username.bottomAnchor),
-            comment.leadingAnchor.constraint(equalTo: username.leadingAnchor),
-            comment.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            commentLabel.topAnchor.constraint(equalTo: username.bottomAnchor),
+            commentLabel.leadingAnchor.constraint(equalTo: username.leadingAnchor),
+            commentLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            deleteButton.topAnchor.constraint(equalTo: comment.bottomAnchor, constant: 5),
+            deleteButton.topAnchor.constraint(equalTo: commentLabel.bottomAnchor, constant: 5),
             deleteButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             deleteButton.leadingAnchor.constraint(equalTo: username.leadingAnchor),
             deleteButton.trailingAnchor.constraint(equalTo: deleteLabel.trailingAnchor, constant: 5),
@@ -75,12 +76,13 @@ class CommentViewCell: UITableViewCell {
     }
     
     func configure(comment: Comment) {
+        self.comment = comment
         username.text = comment.username
-        self.comment.text = comment.description
+        commentLabel.text = comment.description
     }
     
     @objc func deleteComment() {
-//        delegate?.deleteComment(comment: comment.text)
+        delegate?.deleteComment(comment: comment!)
     }
     
     required init?(coder: NSCoder) {

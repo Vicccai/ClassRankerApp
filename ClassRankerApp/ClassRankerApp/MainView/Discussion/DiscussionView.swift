@@ -11,6 +11,7 @@ import UIKit
 class DiscussionView: UIStackView {
     
     var collapsed = true
+    var course: Course?
     
     // ui view for discussion title view
     lazy var disTitleView: UIView = {
@@ -170,10 +171,10 @@ class DiscussionView: UIStackView {
         field.autocapitalizationType = .none
         return field
     }()
+//    var comments = [Comment(id: 12, username: "mariana", description: "yo check out this little star thing"), Comment(id: 15, username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
     
-    // dummy comments data
-    var comments = [Comment(id: 12, username: "mariana", description: "yo check out this little star thing"), Comment(id: 15, username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
-    
+    // comments data
+    var comments : [Comment] = []
     
     // adding subviews
     override init(frame: CGRect) {
@@ -238,20 +239,25 @@ class DiscussionView: UIStackView {
     
     @objc func postComment() {
         if commentField.text != "" {
-            let newComment = Comment(id: 15, username: Globals.user.username, description: commentField.text!)
-            comments.insert(newComment, at: 0)
-            commentsView.reloadData()
-            commentField.text = ""
-            commentsNumber.text = String(comments.count)
+            NetworkManager.postCommentByUser(course: course!, user: Globals.user, description: commentField.text!) { comment in
+                self.comments.insert(comment, at: 0)
+                self.commentsView.reloadData()
+                self.commentField.text = ""
+                self.commentsNumber.text = String(self.comments.count)
+            }
         }
     }
     
-//    func deleteComment(comment: String) {
-//        var commentIndex = comments.first(where: { comment in
-//            comment == comment
-//        })
-//        comments.remove(at: commentIndex)
-//    }
+    func deleteComment(comment: Comment) {
+        NetworkManager.deleteComment(comment: comment, user: Globals.user) { commentToDelete in
+//            let commentIndex = self.comments.first(where: { comment in
+//                commentToDelete == comment
+//            })
+            if let index = self.comments.firstIndex(of: commentToDelete) {
+                self.comments.remove(at: index)
+            }
+        }
+    }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -266,6 +272,7 @@ extension DiscussionView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentViewCell.id) as? CommentViewCell else { return UITableViewCell() }
         cell.configure(comment: comments[indexPath.row])
+        cell.delegate = self
         return cell
     }
 }

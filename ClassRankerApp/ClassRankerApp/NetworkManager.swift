@@ -40,7 +40,7 @@ class NetworkManager {
             "all": matchAll,
             "sort": sort
         ]
-        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default).validate().responseData { response in
+        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default) {$0.timeoutInterval = 300} .validate().responseData { response in
             switch (response.result) {
             case .success(let data):
                 let jsonDecoder = JSONDecoder()
@@ -76,14 +76,16 @@ class NetworkManager {
         }
     }
     
-    static func postCommentByUser(course: Course, username: String, description: String, completion: @escaping (Comment) -> Void) {
+    static func postCommentByUser(course: Course, user: User, description: String, completion: @escaping (Comment) -> Void) {
         let endpoint = "\(host)/comments/"
         let params: [String : Any] = [
             "course_id": course.id,
-            "description": description,
-            "username": username
+            "description": description
         ]
-        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default).validate().responseData { response in
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
             switch (response.result) {
             case .success(let data):
                 let jsonDecoder = JSONDecoder()
@@ -100,24 +102,27 @@ class NetworkManager {
         }
     }
     
-//    static func deleteComment(comment: Comment, completion: @escaping (Comment) -> Void) {
-//        let endpoint = "\(host)/comments/\(comment.id)"
-//        AF.request(endpoint, method: .delete).validate().responseData { response in
-//            switch (response.result) {
-//            case .success(let data):
-//                let jsonDecoder = JSONDecoder()
-//                jsonDecoder.dateDecodingStrategy = .iso8601
-//                if let userResponse = try? jsonDecoder.decode(Comment.self, from: data) {
-//                    completion(userResponse)
-//                } else {
-//                    print("Failed to decode deleteComment")
-//                }
-//                print(data)
-//            case .failure(let error):
-//                print(error.localizedDescription)
-//            }
-//        }
-//    }
+    static func deleteComment(comment: Comment, user:User, completion: @escaping (Comment) -> Void) {
+        let endpoint = "\(host)/comments/\(comment.id)"
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .delete, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
+            switch (response.result) {
+            case .success(let data):
+                let jsonDecoder = JSONDecoder()
+                jsonDecoder.dateDecodingStrategy = .iso8601
+                if let userResponse = try? jsonDecoder.decode(Comment.self, from: data) {
+                    completion(userResponse)
+                } else {
+                    print("Failed to decode deleteComment")
+                }
+                print(data)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
     
     static func registerAccount(username: String, password: String, completion: @escaping (User) -> Void, failureCompletion: @escaping () -> Void) {
         let endpoint = "\(host)/register/"

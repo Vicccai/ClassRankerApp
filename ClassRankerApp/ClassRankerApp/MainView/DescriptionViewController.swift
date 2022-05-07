@@ -9,6 +9,14 @@ import UIKit
 class DescriptionViewController: UIViewController {
     
     var course: Course?
+    var delegate: RankViewController?
+    var comments : [Comment] = []
+    
+    func getComments(course: Course) {
+        NetworkManager.getCommentsByCourse(course: course) { comments in
+            self.comments = comments.comments
+        }
+    }
     
     lazy var descriptionTableView: UITableView = {
         let tableView = UITableView()
@@ -37,12 +45,16 @@ class DescriptionViewController: UIViewController {
     }()
     
     override func viewDidLoad() {
+        getComments(course: course!)
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         navigationItem.largeTitleDisplayMode = .never
         for subView in [descriptionTableView, discussionStackView] {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
+        
+        discussionStackView.course = course
+        discussionStackView.comments = comments
         descriptionTableView.delegate = self
         
         setUpConstraints()
@@ -65,9 +77,6 @@ class DescriptionViewController: UIViewController {
         self.course = course
     }
     
-//    override func viewDidDisappear(_ animated: Bool) {
-//        delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: favCourse)
-//    }
 }
  
 extension DescriptionViewController: UITableViewDataSource {
@@ -78,6 +87,7 @@ extension DescriptionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: DescriptionTableViewCell.id) as? DescriptionTableViewCell else { return UITableViewCell() }
         cell.configure(course: course!)
+        cell.doubleDel = delegate
         cell.delegate = self
         return cell
     }
