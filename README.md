@@ -13,6 +13,7 @@ Mariana Meriles (Front-end),
 Young Zheng (Back-end)
 
 # Screenshots
+![image](https://user-images.githubusercontent.com/69128074/167240728-15605884-3e37-458d-8def-e990fbb4304b.png)
 
 # Front-end Implementation
 
