@@ -19,10 +19,10 @@ Young Zheng (Back-end)
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
 * Tested using Postman
-* Scraped https://www.cureviews.org/, https://www.ratemyprofessors.com/ and utilized Course Roster API to generate data for Course, Breadth, Distribution and Professor tables
-* Added a many—to—many relationship betw Course and Professor tables
-* Implemented user authentication with bcrypt
-* Deployed with Docker and Google Cloud
+* Scraped https://www.cureviews.org/, https://www.ratemyprofessors.com/ and utilized Cornell Course Roster API to generate data for Course, Breadth, Distribution and Professor tables
+* Added a many-to-many relationship to User and Course, Professor and Course, Breadth and Course, Distribution and Course tables.
+* Implemented http token authentication with bcrypt library
+* Containzerization with Docker and deployed using Google Cloud virtual machine
 
 # Product Design
 
