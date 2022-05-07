@@ -9,6 +9,7 @@ import UIKit
 class CoursesTableViewCell: UITableViewCell {
     
     static let id = "CourseCellId"
+    var currentCourse: Course?
     weak var delegate: RankViewController?
     
     let cellPadding: CGFloat = 40
@@ -121,15 +122,16 @@ class CoursesTableViewCell: UITableViewCell {
     }
     
     @objc func isFavorite() {
-        delegate?.isFavoriteCourse(courseName: nameLabel.text!, favorite: !favorite)
+        delegate?.isFavoriteCourse(course: currentCourse!, favorite: !favorite)
     }
     
     func configure(course: Course, index: Int) {
+        currentCourse = course
         numberLabel.text = course.subject + " " + String(course.number)
         nameLabel.text = course.title
         let rating = round(course.rating * 10) / 10.0
         ratingLabel.text = String(rating)
-        //self.favorite = course.favorite
+        self.favorite = course.favorite ?? false
         if course.favorite == true {
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
         } else {

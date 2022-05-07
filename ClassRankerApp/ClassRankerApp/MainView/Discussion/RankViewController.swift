@@ -13,56 +13,80 @@ class RankViewController: UIViewController {
     let padding: CGFloat = 15
     var popupMenuHeight: CGFloat = 0
     var courses: [Course] = []
-//    let courses = [
-//        Course(number: "CS 1110", name: "Intro to Python", rating: 9.7, distribution: "MQR-AS", favorite: false, descr: "pretty good course. walker white? 10/10. other teacher? literally no idea. space invaders was fun. made me like cs. not that i would admit that.", credits: 4, reqs: "be prepared to get yelled at", overallRating: 5.0, workloadRating: 5.0, difficultyRating: 2.5, professors: "Walker White, Daisy Something"),
-//        Course(number: "CS 2110", name: "Object Oriented Programming", rating: 8.4, distribution: "MQR-AS", favorite: true, descr: "welp. made lots of kids hate cs. slightly more boring than 1110 but idk it was still fun and i would die for gries. i repeat, i would DIE FOR GRIES.", credits: 4, reqs: "CS1110 or be smart in high school and take it then", overallRating: 4.8, workloadRating: 4.5, difficultyRating: 4.3, professors: "gries <3"),
-//        Course(number: "MATH 1110", name: "Calc 1", rating: 4.2, distribution:
-//            "MQR-AS", favorite: false, descr: "took calc in high school because i hated myself. probably not a terrible course.", credits: 3, reqs: "don't take in high school", overallRating: 3.5, workloadRating: 2.3, difficultyRating: 1.2, professors: "literally no clue"),
-//        Course(number: "CS 1234", name: "Made up CS LA-AS", rating: 4.2, distribution:
-//            "LA-AS", favorite: false, descr: "made this up so ill make this up too. idk. probably pretty fun bc its cs. probably pretty hard bc its cs. probably in duffield because again, it's cs.", credits: 3, reqs: "probably 2110 like everything else", overallRating: 3.2, workloadRating: 2.1, difficultyRating: 5.6, professors: "Victor Cai")
-//    ]
+    var suppressObservers = true //clear button don't refetch data
     
     var filteredCourses: [Course] = [] // based on SearchBar
     
+    var showFavorites: Bool = false
+    
     var selectedLevel: Int = 0 {
         didSet {
-            if selectedLevel == 0 {
-                levelButton.setTitle("  Level  ", for: .normal)
-                levelButton.backgroundColor = .white
-            } else {
-                levelButton.setTitle("  \(String(selectedLevel))  ", for: .normal)
-                levelButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            if !self.suppressObservers {
+                if selectedLevel == 0 {
+                    levelButton.setTitle("  Level  ", for: .normal)
+                    levelButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+                    levelButton.backgroundColor = .white
+                } else {
+                    levelButton.setTitle("  \(String(selectedLevel))  ", for: .normal)
+                    levelButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+                    levelButton.setTitleColor(.white, for: .normal)
+                }
+                getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
             }
-            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
         }
     }
     var selectedDistr: [String] = [] {
         didSet {
-            if selectedDistr == [] {
-                distrButton.backgroundColor = .white
-            } else {
-                distrButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            if !self.suppressObservers {
+                if selectedDistr == [] {
+                    distrButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+                    distrButton.backgroundColor = .white
+                } else {
+                    distrButton.setTitleColor(.white, for: .normal)
+                    distrButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+                }
             }
         }
     }
     
     var selectedSort: String = "" {
         didSet {
-            if selectedSort == "" {
-                sortButton.setTitle("  Sort by...  ", for: .normal)
-                sortButton.backgroundColor = .white
-            } else {
-                sortButton.setTitle("  \(selectedSort)  ", for: .normal)
-                sortButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+            if !self.suppressObservers {
+                if selectedSort == "" {
+                    sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+                    sortButton.setTitle("  Sort by...  ", for: .normal)
+                    sortButton.backgroundColor = .white
+                } else {
+                    sortButton.setTitleColor(.white, for: .normal)
+                    sortButton.setTitle("  \(selectedSort)  ", for: .normal)
+                    sortButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+                }
+                getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
             }
-            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
         }
     }
     
     var matchAll: Bool = true {
         didSet {
-            getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+            if !self.suppressObservers {
+                getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+            }
         }
+    }
+    
+    @objc func clearButtonTapped() {
+        suppressObservers = true
+        levelButton.setTitle("  Level  ", for: .normal)
+        levelButton.backgroundColor = .white
+        levelButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+        distrButton.backgroundColor = .white
+        distrButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+        sortButton.setTitle("  Sort by...  ", for: .normal)
+        sortButton.backgroundColor = .white
+        sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
+        shownCourses = Globals.courses
+        getCourses()
+        suppressObservers = false
     }
     
     var shownCourses: [Course] = [] // courses that are actually shown, combo of search and dropdown
@@ -84,6 +108,12 @@ class RankViewController: UIViewController {
         button.backgroundColor = .white
         return button
     }
+    
+    let clearButton: UIButton = {
+        let button = makeButton(title: "Clear")
+        button.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     let levelButton: UIButton = {
         let button = makeButton(title: "Level")
@@ -130,8 +160,14 @@ class RankViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(getCourses), name: NSNotification.Name(rawValue: "CoursesLoaded"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(calculateFavs), name: NSNotification.Name(rawValue: "FavoritesLoaded"), object: nil)
+        
+        //get favorites
+        getFavorites()
+        
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
-       
         // title stuff
         navigationItem.title = "Courses"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -155,7 +191,7 @@ class RankViewController: UIViewController {
         navigationItem.searchController = searchController
         definesPresentationContext = true
         
-        for subView in [levelButton, sortButton, distrButton, coursesView, favFilter, favStar] {
+        for subView in [clearButton, levelButton, sortButton, distrButton, coursesView, favFilter, favStar] {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -163,6 +199,7 @@ class RankViewController: UIViewController {
         navigationItem.hidesBackButton = true
         setupConstraints()
         getCourses()
+        suppressObservers = false
     }
     
     func setupConstraints() {
@@ -180,17 +217,18 @@ class RankViewController: UIViewController {
             levelButton.leadingAnchor.constraint(equalTo: favFilter.trailingAnchor, constant: 10),
             levelButton.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
             levelButton.heightAnchor.constraint(equalTo: favFilter.heightAnchor),
-            levelButton.widthAnchor.constraint(equalToConstant: 55),
             
             distrButton.leadingAnchor.constraint(equalTo: levelButton.trailingAnchor, constant: 10),
             distrButton.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
             distrButton.heightAnchor.constraint(equalTo: favFilter.heightAnchor),
-            levelButton.widthAnchor.constraint(equalToConstant: 95),
             
             sortButton.leadingAnchor.constraint(equalTo: distrButton.trailingAnchor, constant: 10),
             sortButton.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
             sortButton.heightAnchor.constraint(equalTo: favFilter.heightAnchor),
-            levelButton.widthAnchor.constraint(equalToConstant: 76),
+            
+            clearButton.leadingAnchor.constraint(equalTo: sortButton.trailingAnchor, constant: 10),
+            clearButton.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
+            clearButton.heightAnchor.constraint(equalTo: favFilter.heightAnchor),
             
             coursesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             coursesView.topAnchor.constraint(equalTo: favFilter.bottomAnchor, constant: padding),
@@ -198,15 +236,30 @@ class RankViewController: UIViewController {
             coursesView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
         ])
     }
-    
 
-    func getCourses() {
-        getCoursesByAttributes(level: 0, distributions: [], matchAll: true, sort: 1)
+    @objc func getCourses() {
+        shownCourses = Globals.courses
+        getFavorites()
+    }
+    @objc func calculateFavs() {
+        print(Globals.courses.count)
+        for i in 0..<shownCourses.count {
+            if Globals.favCourses.contains(shownCourses[i]) {
+                Globals.courses[i].favorite = true
+                shownCourses[i].favorite = true
+            }
+        }
+        coursesView.reloadData()
     }
     
     func getCoursesByAttributes(level: Int, distributions: [String], matchAll: Bool, sort: Int) {
         NetworkManager.getCourseByAttributes(level: level, distributions: distributions, matchAll: matchAll, sort: sort) { courses in
             self.shownCourses = courses.courses
+            for i in 0..<self.shownCourses.count {
+                if Globals.favCourses.contains(self.shownCourses[i]) {
+                    self.shownCourses[i].favorite = true
+                }
+            }
             self.coursesView.reloadData()
         }
     }
@@ -246,35 +299,32 @@ class RankViewController: UIViewController {
         if favStar.image == UIImage(named: "Star 1") {
             // changing colors
             favStar.image = UIImage(named: "Star 2")
-            let cells = self.coursesView.visibleCells as! Array<CoursesTableViewCell>
-            for cell in cells {
-                if cell.favorite == true {
-                    cell.backView.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
-                    cell.favButton.setImage(UIImage(named: "Star 3"), for: .normal)
-                    cell.numberLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
-                    cell.nameLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
-                    cell.ratingLabel.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.0)
-                }
-            }
             
           // if youre turning off the filter
         } else {
             // changing colors back
             favStar.image = UIImage(named: "Star 1")
-            let cells = self.coursesView.visibleCells as! Array<CoursesTableViewCell>
-            for cell in cells {
-                if cell.favorite == true {
-                    cell.backView.backgroundColor = .white
-                    cell.favButton.setImage(UIImage(named: "Star 2"), for: .normal)
-                    cell.numberLabel.textColor = .black
-                    cell.nameLabel.textColor = .black
-                    cell.ratingLabel.textColor = .black
-                }
-            }
         }
-        
+        showFavorites = !showFavorites
+        coursesView.reloadData()
+    }
+    func getFavorites() {
+        NetworkManager.getFavoritesByUser(user: Globals.user) { favorites in
+            Globals.favCourses = favorites.favorites
+            NotificationCenter.default.post(name: Notification.Name("FavoritesLoaded"), object: nil)
+        }
     }
     
+    func getFinalCourses() -> [Course] {
+        var finalCourses = shownCourses
+        if showFavorites {
+            finalCourses = finalCourses.filter(Globals.favCourses.contains)
+        }
+        if isFiltering {
+            finalCourses = finalCourses.filter(filteredCourses.contains)
+        }
+        return finalCourses
+    }
 //    func calculateShownCourses() {
 //        if !isFiltering && selectedMajor == "" && selectedDistr == "" {
 //            shownCourses = courses
@@ -307,14 +357,27 @@ class RankViewController: UIViewController {
 //    }
     
     //create function that takes course name from what it is delegating from and make the change here
-    func isFavoriteCourse(courseName: String, favorite: Bool) {
-        guard let courseIndex = courses.firstIndex (where: { course in
-            course.title == courseName
-        }) else { return }
+    func isFavoriteCourse(course: Course, favorite: Bool) {
+//        guard let courseIndex = shownCourses.firstIndex (where: { course in
+//            course.title == courseName
+//        }) else { return }
+        guard let courseIndex = shownCourses.firstIndex(of: course) else {return}
+        shownCourses[courseIndex].favorite = favorite
         
-        courses[courseIndex].favorite = favorite
+        //add or remove course from favCourses
+        if favorite { //add
+            NetworkManager.addToFavoritesForUser(user: Globals.user, course: course) { _ in
+            }
+            Globals.favCourses.append(course)
+        } else { //remove
+            NetworkManager.removeFromFavoritesForUser(user: Globals.user, course: course) { _ in
+            }
+            if let index = Globals.favCourses.firstIndex(of: course) {
+                Globals.favCourses.remove(at: index)
+            }
+        }
         // refilter here
-        shownCourses = courses
+        coursesView.reloadRows(at: [IndexPath(row: courseIndex, section: 0)], with: .none)
     }
     
     func filterContentForSearchText(searchText: String) {
@@ -330,36 +393,43 @@ class RankViewController: UIViewController {
 
 extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFiltering {
-            return filteredCourses.count
-        } else {
-            return shownCourses.count
-        }
+        return getFinalCourses().count
+//        if showFavorites && Globals.favCourses.count > 1 {
+//            return Globals.favCourses.count
+//        } else if isFiltering {
+//            return filteredCourses.count
+//        } else {
+//            return shownCourses.count
+//        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.delegate = self
-        if isFiltering {
-            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
-        } else {
-            cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
-        }
+        cell.configure(course: getFinalCourses()[indexPath.row], index: indexPath.row)
+//        if showFavorites && Globals.favCourses.count > 1 {
+//            cell.configure(course: Globals.favCourses[indexPath.row], index: indexPath.row)
+//        }else if isFiltering {
+//            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
+//        } else {
+//            cell.configure(course: shownCourses[indexPath.row], index: indexPath.row)
+//        }
         return cell
     }
 }
 
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var course: Course
-        if isFiltering {
-            course = filteredCourses[indexPath.item]
-        } else {
-            course = shownCourses[indexPath.item]
-        }
+        let course = getFinalCourses()[indexPath.item]
+//        if showFavorites && Globals.favCourses.count > 1 {
+//            course = Globals.favCourses[indexPath.item]
+//        } else if isFiltering {
+//            course = filteredCourses[indexPath.item]
+//        } else {
+//            course = shownCourses[indexPath.item]
+//        }
         let descriptionViewController = DescriptionViewController()
         descriptionViewController.configure(course: course)
-        descriptionViewController.delegate = self
         navigationController?.pushViewController(descriptionViewController, animated: true)
     }
 }

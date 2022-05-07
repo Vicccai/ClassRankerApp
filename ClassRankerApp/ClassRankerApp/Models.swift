@@ -7,13 +7,20 @@
 
 import Foundation
 
-var username = String()
+struct Globals {
+    static var courses: [Course] = []
+    static var favCourses: [Course] = []
+    static var user: User = User(username: "", session_token: "")
+}
 
 struct CourseWrapper: Codable {
     var courses: [Course]
 }
 
-struct Course: Codable {
+struct Course: Codable, Equatable {
+    static func == (lhs: Course, rhs: Course) -> Bool {
+        lhs.id == rhs.id
+    }
     // info for the table cell
     var id: Int
     var number: Int
@@ -47,13 +54,14 @@ struct CommentWrapper: Codable {
 }
 
 struct Comment: Codable {
-    var id: Int
+    var id: Int?
     var username: String
     var description: String
 }
 
 struct User: Codable {
     var username: String
+    var session_token: String
 }
 
 struct Favorites: Codable {

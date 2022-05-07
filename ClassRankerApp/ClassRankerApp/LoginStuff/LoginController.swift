@@ -214,7 +214,14 @@ class LoginController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
-        navigationController?.pushViewController(RankViewController(), animated: true)
+        NetworkManager.login(username: usernameField.text!, password: passwordField.text!) { user in
+            Globals.user = User(username: user.username, session_token: user.session_token)
+            self.navigationController?.pushViewController(RankViewController(), animated: true)
+        } failureCompletion: {
+            let alert = UIAlertController(title: "Invalid Username or Password", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     @objc func createAccount() {
@@ -224,6 +231,5 @@ class LoginController: UIViewController {
     func configure(username: String) {
         usernameField.text = username
     }
-    
 }
 

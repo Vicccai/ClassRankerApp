@@ -13,9 +13,6 @@ class NetworkManager {
     
     static func getAllCourses(completion: @escaping (CourseWrapper) -> Void) {
         let endpoint = "\(host)/courses/"
-//        let header: [String : String] = [
-//            "session_token": "value"
-//        ]
         AF.request(endpoint, method: .get).validate().responseData { response in
             switch (response.result) {
             case .success(let data):
@@ -103,26 +100,26 @@ class NetworkManager {
         }
     }
     
-    static func deleteComment(comment: Comment, completion: @escaping (Comment) -> Void) {
-        let endpoint = "\(host)/comments/\(comment.id)"
-        AF.request(endpoint, method: .delete).validate().responseData { response in
-            switch (response.result) {
-            case .success(let data):
-                let jsonDecoder = JSONDecoder()
-                jsonDecoder.dateDecodingStrategy = .iso8601
-                if let userResponse = try? jsonDecoder.decode(Comment.self, from: data) {
-                    completion(userResponse)
-                } else {
-                    print("Failed to decode deleteComment")
-                }
-                print(data)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
+//    static func deleteComment(comment: Comment, completion: @escaping (Comment) -> Void) {
+//        let endpoint = "\(host)/comments/\(comment.id)"
+//        AF.request(endpoint, method: .delete).validate().responseData { response in
+//            switch (response.result) {
+//            case .success(let data):
+//                let jsonDecoder = JSONDecoder()
+//                jsonDecoder.dateDecodingStrategy = .iso8601
+//                if let userResponse = try? jsonDecoder.decode(Comment.self, from: data) {
+//                    completion(userResponse)
+//                } else {
+//                    print("Failed to decode deleteComment")
+//                }
+//                print(data)
+//            case .failure(let error):
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
     
-    static func registerAccount(username: String, password: String, completion: @escaping (User) -> Void) {
+    static func registerAccount(username: String, password: String, completion: @escaping (User) -> Void, failureCompletion: @escaping () -> Void) {
         let endpoint = "\(host)/register/"
         let params: [String : String] = [
             "username": username,
@@ -139,13 +136,13 @@ class NetworkManager {
                     print("Failed to decode registerAccount")
                 }
                 print(data)
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                failureCompletion()
             }
         }
     }
     
-    static func login(username: String, password: String, completion: @escaping (User) -> Void) {
+    static func login(username: String, password: String, completion: @escaping (User) -> Void, failureCompletion: @escaping () -> Void) {
         let endpoint = "\(host)/login/"
         let params: [String : String] = [
             "username": username,
@@ -162,15 +159,18 @@ class NetworkManager {
                     print("Failed to decode login")
                 }
                 print(data)
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                failureCompletion()
             }
         }
     }
     
-    static func getFavoritesByUser(username: String, completion: @escaping (Favorites) -> Void) {
-        let endpoint = "\(host)/favorites/username/"
-        AF.request(endpoint, method: .get).validate().responseData { response in
+    static func getFavoritesByUser(user: User, completion: @escaping (Favorites) -> Void) {
+        let endpoint = "\(host)/favorites/"
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .get, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
             switch (response.result) {
             case .success(let data):
                 let jsonDecoder = JSONDecoder()
@@ -187,12 +187,15 @@ class NetworkManager {
         }
     }
     
-    static func addToFavoritesForUser(username: String, course: Course, completion: @escaping (Course) -> Void) {
-        let endpoint = "\(host)/add/favorites/username/"
+    static func addToFavoritesForUser(user: User, course: Course, completion: @escaping (Course) -> Void) {
+        let endpoint = "\(host)/add/favorites/"
         let params: [String : Int] = [
             "course_id": course.id
         ]
-        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default).validate().responseData { response in
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
             switch (response.result) {
             case .success(let data):
                 let jsonDecoder = JSONDecoder()
@@ -209,12 +212,15 @@ class NetworkManager {
         }
     }
     
-    static func removeFromFavoritesForUser(username: String, course: Course, completion: @escaping (Course) -> Void) {
-        let endpoint = "\(host)/delete/favorites/username/"
+    static func removeFromFavoritesForUser(user: User, course: Course, completion: @escaping (Course) -> Void) {
+        let endpoint = "\(host)/delete/favorites/"
         let params: [String : Int] = [
             "course_id": course.id
         ]
-        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default).validate().responseData { response in
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .post, parameters: params, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
             switch (response.result) {
             case .success(let data):
                 let jsonDecoder = JSONDecoder()
