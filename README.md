@@ -21,7 +21,7 @@ Young Zheng (Back-end)
 * Tested using Postman
 * Scraped [CUReviews](https://www.cureviews.org/), [RateMyProfessors](https://www.ratemyprofessors.com/) and utilized Cornell Course Roster API to generate data for Course, Breadth, Distribution and Professor tables
 * Added a many-to-many relationship to User and Course, Professor and Course, Breadth and Course, Distribution and Course tables.
-* Created endpoint to routinely update tables with new data from CUReviews, RateMyProf and Corenll Course Roster API
+* Created endpoint to routinely update tables with new data from CUReviews, RateMyProf and Cornell Course Roster API
 * Created endpoints for user addition and deletion of favorite courses and comments
 * Implemented http token authentication with bcrypt library
 * Containerization with Docker and deployed using Google Cloud virtual machine
