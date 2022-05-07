@@ -48,6 +48,7 @@ class DescriptionViewController: UIViewController {
         
         discussionStackView.course = course
         discussionStackView.comments = comments
+        discussionStackView.commentsNumber.text = String(comments.count)
         descriptionTableView.delegate = self
         
         setUpConstraints()

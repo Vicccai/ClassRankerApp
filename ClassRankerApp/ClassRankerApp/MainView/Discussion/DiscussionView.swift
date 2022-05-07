@@ -240,7 +240,6 @@ class DiscussionView: UIStackView {
     @objc func postComment() {
         if commentField.text != "" {
             NetworkManager.postCommentByUser(course: course!, user: Globals.user, description: commentField.text!) { comment in
-                print(self.course!)
                 self.comments.insert(comment, at: 0)
                 self.commentsView.reloadData()
                 self.commentField.text = ""
