@@ -17,11 +17,15 @@ Young Zheng (Back-end)
 # Front-end Implementation
 
 # Back-end Implementation
-* Developed using Flask, SQLAlchemy. 
+* Developed using Flask, SQLAlchemy and Python
 * Tested using Postman
-* Scraped https://www.cureviews.org/, https://www.ratemyprofessors.com/ and utilized Course Roster API to generate data for Course table
-* 
+* Scraped https://www.cureviews.org/, https://www.ratemyprofessors.com/ and utilized Course Roster API to generate data for Course, Breadth, Distribution and Professor tables
+* Added a many—to—many relationship betw Course and Professor tables
+* Implemented user authentication with bcrypt
+* Deployed with Docker and Google Cloud
 
 # Product Design
+
+# Future goals 
 
 Credit: tisuela for ratemyprof-api
