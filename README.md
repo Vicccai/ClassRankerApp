@@ -17,7 +17,8 @@ Young Zheng (Back-end)
 # Front-end Implementation
 
 # Back-end Implementation
-* hello
+* Scraped https://www.cureviews.org/, https://www.ratemyprofessors.com/ and utilized Course Roster API to generate data for tables
+* 
 
 # Product Design
 
