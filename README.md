@@ -17,7 +17,7 @@ Young Zheng (Back-end)
 # Front-end Implementation
 
 # Back-end Implementation
-*hello
+* hello
 
 # Product Design
 
