@@ -12,12 +12,12 @@ Victor Cai (Front-end),
 Mariana Meriles (Front-end),
 Young Zheng (Back-end)
 
+# Screenshots
+
 # Front-end Implementation
 
 # Back-end Implementation
 
 # Product Design
-
-# Screenshots
 
 Credit: tisuela for ratemyprof-api
