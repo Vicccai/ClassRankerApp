@@ -12,8 +12,7 @@ Victor Cai (Front-end),
 Mariana Meriles (Front-end),
 Young Zheng (Back-end)
 
-# Screenshots
-![image](https://user-images.githubusercontent.com/69128074/167240728-15605884-3e37-458d-8def-e990fbb4304b.png)
+# [Video](https://photos.google.com/share/AF1QipPToC4NxPdYWmXKUT9DIxdUnzLMl1YYmamJ5J3vwbod4GtYXyqAm6DLbx-Skn4TQg/photo/AF1QipN2ngaYcb5jNHgMcma04EMJ4eA26bX2TTQDfWQ?key=U1FlcnR1Mkp3eGF6S2xMMW9PTjlsTG4zZk1sazhn)
 
 # Front-end Implementation
 
