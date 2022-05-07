@@ -26,9 +26,5 @@ Young Zheng (Back-end)
 * Implemented http token authentication with bcrypt library
 * Containerization with Docker and deployed using Google Cloud virtual machine
 
-# Product Design
-
-# Future goals 
-
 Credit: 
 Thank you tisuela for [ratemyprof-api](https://github.com/tisuela/ratemyprof-api) and Cornell DTI for letting us scrape CUReviews
