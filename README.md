@@ -1,9 +1,8 @@
 # Class Rooster
-Don't wing course registration!
+You don't need to wing course registration anymore!
 
 # Description
-
-Members: 
+Members: Jordan Han (Back-end), Bryan Lee (Back-end), Luke Leh (Design), Victor Cai (Front-end), Mariana Meriles (Front-end), Young Zheng (Back-end)
 
 # Front-end Implementation
 
