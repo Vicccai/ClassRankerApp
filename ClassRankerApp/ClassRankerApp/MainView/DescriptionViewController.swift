@@ -12,12 +12,6 @@ class DescriptionViewController: UIViewController {
     var delegate: RankViewController?
     var comments : [Comment] = []
     
-    func getComments(course: Course) {
-        NetworkManager.getCommentsByCourse(course: course) { comments in
-            self.comments = comments.comments
-        }
-    }
-    
     lazy var descriptionTableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
@@ -45,7 +39,6 @@ class DescriptionViewController: UIViewController {
     }()
     
     override func viewDidLoad() {
-        getComments(course: course!)
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         navigationItem.largeTitleDisplayMode = .never
         for subView in [descriptionTableView, discussionStackView] {

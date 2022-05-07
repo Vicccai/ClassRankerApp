@@ -393,7 +393,11 @@ class RankViewController: UIViewController {
 
 extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return getFinalCourses().count
+        if isFiltering {
+            return filteredCourses.count
+        } else {
+            return getFinalCourses().count
+        }
 //        if showFavorites && Globals.favCourses.count > 1 {
 //            return Globals.favCourses.count
 //        } else if isFiltering {
@@ -406,18 +410,30 @@ extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.delegate = self
-        cell.configure(course: getFinalCourses()[indexPath.row], index: indexPath.row)
+        if isFiltering {
+            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
+        } else {
+            cell.configure(course: getFinalCourses()[indexPath.row], index: indexPath.row)
+        }
         return cell
     }
 }
 
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let course = getFinalCourses()[indexPath.item]
+        let course: Course
+        if isFiltering {
+            course = filteredCourses[indexPath.item]
+        } else {
+            course = getFinalCourses()[indexPath.item]
+        }
         let descriptionViewController = DescriptionViewController()
         descriptionViewController.delegate = self
         descriptionViewController.configure(course: course)
-        navigationController?.pushViewController(descriptionViewController, animated: true)
+        NetworkManager.getCommentsByCourse(course: course) { comments in
+            descriptionViewController.comments = comments.comments
+            self.navigationController?.pushViewController(descriptionViewController, animated: true)
+        }
     }
 }
 
