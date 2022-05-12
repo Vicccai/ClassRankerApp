@@ -15,6 +15,7 @@ Young Zheng (Back-end)
 # [Video](https://photos.google.com/share/AF1QipPToC4NxPdYWmXKUT9DIxdUnzLMl1YYmamJ5J3vwbod4GtYXyqAm6DLbx-Skn4TQg/photo/AF1QipN2ngaYcb5jNHgMcma04EMJ4eA26bX2TTQDfWQ?key=U1FlcnR1Mkp3eGF6S2xMMW9PTjlsTG4zZk1sazhn)
 
 # Front-end Implementation
+To be added...
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
