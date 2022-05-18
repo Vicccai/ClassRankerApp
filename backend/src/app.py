@@ -2,7 +2,7 @@ import datetime
 import json
 import math
 from flask import Flask, request
-from db import db, Course, User, Professor, Comment, Breadth, Distribution
+from db import SortedByDifficulty, SortedByRating, SortedByWorkload, db, Course, User, Professor, Comment, Breadth, Distribution
 from ratemyprof_api import ratemyprof_api 
 import requests
 import users_dao
@@ -204,10 +204,15 @@ def set_up_and_update_courses():
     Professor.query.delete()
     Breadth.query.delete()
     Distribution.query.delete()
+    SortedByDifficulty.query.delete()
+    SortedByRating.query.delete()
+    SortedByWorkload.query.delete()
     Cornell_University = ratemyprof_api.RateMyProfApi(298) 
-    rosters = get_rosters()
+    # rosters = get_rosters()
+    rosters = ["FA22"]
     for roster in rosters:
-        subjects = get_subjects(roster)
+        # subjects = get_subjects(roster)
+        subjects = ["NEPAL"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -242,7 +247,56 @@ def set_up_and_update_courses():
                     add_breadths_to_course(prev_course, breadth)
                     add_distributions_to_course(prev_course, distribution)
                 db.session.commit()
+    sort_courses()
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
+
+def sort_courses():
+    """
+    Loops through the table of courses and sorts them by rating, workload and difficulty. Adds the sorted lists to their respective tables
+    """
+    course_list = []
+    for c in Course.query.all():
+        course_list.append(c)
+    sorted_by_rating = course_list.copy()
+    sorted_by_workload = course_list.copy()
+    sorted_by_difficulty = course_list.copy()
+    sorted_by_rating.sort(reverse=True, key=sort_by_rating)
+    sorted_by_workload.sort(key=sort_by_workload)
+    sorted_by_difficulty.sort(key=sort_by_difficulty)
+    for c in sorted_by_rating:
+        new_course = SortedByRating(
+            course_id = c.id,
+            subject = c.subject,
+            number = c.number
+        )
+        for b in c.breadths:
+            new_course.breadths.append(b)
+        for d in c.distributions:
+            new_course.distributions.append(d)
+        db.session.add(new_course)
+    for c in sorted_by_workload:
+        new_course = SortedByWorkload(
+            course_id = c.id,
+            subject = c.subject,
+            number = c.number
+        )
+        for b in c.breadths:
+            new_course.breadths.append(b)
+        for d in c.distributions:
+            new_course.distributions.append(d)
+        db.session.add(new_course)
+    for c in sorted_by_difficulty:
+        new_course = SortedByDifficulty(
+            course_id = c.id,
+            subject = c.subject,
+            number = c.number
+        )
+        for b in c.breadths:
+            new_course.breadths.append(b)
+        for d in c.distributions:
+            new_course.distributions.append(d)
+        db.session.add(new_course)
+    db.session.commit()
 
 def list_helper(all, b_or_d, c):
     """
@@ -351,26 +405,37 @@ def get_sorted_courses():
         return failure_response("Required field(s) not supplied.", 400)
     if not isinstance(sort, int) or sort < 1 or sort > 6:
         return failure_response("Invalid input for sort.", 400)
-    course_list = []
-    for c in Course.query.all():
+    sorted_courses = []
+    #course_list = []
+    #for c in Course.query.all():
+    #    if c.subject == subject or subject == "":
+    #        if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
+    #            if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
+    #                course_list.append(c)
+    #if sort == 6:
+    #    course_list.sort(reverse=True, key=sort_by_prof_and_rating)
+    #elif sort == 5:
+    #    course_list.sort(reverse=True, key=sort_by_prof)
+    #elif sort == 4:
+    #    course_list.sort(reverse=True, key=sort_by_users)
+    #elif sort == 2:
+    #    course_list.sort(key=sort_by_difficulty)
+    #elif sort == 3:
+    #    course_list.sort(key=sort_by_workload)
+    #else:
+    #    course_list.sort(reverse=True, key=sort_by_rating)
+    if sort == 1:
+        courses = SortedByRating.query.all()
+    elif sort == 2:
+        courses = SortedByDifficulty.query.all()
+    else:
+        courses = SortedByWorkload.query.all()
+    for c in courses:
         if c.subject == subject or subject == "":
-            print(c.number)
             if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                 if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
-                    course_list.append(c)
-    if sort == 6:
-        course_list.sort(reverse=True, key=sort_by_prof_and_rating)
-    elif sort == 5:
-        course_list.sort(reverse=True, key=sort_by_prof)
-    elif sort == 4:
-        course_list.sort(reverse=True, key=sort_by_users)
-    elif sort == 2:
-        course_list.sort(key=sort_by_difficulty)
-    elif sort == 3:
-        course_list.sort(key=sort_by_workload)
-    else:
-        course_list.sort(reverse=True, key=sort_by_rating)
-    return json.dumps({"courses": [c.serialize() for c in course_list]}), 200
+                    sorted_courses.append(Course.query.filter_by(id=c.course_id).first())
+    return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
 
 @app.route("/courses/")
 def get_all_courses():
