@@ -19,6 +19,42 @@ associate_professors_with_courses = db.Table(
     db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
+associate_users_with_sorted_rating = db.Table(
+    "associate_users_with_sorted_rating",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+)
+
+associate_professors_with_sorted_rating = db.Table(
+    "associate_professors_with_sorted_rating",
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+)
+
+associate_users_with_sorted_workload = db.Table(
+    "associate_users_with_sorted_workload",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+)
+
+associate_professors_with_sorted_workload = db.Table(
+    "associate_professors_with_sorted_workload",
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+)
+
+associate_users_with_sorted_difficulty = db.Table(
+    "associate_users_with_sorted_difficulty",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id"))
+)
+
+associate_professors_with_sorted_difficulty = db.Table(
+    "associate_professors_with_sorted_difficulty",
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("sortedByDificulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id"))
+)
+
 associate_breadths_with_courses = db.Table(
     "associate_breadths_with_courses",
     db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.id")),
@@ -70,8 +106,6 @@ associate_sorted_difficulty_with_distributions = db.Table(
 class Course(db.Model):
     """
     Course model 
-
-    has a many to many model with users
     """
     __tablename__ = "courses"
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
@@ -93,7 +127,7 @@ class Course(db.Model):
 
     def __init__(self, **kwargs): 
         """
-        initialize Course object
+        Initialize Course object
         """
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
@@ -136,18 +170,62 @@ class SortedByRating(db.Model):
     Table of courses sorted by rating
     """
     __tablename__="sortedByRating"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    course_id = db.Column(db.Integer, nullable = False)
+    id = db.Column(db.Integer, primary_key = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
+    subandnum = db.Column(db.String, nullable = False)
+    title = db.Column(db.String, nullable = False)
+    creditsMin = db.Column(db.Integer, nullable = False)
+    creditsMax = db.Column(db.Integer, nullable = False)
+    description = db.Column(db.String, nullable = False)
+    workload = db.Column(db.Float)
+    difficulty = db.Column(db.Float)
+    rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_rating_with_breadths)
     distributions = db.relationship("Distribution", secondary= associate_sorted_rating_with_distributions)
+    users = db.relationship("User", secondary = associate_users_with_sorted_rating, back_populates = "sortedByRating")
+    professors = db.relationship("Professor", secondary = associate_professors_with_sorted_rating)
+    comments = db.relationship("Comment", cascade = "delete")
 
-    def __init__(self, **kwargs):
-        """Initializes SortedByRating object"""
-        self.course_id = kwargs.get("course_id", "")
+
+    def __init__(self, **kwargs): 
+        """
+        Initialize SortByRating object
+        """
+        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
-        self.number = kwargs.get("number", "")
+        self.number = kwargs.get("number", 0)
+        self.subandnum = kwargs.get("subandnum", "")
+        self.title = kwargs.get("title", "")
+        self.creditsMin = kwargs.get("creditsMin", 0)
+        self.creditsMax = kwargs.get("creditsMax", 0)
+        self.description = kwargs.get("description", "")
+        self.workload = kwargs.get("workload", 0)
+        self.difficulty = kwargs.get("difficulty", 0)
+        self.rating = kwargs.get("rating", 0)
+
+    def serialize(self):
+        """
+        Serialize SortByRating object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "creditsMin": self.creditsMin,
+            "creditsMax": self.creditsMax,
+            "description": self.description,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            "users": [c.simple_serialize() for c in self.users],
+            "professors": [d.simple_serialize() for d in self.professors],
+            "comments": [m.serialize() for m in self.comments],
+            "breadths": [b.simple_serialize() for b in self.breadths],
+            "distributions": [f.simple_serialize() for f in self.distributions]
+            }
 
 class SortedByWorkload(db.Model):
     """
@@ -156,18 +234,61 @@ class SortedByWorkload(db.Model):
     Table of courses sorted by workload
     """
     __tablename__="sortedByWorkload"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    course_id = db.Column(db.Integer, nullable = False)
+    id = db.Column(db.Integer, primary_key = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
+    subandnum = db.Column(db.String, nullable = False)
+    title = db.Column(db.String, nullable = False)
+    creditsMin = db.Column(db.Integer, nullable = False)
+    creditsMax = db.Column(db.Integer, nullable = False)
+    description = db.Column(db.String, nullable = False)
+    workload = db.Column(db.Float)
+    difficulty = db.Column(db.Float)
+    rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_workload_with_breadths)
     distributions = db.relationship("Distribution", secondary= associate_sorted_workload_with_distributions)
+    users = db.relationship("User", secondary = associate_users_with_sorted_workload, back_populates = "sortedByWorkload")
+    professors = db.relationship("Professor", secondary = associate_professors_with_sorted_workload)
+    comments = db.relationship("Comment", cascade = "delete")
 
-    def __init__(self, **kwargs):
-        """Initializes SortedByWorkload object"""
-        self.course_id = kwargs.get("course_id", "")
+    def __init__(self, **kwargs): 
+        """
+        Initialize SortByWorkload object
+        """
+        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
-        self.number = kwargs.get("number", "")
+        self.number = kwargs.get("number", 0)
+        self.subandnum = kwargs.get("subandnum", "")
+        self.title = kwargs.get("title", "")
+        self.creditsMin = kwargs.get("creditsMin", 0)
+        self.creditsMax = kwargs.get("creditsMax", 0)
+        self.description = kwargs.get("description", "")
+        self.workload = kwargs.get("workload", 0)
+        self.difficulty = kwargs.get("difficulty", 0)
+        self.rating = kwargs.get("rating", 0)
+
+    def serialize(self):
+        """
+        Serialize SortByWorkload object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "creditsMin": self.creditsMin,
+            "creditsMax": self.creditsMax,
+            "description": self.description,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            "users": [c.simple_serialize() for c in self.users],
+            "professors": [d.simple_serialize() for d in self.professors],
+            "comments": [m.serialize() for m in self.comments],
+            "breadths": [b.simple_serialize() for b in self.breadths],
+            "distributions": [f.simple_serialize() for f in self.distributions]
+            }
 
 class SortedByDifficulty(db.Model):
     """
@@ -176,18 +297,61 @@ class SortedByDifficulty(db.Model):
     Table of courses sorted by difficulty
     """
     __tablename__="sortedByDifficulty"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    course_id = db.Column(db.Integer, nullable = False)
+    id = db.Column(db.Integer, primary_key = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
+    subandnum = db.Column(db.String, nullable = False)
+    title = db.Column(db.String, nullable = False)
+    creditsMin = db.Column(db.Integer, nullable = False)
+    creditsMax = db.Column(db.Integer, nullable = False)
+    description = db.Column(db.String, nullable = False)
+    workload = db.Column(db.Float)
+    difficulty = db.Column(db.Float)
+    rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_difficulty_with_breadths)
     distributions = db.relationship("Distribution", secondary= associate_sorted_difficulty_with_distributions)
+    users = db.relationship("User", secondary = associate_users_with_sorted_difficulty, back_populates = "sortedByDifficulty")
+    professors = db.relationship("Professor", secondary = associate_professors_with_sorted_difficulty)
+    comments = db.relationship("Comment", cascade = "delete")
 
-    def __init__(self, **kwargs):
-        """Initializes SortedByDifficulty object"""
-        self.course_id = kwargs.get("course_id", "")
+    def __init__(self, **kwargs): 
+        """
+        Initialize SortByDifficulty object
+        """
+        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
-        self.number = kwargs.get("number", "")
+        self.number = kwargs.get("number", 0)
+        self.subandnum = kwargs.get("subandnum", "")
+        self.title = kwargs.get("title", "")
+        self.creditsMin = kwargs.get("creditsMin", 0)
+        self.creditsMax = kwargs.get("creditsMax", 0)
+        self.description = kwargs.get("description", "")
+        self.workload = kwargs.get("workload", 0)
+        self.difficulty = kwargs.get("difficulty", 0)
+        self.rating = kwargs.get("rating", 0)
+
+    def serialize(self):
+        """
+        Serialize SortByDifficulty object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "creditsMin": self.creditsMin,
+            "creditsMax": self.creditsMax,
+            "description": self.description,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            "users": [c.simple_serialize() for c in self.users],
+            "professors": [d.simple_serialize() for d in self.professors],
+            "comments": [m.serialize() for m in self.comments],
+            "breadths": [b.simple_serialize() for b in self.breadths],
+            "distributions": [f.simple_serialize() for f in self.distributions]
+            }
 
 class Breadth(db.Model):
     """
@@ -236,6 +400,9 @@ class User(db.Model):
     name =db.Column(db.String, nullable = False)
     username = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_users_with_courses, back_populates="users")
+    sortedByRating = db.relationship("SortedByRating", secondary = associate_users_with_sorted_rating, back_populates="users")
+    sortedByWorkload = db.relationship("SortedByWorkload", secondary = associate_users_with_sorted_workload, back_populates="users")
+    sortedByDifficulty = db.relationship("SortedByDifficulty", secondary = associate_users_with_sorted_difficulty, back_populates="users")
     comments = db.relationship("Comment", cascade = "delete")
     password_digest = db.Column(db.String, nullable = False)
 
@@ -311,21 +478,18 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable = False)
     last_name = db.Column(db.String, nullable = False)
-    rating = db.Column(db.Float, nullable = False)
     courses = db.relationship("Course", secondary = associate_professors_with_courses, back_populates="professors")
 
     def __init__(self, **kwargs):
         """Initializes a Professor object"""
         self.first_name = kwargs.get("first_name", "")
         self.last_name = kwargs.get("last_name", "")
-        self.rating = kwargs.get("rating", 0)
 
     def simple_serialize(self):
         """simple serializes a professor object"""
         return {
             "first_name": self.first_name,
-            "last_name": self.last_name,
-            "rating": self.rating
+            "last_name": self.last_name
         }
 
 class Comment(db.Model):
@@ -339,13 +503,20 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     username = db.Column(db.String, db.ForeignKey("users.username"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
-    description = db.Column(db.String, nullable = False)
+    sortedByRating_id = db.Column(db.Integer, db.ForeignKey("sortedByRating.id"), nullable=False)
+    sortedByDifficulty_id = db.Column(db.Integer, db.ForeignKey("sortedByDifficulty.id"), nullable=False)
+    sortedByWorkload_id = db.Column(db.Integer, db.ForeignKey("sortedByWorkload.id"), nullable=False)
+    description = db.Column(db.String, nullable = False) 
 
     def __init__(self, **kwargs):
         """ 
         Initializes an Comment object
         """
-        self.course_id= kwargs.get("course_id")
+        id = kwargs.get("course_id")
+        self.course_id= id
+        self.sortedByRating_id = id
+        self.sortedByDifficulty_id = id
+        self.sortedByWorkload_id = id
         self.username=kwargs.get("username")
         self.description= kwargs.get("description")
 

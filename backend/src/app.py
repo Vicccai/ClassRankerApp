@@ -3,7 +3,6 @@ import json
 import math
 from flask import Flask, request
 from db import SortedByDifficulty, SortedByRating, SortedByWorkload, db, Course, User, Professor, Comment, Breadth, Distribution
-from ratemyprof_api import ratemyprof_api 
 import requests
 import users_dao
 
@@ -147,7 +146,7 @@ def convert_to_list(dist):
     list += [dist[i:-1].strip()]
     return list
 
-def add_professors_to_course(course, professors, Cornell_University):
+def add_professors_to_course(course, professors):
     """
     Given list of professors adds them to the course 
     """
@@ -160,8 +159,7 @@ def add_professors_to_course(course, professors, Cornell_University):
             prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
             if(prev_prof is None):
                 prev_prof = Professor(first_name=prof[0],
-                    last_name=prof[1],
-                    rating=get_professor_rating(Cornell_University,prof[0],prof[1]))
+                                    last_name=prof[1])
             course.professors.append(prev_prof) 
 
 def add_breadths_to_course(course, breadths):
@@ -207,12 +205,9 @@ def set_up_and_update_courses():
     SortedByDifficulty.query.delete()
     SortedByRating.query.delete()
     SortedByWorkload.query.delete()
-    Cornell_University = ratemyprof_api.RateMyProfApi(298) 
-    # rosters = get_rosters()
-    rosters = ["FA22"]
+    rosters = get_rosters()
     for roster in rosters:
-        # subjects = get_subjects(roster)
-        subjects = ["NEPAL"]
+        subjects = get_subjects(roster)
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -234,7 +229,7 @@ def set_up_and_update_courses():
                         difficulty = rating["difficulty"],
                         rating = rating["rating"]
                         )
-                    add_professors_to_course(new_course, course["professors"], Cornell_University)
+                    add_professors_to_course(new_course, course["professors"])
                     add_breadths_to_course(new_course, breadth)
                     add_distributions_to_course(new_course, distribution)
                     db.session.add(new_course)
@@ -243,7 +238,7 @@ def set_up_and_update_courses():
                     prev_course.workload = rating["workload"]
                     prev_course.difficulty = rating["difficulty"]
                     prev_course.rating = rating["rating"]
-                    add_professors_to_course(prev_course, course["professors"], Cornell_University)
+                    add_professors_to_course(prev_course, course["professors"])
                     add_breadths_to_course(prev_course, breadth)
                     add_distributions_to_course(prev_course, distribution)
                 db.session.commit()
@@ -265,36 +260,78 @@ def sort_courses():
     sorted_by_difficulty.sort(key=sort_by_difficulty)
     for c in sorted_by_rating:
         new_course = SortedByRating(
-            course_id = c.id,
+            id = c.id,
             subject = c.subject,
-            number = c.number
+            number = c.number,
+            subandnum = c.subandnum,
+            title = c.title,
+            creditsMin = c.creditsMin,
+            creditsMax = c.creditsMax,
+            description = c.description,
+            workload = c.workload,
+            difficulty = c.difficulty,
+            rating = c.rating
         )
         for b in c.breadths:
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
+        for u in c.users:
+            new_course.users.append(u)
+        for p in c.professors:
+            new_course.professors.append(p)
+        for cm in c.comments:
+            new_course.comments.append(cm)
         db.session.add(new_course)
     for c in sorted_by_workload:
         new_course = SortedByWorkload(
-            course_id = c.id,
+            id = c.id,
             subject = c.subject,
-            number = c.number
+            number = c.number,
+            subandnum = c.subandnum,
+            title = c.title,
+            creditsMin = c.creditsMin,
+            creditsMax = c.creditsMax,
+            description = c.description,
+            workload = c.workload,
+            difficulty = c.difficulty,
+            rating = c.rating
         )
         for b in c.breadths:
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
+        for u in c.users:
+            new_course.users.append(u)
+        for p in c.professors:
+            new_course.professors.append(p)
+        for cm in c.comments:
+            new_course.comments.append(cm)
         db.session.add(new_course)
     for c in sorted_by_difficulty:
         new_course = SortedByDifficulty(
-            course_id = c.id,
+            id = c.id,
             subject = c.subject,
-            number = c.number
+            number = c.number,
+            subandnum = c.subandnum,
+            title = c.title,
+            creditsMin = c.creditsMin,
+            creditsMax = c.creditsMax,
+            description = c.description,
+            workload = c.workload,
+            difficulty = c.difficulty,
+            rating = c.rating
         )
         for b in c.breadths:
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
+        for u in c.users:
+            new_course.users.append(u)
+        for p in c.professors:
+            new_course.professors.append(p)
+        for cm in c.comments:
+            new_course.comments.append(cm)
         db.session.add(new_course)
     db.session.commit()
 
@@ -343,40 +380,6 @@ def sort_by_workload(course):
     workload = course.workload
     return workload if workload > 0 else 6
 
-def sort_by_users(course):
-    """
-    Function to specify sorting criteria for users
-    """
-    return len(course.users)
-
-def sort_by_prof(course):
-    """
-    Function to specify sorting criteria for professors
-    """
-    professors = course.professors
-    avg_rating = 0
-    total = 0
-    for prof in professors:
-        rating = prof.rating
-        if rating > 0:
-            avg_rating += rating
-            total += 1
-    if total == 0:
-        return -1
-    return avg_rating / total
-
-def sort_by_prof_and_rating(course):
-    """
-    Function to specify sorting criteria for ratings and professors
-    """
-    rating = sort_by_rating(course)
-    if rating == -1:
-        rating = 0
-    prof_rating = sort_by_prof(course)
-    if prof_rating == -1:
-        prof_rating = 0
-    return rating + prof_rating
-
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
     """
@@ -386,13 +389,10 @@ def get_sorted_courses():
     For the level attribute, it can be 0 if there is no specified level, else it will be X000
     For the breadth and distribution attribute, it can be the empty list if there is no specified elements
     For the all attribute, if it is true, it will return courses with all the dist/breadth if it is false, then it will return courses with any
-    For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3, 4:
+    For the sort attribute, it can sorted 4 different ways, input can be 1, 2, 3:
         1 is sorting by best to worst rating
         2 is sorting by least to most difficulty
         3 is sorting by least to most workload
-        4 is sorting by most to least favorites
-        5 is sorting by best to worst overall professor rating
-        6 is sorted by professors and ratings
     """
     body = json.loads(request.data)
     subject = body.get("subject")
@@ -403,27 +403,9 @@ def get_sorted_courses():
     sort = body.get("sort")
     if subject is None or level is None or breadth is None or distribution is None or all is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
-    if not isinstance(sort, int) or sort < 1 or sort > 6:
+    if not isinstance(sort, int) or sort < 1 or sort > 3:
         return failure_response("Invalid input for sort.", 400)
     sorted_courses = []
-    #course_list = []
-    #for c in Course.query.all():
-    #    if c.subject == subject or subject == "":
-    #        if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
-    #            if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
-    #                course_list.append(c)
-    #if sort == 6:
-    #    course_list.sort(reverse=True, key=sort_by_prof_and_rating)
-    #elif sort == 5:
-    #    course_list.sort(reverse=True, key=sort_by_prof)
-    #elif sort == 4:
-    #    course_list.sort(reverse=True, key=sort_by_users)
-    #elif sort == 2:
-    #    course_list.sort(key=sort_by_difficulty)
-    #elif sort == 3:
-    #    course_list.sort(key=sort_by_workload)
-    #else:
-    #    course_list.sort(reverse=True, key=sort_by_rating)
     if sort == 1:
         courses = SortedByRating.query.all()
     elif sort == 2:
@@ -434,7 +416,7 @@ def get_sorted_courses():
         if c.subject == subject or subject == "":
             if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                 if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
-                    sorted_courses.append(Course.query.filter_by(id=c.course_id).first())
+                    sorted_courses.append(c)
     return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
 
 @app.route("/courses/")
@@ -579,10 +561,16 @@ def add_to_favorites():
     course_id = body.get("course_id")
     if course_id is None:
         return failure_response("Required field(s) not provided.", 400)
-    course = Course.query.filter_by(id= course_id).first()
+    course = Course.query.filter_by(id=course_id).first()
+    course_rating = SortedByRating.query.filter_by(id=course_id).first()
+    course_difficulty = SortedByDifficulty.query.filter_by(id=course_id).first()
+    course_workload = SortedByWorkload.query.filter_by(id=course_id).first()
     if course is None:
         return failure_response("Course not found.")
     user.courses.append(course)
+    user.sortedByRating.append(course_rating)
+    user.sortedByDifficulty.append(course_difficulty)
+    user.sortedByWorkload.append(course_workload)
     db.session.commit()
     return json.dumps(course.serialize()), 200
 
@@ -609,7 +597,13 @@ def delete_from_favorites():
             course = c
     if course is None:
         return failure_response("Course not found.")
+    course_rating = SortedByRating.query.filter_by(id=course_id).first()
+    course_difficulty = SortedByDifficulty.query.filter_by(id=course_id).first()
+    course_workload = SortedByWorkload.query.filter_by(id=course_id).first()
     user.courses.remove(course)
+    user.sortedByRating.remove(course_rating)
+    user.sortedByDifficulty.remove(course_difficulty)
+    user.sortedByWorkload.remove(course_workload)
     db.session.commit()
     return json.dumps(course.serialize()), 200
 

@@ -1,7 +1,8 @@
 version: '3'
 services:
   demo:
-    image: bdl55/appdev-hack
-    env_file: .env
+    image: yz486/appdev-hack
+    volume:
+      - /home/yozheng2002/data.db:/usr/app/data.db
     ports:
       - "5000:5000"
