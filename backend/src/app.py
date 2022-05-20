@@ -203,8 +203,8 @@ def set_up_and_update_courses():
     Professor.query.delete()
     Breadth.query.delete()
     Distribution.query.delete()
-    SortedByDifficulty.query.delete()
     SortedByRating.query.delete()
+    SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
     #rosters = get_rosters()
     rosters = ["FA22"]
@@ -352,14 +352,6 @@ def sort_courses():
             cm.sortedByDifficulty_subandnum = c.subandnum
         db.session.add(new_course)
     db.session.commit()
-
-@app.route("/sorted/")
-def sorted():
-    course_list = []
-    for c in Course.query.all():
-        course_list.append(c)
-    course_list.sort(key=sort_by_difficulty)
-    return json.dumps({"courses": [c.serialize() for c in course_list]})
 
 def list_helper(all, b_or_d, c):
     """
