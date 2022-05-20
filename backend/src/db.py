@@ -140,6 +140,24 @@ class Course(db.Model):
         self.difficulty = kwargs.get("difficulty", 0)
         self.rating = kwargs.get("rating", 0)
 
+    def simple_serialize(self):
+        """
+        Simple serializes a Course object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "creditsMin": self.creditsMin,
+            "creditsMax": self.creditsMax,
+            "description": self.description,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            }
+
     def serialize(self):
         """
         Serialize Course object
@@ -170,7 +188,7 @@ class SortedByRating(db.Model):
     Table of courses sorted by rating
     """
     __tablename__="sortedByRating"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -192,7 +210,6 @@ class SortedByRating(db.Model):
         """
         Initialize SortByRating object
         """
-        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -203,6 +220,21 @@ class SortedByRating(db.Model):
         self.workload = kwargs.get("workload", 0)
         self.difficulty = kwargs.get("difficulty", 0)
         self.rating = kwargs.get("rating", 0)
+
+    def simple_serialize(self):
+        """
+        Simple serializes a Course object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            }
 
     def serialize(self):
         """
@@ -234,7 +266,7 @@ class SortedByWorkload(db.Model):
     Table of courses sorted by workload
     """
     __tablename__="sortedByWorkload"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -255,7 +287,6 @@ class SortedByWorkload(db.Model):
         """
         Initialize SortByWorkload object
         """
-        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -266,6 +297,21 @@ class SortedByWorkload(db.Model):
         self.workload = kwargs.get("workload", 0)
         self.difficulty = kwargs.get("difficulty", 0)
         self.rating = kwargs.get("rating", 0)
+
+    def simple_serialize(self):
+        """
+        Simple serializes a Course object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            }
 
     def serialize(self):
         """
@@ -297,7 +343,7 @@ class SortedByDifficulty(db.Model):
     Table of courses sorted by difficulty
     """
     __tablename__="sortedByDifficulty"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -318,7 +364,6 @@ class SortedByDifficulty(db.Model):
         """
         Initialize SortByDifficulty object
         """
-        self.id = kwargs.get("id", 0)
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -329,6 +374,21 @@ class SortedByDifficulty(db.Model):
         self.workload = kwargs.get("workload", 0)
         self.difficulty = kwargs.get("difficulty", 0)
         self.rating = kwargs.get("rating", 0)
+    
+    def simple_serialize(self):
+        """
+        Simple serializes a Course object
+        """
+        return {
+            "id": self.id,
+            "subject": self.subject,
+            "number": self.number,
+            "subandnum": self.subandnum,
+            "title": self.title,
+            "workload": self.workload,
+            "difficulty": self.difficulty,
+            "rating": self.rating,
+            }
 
     def serialize(self):
         """
@@ -503,20 +563,20 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement=True)
     username = db.Column(db.String, db.ForeignKey("users.username"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
-    sortedByRating_id = db.Column(db.Integer, db.ForeignKey("sortedByRating.id"), nullable=False)
-    sortedByDifficulty_id = db.Column(db.Integer, db.ForeignKey("sortedByDifficulty.id"), nullable=False)
-    sortedByWorkload_id = db.Column(db.Integer, db.ForeignKey("sortedByWorkload.id"), nullable=False)
+    sortedByRating_subandnum = db.Column(db.String, db.ForeignKey("sortedByRating.subandnum"), nullable=False)
+    sortedByDifficulty_subandnum = db.Column(db.String, db.ForeignKey("sortedByDifficulty.subandnum"), nullable=False)
+    sortedByWorkload_subandnum = db.Column(db.String, db.ForeignKey("sortedByWorkload.subandnum"), nullable=False)
     description = db.Column(db.String, nullable = False) 
 
     def __init__(self, **kwargs):
         """ 
         Initializes an Comment object
         """
-        id = kwargs.get("course_id")
-        self.course_id= id
-        self.sortedByRating_id = id
-        self.sortedByDifficulty_id = id
-        self.sortedByWorkload_id = id
+        self.course_id= kwargs.get("course_id")
+        subandnum = kwargs.get("subandnum")
+        self.sortedByRating_subandnum = subandnum
+        self.sortedByDifficulty_subandnum = subandnum
+        self.sortedByWorkload_subandnum = subandnum
         self.username=kwargs.get("username")
         self.description= kwargs.get("description")
 

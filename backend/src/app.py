@@ -5,6 +5,7 @@ from flask import Flask, request
 from db import SortedByDifficulty, SortedByRating, SortedByWorkload, db, Course, User, Professor, Comment, Breadth, Distribution
 import requests
 import users_dao
+import copy
 
 
 app = Flask(__name__)
@@ -205,9 +206,11 @@ def set_up_and_update_courses():
     SortedByDifficulty.query.delete()
     SortedByRating.query.delete()
     SortedByWorkload.query.delete()
-    rosters = get_rosters()
+    #rosters = get_rosters()
+    rosters = ["FA22"]
     for roster in rosters:
         subjects = get_subjects(roster)
+        subjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -245,6 +248,27 @@ def set_up_and_update_courses():
     sort_courses()
     return json.dumps({"courses": [c.serialize() for c in Course.query.all()]})
 
+def sort_by_rating(course):
+    """
+    Function to specify sorting criteria for ratings
+    """
+    rating = course.rating
+    return rating if rating > 0 else -1
+
+def sort_by_difficulty(course):
+    """
+    Function to specify sorting criteria for difficulty
+    """
+    difficulty = course.difficulty
+    return difficulty if difficulty > 0 else 6
+
+def sort_by_workload(course):
+    """
+    Function to specify sorting criteria for workload
+    """
+    workload = course.workload
+    return workload if workload > 0 else 6
+
 def sort_courses():
     """
     Loops through the table of courses and sorts them by rating, workload and difficulty. Adds the sorted lists to their respective tables
@@ -252,15 +276,9 @@ def sort_courses():
     course_list = []
     for c in Course.query.all():
         course_list.append(c)
-    sorted_by_rating = course_list.copy()
-    sorted_by_workload = course_list.copy()
-    sorted_by_difficulty = course_list.copy()
-    sorted_by_rating.sort(reverse=True, key=sort_by_rating)
-    sorted_by_workload.sort(key=sort_by_workload)
-    sorted_by_difficulty.sort(key=sort_by_difficulty)
-    for c in sorted_by_rating:
+    course_list.sort(reverse=True, key=sort_by_rating)
+    for c in course_list:
         new_course = SortedByRating(
-            id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -281,11 +299,11 @@ def sort_courses():
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
-            new_course.comments.append(cm)
+            cm.sortedByRating_subandnum = c.subandnum
         db.session.add(new_course)
-    for c in sorted_by_workload:
+    course_list.sort(key=sort_by_workload)
+    for c in course_list:
         new_course = SortedByWorkload(
-            id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -306,11 +324,11 @@ def sort_courses():
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
-            new_course.comments.append(cm)
+            cm.sortedByWorkload_subandnum = c.subandnum
         db.session.add(new_course)
-    for c in sorted_by_difficulty:
+    course_list.sort(key=sort_by_difficulty)
+    for c in course_list:
         new_course = SortedByDifficulty(
-            id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -331,9 +349,17 @@ def sort_courses():
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
-            new_course.comments.append(cm)
+            cm.sortedByDifficulty_subandnum = c.subandnum
         db.session.add(new_course)
     db.session.commit()
+
+@app.route("/sorted/")
+def sorted():
+    course_list = []
+    for c in Course.query.all():
+        course_list.append(c)
+    course_list.sort(key=sort_by_difficulty)
+    return json.dumps({"courses": [c.serialize() for c in course_list]})
 
 def list_helper(all, b_or_d, c):
     """
@@ -358,27 +384,6 @@ def list_helper(all, b_or_d, c):
                 if b == r.name:
                     return True
         return False 
-
-def sort_by_rating(course):
-    """
-    Function to specify sorting criteria for ratings
-    """
-    rating = course.rating
-    return rating if rating > 0 else -1
-
-def sort_by_difficulty(course):
-    """
-    Function to specify sorting criteria for difficulty
-    """
-    difficulty = course.difficulty
-    return difficulty if difficulty > 0 else 6
-
-def sort_by_workload(course):
-    """
-    Function to specify sorting criteria for workload
-    """
-    workload = course.workload
-    return workload if workload > 0 else 6
 
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
@@ -413,11 +418,14 @@ def get_sorted_courses():
     else:
         courses = SortedByWorkload.query.all()
     for c in courses:
+        if(len(sorted_courses) > 100):
+            break
         if c.subject == subject or subject == "":
             if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                 if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
                     sorted_courses.append(c)
     return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
+
 
 @app.route("/courses/")
 def get_all_courses():
@@ -562,11 +570,14 @@ def add_to_favorites():
     if course_id is None:
         return failure_response("Required field(s) not provided.", 400)
     course = Course.query.filter_by(id=course_id).first()
-    course_rating = SortedByRating.query.filter_by(id=course_id).first()
-    course_difficulty = SortedByDifficulty.query.filter_by(id=course_id).first()
-    course_workload = SortedByWorkload.query.filter_by(id=course_id).first()
+    course_rating = SortedByRating.query.filter_by(subandnum=course.subandnum).first()
+    course_difficulty = SortedByDifficulty.query.filter_by(subandnum=course.subandnum).first()
+    course_workload = SortedByWorkload.query.filter_by(subandnum=course.subandnum).first()
     if course is None:
         return failure_response("Course not found.")
+    for c in user.courses:
+        if c.id == course_id:
+            return failure_response("Course is already liked")
     user.courses.append(course)
     user.sortedByRating.append(course_rating)
     user.sortedByDifficulty.append(course_difficulty)
@@ -597,9 +608,9 @@ def delete_from_favorites():
             course = c
     if course is None:
         return failure_response("Course not found.")
-    course_rating = SortedByRating.query.filter_by(id=course_id).first()
-    course_difficulty = SortedByDifficulty.query.filter_by(id=course_id).first()
-    course_workload = SortedByWorkload.query.filter_by(id=course_id).first()
+    course_rating = SortedByRating.query.filter_by(subandnum=course.subandnum).first()
+    course_difficulty = SortedByDifficulty.query.filter_by(subandnum=course.subandnum).first()
+    course_workload = SortedByWorkload.query.filter_by(subandnum=course.subandnum).first()
     user.courses.remove(course)
     user.sortedByRating.remove(course_rating)
     user.sortedByDifficulty.remove(course_difficulty)
@@ -665,6 +676,7 @@ def post_comment():
         return failure_response("Course not found.")
     new_comment = Comment(
         course_id= course_id, 
+        subandnum = course.subandnum,
         username = username,
         description = description
     )
