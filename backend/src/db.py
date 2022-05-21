@@ -22,37 +22,37 @@ associate_professors_with_courses = db.Table(
 associate_users_with_sorted_rating = db.Table(
     "associate_users_with_sorted_rating",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
-    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.subandnum"))
 )
 
 associate_professors_with_sorted_rating = db.Table(
     "associate_professors_with_sorted_rating",
     db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
-    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.subandnum"))
 )
 
 associate_users_with_sorted_workload = db.Table(
     "associate_users_with_sorted_workload",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
-    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.subandnum"))
 )
 
 associate_professors_with_sorted_workload = db.Table(
     "associate_professors_with_sorted_workload",
     db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
-    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.subandnum"))
 )
 
 associate_users_with_sorted_difficulty = db.Table(
     "associate_users_with_sorted_difficulty",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
-    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id"))
+    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.subandnum"))
 )
 
 associate_professors_with_sorted_difficulty = db.Table(
     "associate_professors_with_sorted_difficulty",
     db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
-    db.Column("sortedByDificulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id"))
+    db.Column("sortedByDificulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.subandnum"))
 )
 
 associate_breadths_with_courses = db.Table(

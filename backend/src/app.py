@@ -294,8 +294,6 @@ def sort_courses():
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
-        for u in c.users:
-            new_course.users.append(u)
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
@@ -319,8 +317,6 @@ def sort_courses():
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
-        for u in c.users:
-            new_course.users.append(u)
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
@@ -344,8 +340,6 @@ def sort_courses():
             new_course.breadths.append(b)
         for d in c.distributions:
             new_course.distributions.append(d)
-        for u in c.users:
-            new_course.users.append(u)
         for p in c.professors:
             new_course.professors.append(p)
         for cm in c.comments:
