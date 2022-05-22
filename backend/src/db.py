@@ -189,6 +189,7 @@ class SortedByRating(db.Model):
     """
     __tablename__="sortedByRating"
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    course_id = db.Column(db.Integer, nullable = False)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -210,6 +211,7 @@ class SortedByRating(db.Model):
         """
         Initialize SortByRating object
         """
+        self.course_id = kwargs.get("course_id", 0)
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -226,7 +228,7 @@ class SortedByRating(db.Model):
         Simple serializes a Course object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,
@@ -241,7 +243,7 @@ class SortedByRating(db.Model):
         Serialize SortByRating object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,
@@ -267,6 +269,7 @@ class SortedByWorkload(db.Model):
     """
     __tablename__="sortedByWorkload"
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    course_id = db.Column(db.Integer, nullable = False)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -287,6 +290,7 @@ class SortedByWorkload(db.Model):
         """
         Initialize SortByWorkload object
         """
+        self.course_id = kwargs.get("course_id")
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -303,7 +307,7 @@ class SortedByWorkload(db.Model):
         Simple serializes a Course object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,
@@ -318,7 +322,7 @@ class SortedByWorkload(db.Model):
         Serialize SortByWorkload object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,
@@ -344,6 +348,7 @@ class SortedByDifficulty(db.Model):
     """
     __tablename__="sortedByDifficulty"
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    course_id = db.Column(db.Integer, nullable = False)
     subject = db.Column(db.String, nullable = False)
     number = db.Column(db.Integer, nullable = False)
     subandnum = db.Column(db.String, nullable = False)
@@ -364,6 +369,7 @@ class SortedByDifficulty(db.Model):
         """
         Initialize SortByDifficulty object
         """
+        self.course_id = kwargs.get("course_id", 0)
         self.subject = kwargs.get("subject", "")
         self.number = kwargs.get("number", 0)
         self.subandnum = kwargs.get("subandnum", "")
@@ -380,7 +386,7 @@ class SortedByDifficulty(db.Model):
         Simple serializes a Course object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,
@@ -395,7 +401,7 @@ class SortedByDifficulty(db.Model):
         Serialize SortByDifficulty object
         """
         return {
-            "id": self.id,
+            "id": self.course_id,
             "subject": self.subject,
             "number": self.number,
             "subandnum": self.subandnum,

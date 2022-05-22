@@ -279,6 +279,7 @@ def sort_courses():
     course_list.sort(reverse=True, key=sort_by_rating)
     for c in course_list:
         new_course = SortedByRating(
+            course_id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -302,6 +303,7 @@ def sort_courses():
     course_list.sort(key=sort_by_workload)
     for c in course_list:
         new_course = SortedByWorkload(
+            course_id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -325,6 +327,7 @@ def sort_courses():
     course_list.sort(key=sort_by_difficulty)
     for c in course_list:
         new_course = SortedByDifficulty(
+            course_id = c.id,
             subject = c.subject,
             number = c.number,
             subandnum = c.subandnum,
@@ -418,7 +421,7 @@ def get_all_courses():
     """
     Endpoint for getting all courses
     """
-    return json.dumps({"courses": [c.serialize() for c in Course.query.all()]}), 200
+    return json.dumps({"courses": [c.serialize() for c in SortedByRating.query.all()]}), 200
 
 #Endpoints for authentication
 def extract_token(request):
