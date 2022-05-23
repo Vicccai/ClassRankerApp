@@ -206,11 +206,9 @@ def set_up_and_update_courses():
     SortedByRating.query.delete()
     SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
-    #rosters = get_rosters()
-    rosters = ["FA22"]
+    rosters = get_rosters()
     for roster in rosters:
         subjects = get_subjects(roster)
-        subjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
