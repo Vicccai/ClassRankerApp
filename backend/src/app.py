@@ -207,8 +207,10 @@ def set_up_and_update_courses():
     SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
     rosters = get_rosters()
+    #rosters = ["FA22"]
     for roster in rosters:
         subjects = get_subjects(roster)
+        #ubjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -409,7 +411,7 @@ def get_sorted_courses():
             break
         if c.subject == subject or subject == "":
             if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
-                if list_helper(all, breadth, c.breadths) and list_helper(all, distribution, c.distributions):
+                if list_helper(all, distribution, c.distributions):
                     sorted_courses.append(c)
     return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
 
