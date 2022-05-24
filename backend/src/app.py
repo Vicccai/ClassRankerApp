@@ -204,11 +204,11 @@ def set_up_and_update_courses():
     SortedByRating.query.delete()
     SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
-    rosters = get_rosters()
-    #rosters = ["FA22"]
+    # rosters = get_rosters()
+    rosters = ["FA22"]
     for roster in rosters:
-        subjects = get_subjects(roster)
-        #subjects = ["CS"]
+        # subjects = get_subjects(roster)
+        subjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -298,6 +298,7 @@ def sort_courses():
         for cm in c.comments:
             cm.sortedByRating_subandnum = c.subandnum
         db.session.add(new_course)
+    db.session.commit()
     course_list.sort(key=sort_by_workload)
     for c in course_list:
         new_course = SortedByWorkload(
@@ -322,6 +323,7 @@ def sort_courses():
         for cm in c.comments:
             cm.sortedByWorkload_subandnum = c.subandnum
         db.session.add(new_course)
+    db.session.commit()
     course_list.sort(key=sort_by_difficulty)
     for c in course_list:
         new_course = SortedByDifficulty(
@@ -375,8 +377,9 @@ def list_helper(all, dist, c):
 
 def list_helper_for_two(distribution, sort, all):
     """
-    Helper function to find courses that fulfills two or less distributions. The all parameter determines whether to get courses that fullfil 
-    either all of the distributions or at least one of them. 
+    Helper function to find courses that fulfills two or less distributions. 
+    The all parameter determines whether to get courses that fullfil either all
+    of the distributions or at least one of them. 
     """
     sorted_courses = []
     if len(distribution) == 2:
@@ -420,14 +423,11 @@ def list_helper_for_two(distribution, sort, all):
     else:
         dist1 = Distribution.query.filter_by(name = distribution[0]).first()
         if sort == 1:
-            for c1 in dist1.sortedByRating:
-                sorted_courses.append(c1)
+            sorted_courses = [c for c in dist1.sortedByRating]
         elif sort == 2:
-            for c1 in dist1.sortedByDifficulty:
-                sorted_courses.append(c1)
+            sorted_courses = [c for c in dist1.sortedByDifficulty]
         else:
-            for c1 in dist1.sortedByWorkload:
-                sorted_courses.append(c1)
+            sorted_courses = [c for c in dist1.sortedByWorkload]
     return sorted_courses
 
 @app.route("/courses/attributes/", methods = ["POST"])

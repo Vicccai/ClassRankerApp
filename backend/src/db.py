@@ -57,50 +57,50 @@ associate_professors_with_sorted_difficulty = db.Table(
 
 associate_breadths_with_courses = db.Table(
     "associate_breadths_with_courses",
-    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.id")),
+    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.name")),
     db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
 associate_distributions_with_courses = db.Table(
     "associate_distributions_with_courses",
-    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.id")),
+    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.name")),
     db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
 associate_sorted_rating_with_breadths = db.Table(
     "associate_sorted_rating_with_breadths",
-    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.id")),
-    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.name")),
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.subandnum"))
 )
 
 associate_sorted_rating_with_distributions = db.Table(
     "associate_sorted_rating_with_distributions",
-    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.id")),
-    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.id"))
+    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.name")),
+    db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.subandnum"))
 )
 
 associate_sorted_workload_with_breadths = db.Table(
     "associate_sorted_workload_with_breadths",
-    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.id")),
-    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.name")),
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.subandnum"))
 )
 
 associate_sorted_workload_with_distributions = db.Table(
     "associate_sorted_workload_with_distributions",
-    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.id")),
-    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.id"))
+    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.name")),
+    db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.subandnum"))
 )
 
 associate_sorted_difficulty_with_breadths = db.Table(
     "associate_sorted_difficulty_with_breadths",
-    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.id")),
-    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id")),
+    db.Column("breadth_id", db.Integer, db.ForeignKey("breadths.name")),
+    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.subandnum")),
 )
 
 associate_sorted_difficulty_with_distributions = db.Table(
     "associate_sorted_difficulty_with_distributions",
-    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.id")),
-    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.id"))
+    db.Column("distribution_id", db.Integer, db.ForeignKey("distributions.name")),
+    db.Column("sortedByDifficulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.subandnum"))
 )
 
 class Course(db.Model):
