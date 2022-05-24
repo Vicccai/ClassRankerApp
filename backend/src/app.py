@@ -158,7 +158,8 @@ def add_professors_to_course(course, professors):
             prev_prof = Professor.query.filter_by(first_name=prof[0],last_name=prof[1]).first()
             if(prev_prof is None):
                 prev_prof = Professor(first_name=prof[0],
-                                    last_name=prof[1])
+                                    last_name=prof[1],
+                                    full_name=prof[0] + " " + prof[1])
             course.professors.append(prev_prof) 
 
 def add_breadths_to_course(course, breadths):
@@ -486,6 +487,16 @@ def get_all_courses():
     Endpoint for getting all courses
     """
     return json.dumps({"courses": [c.serialize() for c in SortedByRating.query.all()]}), 200
+
+@app.route("/test/")
+def bruh():
+    """
+    Endpoint for getting all courses
+    """
+    dist1 = Distribution.query.filter_by(name = "SDS-AS").first()
+    return json.dumps({"courses": len([c for c in dist1.courses]), 
+    "sorted":len([c for c in dist1.sortedByRating])}), 200
+
 
 #Endpoints for authentication
 def extract_token(request):

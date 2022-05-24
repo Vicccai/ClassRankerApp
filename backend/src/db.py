@@ -15,7 +15,7 @@ associate_users_with_courses = db.Table(
 
 associate_professors_with_courses = db.Table(
     "associate_professors_with_courses",
-    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.full_name")),
     db.Column("course_id", db.Integer, db.ForeignKey("courses.id"))
 )
 
@@ -27,7 +27,7 @@ associate_users_with_sorted_rating = db.Table(
 
 associate_professors_with_sorted_rating = db.Table(
     "associate_professors_with_sorted_rating",
-    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.full_name")),
     db.Column("sortedByRating_id", db.Integer, db.ForeignKey("sortedByRating.subandnum"))
 )
 
@@ -39,7 +39,7 @@ associate_users_with_sorted_workload = db.Table(
 
 associate_professors_with_sorted_workload = db.Table(
     "associate_professors_with_sorted_workload",
-    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.full_name")),
     db.Column("sortedByWorkload_id", db.Integer, db.ForeignKey("sortedByWorkload.subandnum"))
 )
 
@@ -51,7 +51,7 @@ associate_users_with_sorted_difficulty = db.Table(
 
 associate_professors_with_sorted_difficulty = db.Table(
     "associate_professors_with_sorted_difficulty",
-    db.Column("professor_id", db.Integer, db.ForeignKey("professors.id")),
+    db.Column("professor_id", db.Integer, db.ForeignKey("professors.full_name")),
     db.Column("sortedByDificulty_id", db.Integer, db.ForeignKey("sortedByDifficulty.subandnum"))
 )
 
@@ -547,12 +547,14 @@ class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable = False)
     last_name = db.Column(db.String, nullable = False)
+    full_name = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_professors_with_courses, back_populates="professors")
 
     def __init__(self, **kwargs):
         """Initializes a Professor object"""
         self.first_name = kwargs.get("first_name", "")
         self.last_name = kwargs.get("last_name", "")
+        self.full_name = kwargs.get("full_name", "")
 
     def simple_serialize(self):
         """simple serializes a professor object"""
