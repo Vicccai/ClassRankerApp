@@ -488,15 +488,6 @@ def get_all_courses():
     """
     return json.dumps({"courses": [c.serialize() for c in SortedByRating.query.all()]}), 200
 
-@app.route("/test/")
-def bruh():
-    """
-    Endpoint for getting all courses
-    """
-    dist1 = Distribution.query.filter_by(name = "SDS-AS").first()
-    return json.dumps({"courses": len([c for c in dist1.courses]), 
-    "sorted":len([c for c in dist1.sortedByRating])}), 200
-
 
 #Endpoints for authentication
 def extract_token(request):
