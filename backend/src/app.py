@@ -5,8 +5,6 @@ from flask import Flask, request
 from db import SortedByDifficulty, SortedByRating, SortedByWorkload, db, Course, User, Professor, Comment, Breadth, Distribution
 import requests
 import users_dao
-import copy
-
 
 app = Flask(__name__)
 db_filename = "data.db"
@@ -210,7 +208,7 @@ def set_up_and_update_courses():
     #rosters = ["FA22"]
     for roster in rosters:
         subjects = get_subjects(roster)
-        #ubjects = ["CS"]
+        #subjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -350,29 +348,87 @@ def sort_courses():
         db.session.add(new_course)
     db.session.commit()
 
-def list_helper(all, b_or_d, c):
+def list_helper(all, dist, c):
     """
-    helper function for finding breadths and distributions in courses 
+    helper function for finding distributions in courses 
     """
-    if len(b_or_d) == 0:
+    if len(dist) == 0:
         return True
     if all:
-        for b in b_or_d:
+        for b in dist:
             if len(c) == 0:
                 return False
             contain = False
             for r in c:
                 if b == r.name:
                     contain = True
+                    break
             if not contain:
                 return False
         return True
     else:
-        for b in b_or_d:
+        for b in dist:
             for r in c:
                 if b == r.name:
                     return True
         return False 
+
+def list_helper_for_two(distribution, sort, all):
+    """
+    Helper function to find courses that fulfills two or less distributions. The all parameter determines whether to get courses that fullfil 
+    either all of the distributions or at least one of them. 
+    """
+    sorted_courses = []
+    if len(distribution) == 2:
+        dist1 = Distribution.query.filter_by(name = distribution[0]).first()
+        dist2 = Distribution.query.filter_by(name = distribution[1]).first()
+        if all: 
+            if sort == 1 :
+                for c1 in dist1.sortedByRating:
+                    for c2 in dist2.sortedByRating:
+                        if(c1.id == c2.id):
+                            sorted_courses.append(c1)
+                            break
+            elif sort == 2:
+                for c1 in dist1.sortedByDifficulty:
+                    for c2 in dist2.sortedByDifficulty:
+                        if(c1.id == c2.id):
+                            sorted_courses.append(c1)
+                            break
+            else:
+                for c1 in dist1.sortedByWorkload:
+                    for c2 in dist2.sortedByWorkload:
+                        if(c1.id == c2.id):
+                            sorted_courses.append(c1)
+                            break
+        else:
+            if sort == 1 :
+                for c1 in dist1.sortedByRating:
+                    sorted_courses.append(c1)
+                for c2 in dist2.sortedByRating:
+                    sorted_courses.append(c2)
+            elif sort == 2:
+                for c1 in dist1.sortedByDifficulty:
+                    sorted_courses.append(c1)
+                for c2 in dist2.sortedByDifficulty:
+                    sorted_courses.append(c2)
+            else:
+                for c1 in dist1.sortedByWorkload:
+                    sorted_courses.append(c1)
+                for c2 in dist2.sortedByWorkload:
+                    sorted_courses.append(c2)
+    else:
+        dist1 = Distribution.query.filter_by(name = distribution[0]).first()
+        if sort == 1:
+            for c1 in dist1.sortedByRating:
+                sorted_courses.append(c1)
+        elif sort == 2:
+            for c1 in dist1.sortedByDifficulty:
+                sorted_courses.append(c1)
+        else:
+            for c1 in dist1.sortedByWorkload:
+                sorted_courses.append(c1)
+    return sorted_courses
 
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
@@ -391,28 +447,36 @@ def get_sorted_courses():
     body = json.loads(request.data)
     subject = body.get("subject")
     level = body.get("level")
-    breadth = body.get("breadth")
     distribution = body.get("distribution")
     all = body.get("all")
     sort = body.get("sort")
-    if subject is None or level is None or breadth is None or distribution is None or all is None or sort is None:
+    if subject is None or level is None or distribution is None or all is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
     if not isinstance(sort, int) or sort < 1 or sort > 3:
         return failure_response("Invalid input for sort.", 400)
     sorted_courses = []
-    if sort == 1:
-        courses = SortedByRating.query.all()
-    elif sort == 2:
-        courses = SortedByDifficulty.query.all()
-    else:
-        courses = SortedByWorkload.query.all()
-    for c in courses:
-        if(len(sorted_courses) > 100):
-            break
-        if c.subject == subject or subject == "":
-            if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
-                if list_helper(all, distribution, c.distributions):
+    if len(distribution) <= 2 and distribution != []:
+        dist_courses = list_helper_for_two(distribution, sort, all)
+        for c in dist_courses:
+            if(len(sorted_courses) > 100):
+                break
+            if c.subject == subject or subject == "":
+                if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                     sorted_courses.append(c)
+    else:
+        if sort == 1:
+            courses = SortedByRating.query.all()
+        elif sort == 2:
+            courses = SortedByDifficulty.query.all()
+        else:
+            courses = SortedByWorkload.query.all()
+        for c in courses:
+            if(len(sorted_courses) > 100):
+                break
+            if c.subject == subject or subject == "":
+                if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
+                    if list_helper(all, distribution, c.distributions):
+                        sorted_courses.append(c)
     return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
 
 

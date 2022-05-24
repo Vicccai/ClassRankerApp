@@ -201,7 +201,7 @@ class SortedByRating(db.Model):
     difficulty = db.Column(db.Float)
     rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_rating_with_breadths)
-    distributions = db.relationship("Distribution", secondary= associate_sorted_rating_with_distributions)
+    distributions = db.relationship("Distribution", secondary= associate_sorted_rating_with_distributions, back_populates = "sortedByRating")
     users = db.relationship("User", secondary = associate_users_with_sorted_rating, back_populates = "sortedByRating")
     professors = db.relationship("Professor", secondary = associate_professors_with_sorted_rating)
     comments = db.relationship("Comment", cascade = "delete")
@@ -281,7 +281,7 @@ class SortedByWorkload(db.Model):
     difficulty = db.Column(db.Float)
     rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_workload_with_breadths)
-    distributions = db.relationship("Distribution", secondary= associate_sorted_workload_with_distributions)
+    distributions = db.relationship("Distribution", secondary= associate_sorted_workload_with_distributions, back_populates = "sortedByWorkload")
     users = db.relationship("User", secondary = associate_users_with_sorted_workload, back_populates = "sortedByWorkload")
     professors = db.relationship("Professor", secondary = associate_professors_with_sorted_workload)
     comments = db.relationship("Comment", cascade = "delete")
@@ -360,7 +360,7 @@ class SortedByDifficulty(db.Model):
     difficulty = db.Column(db.Float)
     rating = db.Column(db.Float)
     breadths = db.relationship("Breadth", secondary = associate_sorted_difficulty_with_breadths)
-    distributions = db.relationship("Distribution", secondary= associate_sorted_difficulty_with_distributions)
+    distributions = db.relationship("Distribution", secondary= associate_sorted_difficulty_with_distributions, back_populates = "sortedByDifficulty")
     users = db.relationship("User", secondary = associate_users_with_sorted_difficulty, back_populates = "sortedByDifficulty")
     professors = db.relationship("Professor", secondary = associate_professors_with_sorted_difficulty)
     comments = db.relationship("Comment", cascade = "delete")
@@ -446,6 +446,9 @@ class Distribution(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable = False)
     courses = db.relationship("Course", secondary = associate_distributions_with_courses, back_populates = "distributions")
+    sortedByRating = db.relationship("SortedByRating", secondary = associate_sorted_rating_with_distributions, back_populates = "distributions")
+    sortedByDifficulty = db.relationship("SortedByDifficulty", secondary = associate_sorted_difficulty_with_distributions, back_populates = "distributions")
+    sortedByWorkload = db.relationship("SortedByWorkload", secondary = associate_sorted_workload_with_distributions, back_populates = "distributions")
 
     def __init__(self, **kwargs):
         """Initializes Distribution object"""
