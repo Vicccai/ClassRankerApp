@@ -205,11 +205,11 @@ def set_up_and_update_courses():
     SortedByRating.query.delete()
     SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
-    # rosters = get_rosters()
-    rosters = ["FA22"]
+    rosters = get_rosters()
+    #rosters = ["FA22"]
     for roster in rosters:
-        # subjects = get_subjects(roster)
-        subjects = ["CS"]
+        subjects = get_subjects(roster)
+        #subjects = ["CS"]
         for subject in subjects:
             courses = get_courses(roster, subject)
             for course in courses:
@@ -376,59 +376,31 @@ def list_helper(all, dist, c):
                     return True
         return False 
 
-def list_helper_for_two(distribution, sort, all):
+def list_helper_for_two(distribution, sort):
     """
-    Helper function to find courses that fulfills two or less distributions. 
-    The all parameter determines whether to get courses that fullfil either all
-    of the distributions or at least one of them. 
+    Helper function to find courses that fulfills two distributions
     """
     sorted_courses = []
-    if len(distribution) == 2:
-        dist1 = Distribution.query.filter_by(name = distribution[0]).first()
-        dist2 = Distribution.query.filter_by(name = distribution[1]).first()
-        if all: 
-            if sort == 1 :
-                for c1 in dist1.sortedByRating:
-                    for c2 in dist2.sortedByRating:
-                        if(c1.id == c2.id):
-                            sorted_courses.append(c1)
-                            break
-            elif sort == 2:
-                for c1 in dist1.sortedByDifficulty:
-                    for c2 in dist2.sortedByDifficulty:
-                        if(c1.id == c2.id):
-                            sorted_courses.append(c1)
-                            break
-            else:
-                for c1 in dist1.sortedByWorkload:
-                    for c2 in dist2.sortedByWorkload:
-                        if(c1.id == c2.id):
-                            sorted_courses.append(c1)
-                            break
-        else:
-            if sort == 1 :
-                for c1 in dist1.sortedByRating:
+    dist1 = Distribution.query.filter_by(name = distribution[0]).first()
+    dist2 = Distribution.query.filter_by(name = distribution[1]).first()
+    if sort == 1 :
+        for c1 in dist1.sortedByRating:
+            for c2 in dist2.sortedByRating:
+                if(c1.id == c2.id):
                     sorted_courses.append(c1)
-                for c2 in dist2.sortedByRating:
-                    sorted_courses.append(c2)
-            elif sort == 2:
-                for c1 in dist1.sortedByDifficulty:
+                    break
+    elif sort == 2:
+        for c1 in dist1.sortedByDifficulty:
+            for c2 in dist2.sortedByDifficulty:
+                if(c1.id == c2.id):
                     sorted_courses.append(c1)
-                for c2 in dist2.sortedByDifficulty:
-                    sorted_courses.append(c2)
-            else:
-                for c1 in dist1.sortedByWorkload:
-                    sorted_courses.append(c1)
-                for c2 in dist2.sortedByWorkload:
-                    sorted_courses.append(c2)
+                    break
     else:
-        dist1 = Distribution.query.filter_by(name = distribution[0]).first()
-        if sort == 1:
-            sorted_courses = [c for c in dist1.sortedByRating]
-        elif sort == 2:
-            sorted_courses = [c for c in dist1.sortedByDifficulty]
-        else:
-            sorted_courses = [c for c in dist1.sortedByWorkload]
+        for c1 in dist1.sortedByWorkload:
+            for c2 in dist2.sortedByWorkload:
+                if(c1.id == c2.id):
+                    sorted_courses.append(c1)
+                    break
     return sorted_courses
 
 @app.route("/courses/attributes/", methods = ["POST"])
@@ -456,8 +428,8 @@ def get_sorted_courses():
     if not isinstance(sort, int) or sort < 1 or sort > 3:
         return failure_response("Invalid input for sort.", 400)
     sorted_courses = []
-    if len(distribution) <= 2 and distribution != []:
-        dist_courses = list_helper_for_two(distribution, sort, all)
+    if all and len(distribution) == 2:
+        dist_courses = list_helper_for_two(distribution, sort)
         for c in dist_courses:
             if(len(sorted_courses) > 100):
                 break
