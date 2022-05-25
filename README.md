@@ -25,7 +25,6 @@ To be added...
 * Added one-to-many relationship to User and Comment tables and many-to-many relationships to User and Course, Professor and Course, Breadth and Course, and Distribution and Course tables
 * Optimized filter times using pre-sorted tables; lowered search time on Google Cloud's e2-small vm from 7-8 seconds to <1 sec
 * Created endpoint to routinely update tables with new data from [CUReviews](https://www.cureviews.org/) and Cornell [Class Roster](https://classes.cornell.edu/browse/roster/FA22) API
-* Created endpoints for user addition and deletion of favorite courses and comments
 * Implemented http token authentication with bcrypt library
 * Containerized with Docker and deployed using Google Cloud virtual machine
 
