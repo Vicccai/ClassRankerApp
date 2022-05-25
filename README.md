@@ -23,7 +23,7 @@ To be added...
 * Tested using Postman
 * Scraped [CUReviews](https://www.cureviews.org/) and utilized Cornell [Class Roster](https://classes.cornell.edu/browse/roster/FA22) API to generate data for Course, Breadth, Distribution and Professor tables
 * Added one-to-many relationship to User and Comment and many-to-many relationships to User and Course, Professor and Course, Breadth and Course, and Distribution and Course tables
-* Optimized filter times using pre-sorted tables; lowered search time on Google Cloud e2-small vm from 7-8 seconds to <1 sec
+* Optimized filter times using pre-sorted tables; lowered search time on Google Cloud's e2-small vm from 7-8 seconds to <1 sec
 * Created endpoint to routinely update tables with new data from CUReviews and Cornell Class Roster API
 * Created endpoints for user addition and deletion of favorite courses and comments
 * Implemented http token authentication with bcrypt library
