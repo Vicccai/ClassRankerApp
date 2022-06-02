@@ -592,9 +592,14 @@ def logout():
     user.session_expiration = datetime.datetime.now()
     db.session.commit()
 
-    return success_response({
-        "message": "You have successfully logged out."
-    })
+    return success_response(
+        {
+            "username": user.username,
+            "session_token": user.session_token,
+            "session_expiration": str(user.session_expiration),
+            "update_token": user.update_token
+        }
+    )
 
 @app.route("/users/")
 def get_users():
