@@ -435,7 +435,7 @@ def strip_dist_helper(distribution):
     """
     res = []
     for d in distribution:
-        if d.find("CE-EN") != -1:
+        if d.find("CE-AS") != -1:
             res.append("CE-EN")
         else:
             res.append(d)
