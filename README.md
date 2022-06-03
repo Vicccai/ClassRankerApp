@@ -10,7 +10,7 @@ Bryan Lee (Back-end),
 Luke Leh (Design),
 Victor Cai (Front-end),
 Mariana Meriles (Front-end),
-Young Zheng (Back-end)
+Young Zheng (Full Stack)
 
 # Screenshots
 To be added... 
