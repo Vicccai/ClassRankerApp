@@ -25,7 +25,7 @@ def success_response(data, code=200):
     Generalized success response function
     """
     return json.dumps(data), code
-
+    
 def get_rosters():
     """
     Gives last 4 of the available rosters (FA22, SP20 etc)
@@ -205,6 +205,21 @@ def set_up_and_update_courses():
     SortedByRating.query.delete()
     SortedByDifficulty.query.delete()
     SortedByWorkload.query.delete()
+    course_0 = Course.query.filter_by(id=1).first()
+    if course_0 is None:
+        new_course = Course(
+            subject = "No courses here",
+            number = 0,
+            subandnum = "No courses here",
+            title = "Try some new filters!",
+            creditsMin = 0,
+            creditsMax = 0,
+            description = "Psychiatrist: What seems to be the problem? Patient: I think I'm a chicken. Psychiatrist: How long has this been going on? Patient: Ever since I came out of my shell.",
+            workload = 0,
+            difficulty = 0,
+            rating = 0
+            )
+        db.session.add(new_course)
     rosters = get_rosters()
     #rosters = ["FA22"]
     for roster in rosters:
@@ -378,30 +393,55 @@ def list_helper(all, dist, c):
 
 def list_helper_for_two(distribution, sort):
     """
-    Helper function to find courses that fulfills two distributions
+    Helper function to find courses that fulfills two or less distributions
     """
     sorted_courses = []
     dist1 = Distribution.query.filter_by(name = distribution[0]).first()
-    dist2 = Distribution.query.filter_by(name = distribution[1]).first()
-    if sort == 1 :
-        for c1 in dist1.sortedByRating:
-            for c2 in dist2.sortedByRating:
-                if(c1.id == c2.id):
-                    sorted_courses.append(c1)
-                    break
-    elif sort == 2:
-        for c1 in dist1.sortedByDifficulty:
-            for c2 in dist2.sortedByDifficulty:
-                if(c1.id == c2.id):
-                    sorted_courses.append(c1)
-                    break
+    if len(distribution) == 2:
+        dist2 = Distribution.query.filter_by(name = distribution[1]).first()
+        if sort == 1 :
+            for c1 in dist1.sortedByRating:
+                for c2 in dist2.sortedByRating:
+                    if(c1.id == c2.id):
+                        sorted_courses.append(c1)
+                        break
+        elif sort == 2:
+            for c1 in dist1.sortedByDifficulty:
+                for c2 in dist2.sortedByDifficulty:
+                    if(c1.id == c2.id):
+                        sorted_courses.append(c1)
+                        break
+        else:
+            for c1 in dist1.sortedByWorkload:
+                for c2 in dist2.sortedByWorkload:
+                    if(c1.id == c2.id):
+                        sorted_courses.append(c1)
+                        break
     else:
-        for c1 in dist1.sortedByWorkload:
-            for c2 in dist2.sortedByWorkload:
-                if(c1.id == c2.id):
+        if sort == 1 :
+            for c1 in dist1.sortedByRating:
+                sorted_courses.append(c1)
+        elif sort == 2:
+            for c1 in dist1.sortedByDifficulty:
                     sorted_courses.append(c1)
-                    break
+        else:
+            for c1 in dist1.sortedByWorkload:
+                sorted_courses.append(c1)
     return sorted_courses
+
+def strip_dist_helper(distribution):
+    """
+    Helper function to strip the title from the distribution
+    """
+    res = []
+    for d in distribution:
+        if d.find("CE-AS") != -1:
+            res.append("CE-EN")
+        elif d.find("LAD-AS") != -1:
+            res.append("LAD-HE")
+        else:
+            res.append(d)
+    return res
 
 @app.route("/courses/attributes/", methods = ["POST"])
 def get_sorted_courses():
@@ -420,20 +460,23 @@ def get_sorted_courses():
     body = json.loads(request.data)
     subject = body.get("subject")
     level = body.get("level")
-    distribution = body.get("distribution")
+    distribution = strip_dist_helper(body.get("distribution"))
     all = body.get("all")
     sort = body.get("sort")
     if subject is None or level is None or distribution is None or all is None or sort is None:
         return failure_response("Required field(s) not supplied.", 400)
     if not isinstance(sort, int) or sort < 1 or sort > 3:
         return failure_response("Invalid input for sort.", 400)
+    course_0 = Course.query.filter_by(id=1).first()
+    if level == 0 and distribution == []:
+        return json.dumps({"courses": [course_0.serialize()]}), 200
     sorted_courses = []
-    if all and len(distribution) == 2:
+    if (all and len(distribution) == 2) or len(distribution) == 1:
         dist_courses = list_helper_for_two(distribution, sort)
         for c in dist_courses:
-            if(len(sorted_courses) > 100):
+            if(len(sorted_courses) > 200):
                 break
-            if c.subject == subject or subject == "":
+            if c.course_id != 1 and (c.subject == subject or subject == ""):
                 if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                     sorted_courses.append(c)
     else:
@@ -444,12 +487,14 @@ def get_sorted_courses():
         else:
             courses = SortedByWorkload.query.all()
         for c in courses:
-            if(len(sorted_courses) > 100):
+            if(len(sorted_courses) > 200):
                 break
-            if c.subject == subject or subject == "":
+            if c.course_id != 1 and (c.subject == subject or subject == ""):
                 if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
                     if list_helper(all, distribution, c.distributions):
                         sorted_courses.append(c)
+    if(len(sorted_courses) == 0):
+        return json.dumps({"courses": [course_0.serialize()]}), 200
     return json.dumps({"courses": [c.serialize() for c in sorted_courses]}), 200
 
 
@@ -458,7 +503,9 @@ def get_all_courses():
     """
     Endpoint for getting all courses
     """
-    return json.dumps({"courses": [c.serialize() for c in SortedByRating.query.all()]}), 200
+    course_0 = Course.query.filter_by(id=1).first()
+    return json.dumps({"courses": [course_0.serialize()]}), 200
+    #return json.dumps({"courses": [c.serialize() for c in SortedByRating.query.all()]}), 200
 
 
 #Endpoints for authentication
@@ -547,9 +594,14 @@ def logout():
     user.session_expiration = datetime.datetime.now()
     db.session.commit()
 
-    return success_response({
-        "message": "You have successfully logged out."
-    })
+    return success_response(
+        {
+            "username": user.username,
+            "session_token": user.session_token,
+            "session_expiration": str(user.session_expiration),
+            "update_token": user.update_token
+        }
+    )
 
 @app.route("/users/")
 def get_users():
@@ -575,7 +627,10 @@ def get_favorites():
     if user is None or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
 
-    courses = user.courses
+    courses = []
+    for c in user.courses:
+        if c.id != 1:
+            courses.append(c)
     return json.dumps({"favorites": [f.serialize() for f in courses]}), 200
 
 @app.route("/add/favorites/", methods = ["POST"])
