@@ -437,6 +437,8 @@ def strip_dist_helper(distribution):
     for d in distribution:
         if d.find("CE-AS") != -1:
             res.append("CE-EN")
+        elif d.find("LAD-AS") != -1:
+            res.append("LAD-HE")
         else:
             res.append(d)
     return res
