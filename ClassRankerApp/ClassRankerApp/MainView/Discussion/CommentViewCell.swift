@@ -24,7 +24,7 @@ class CommentViewCell: UITableViewCell {
     var commentLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         return label
@@ -32,7 +32,6 @@ class CommentViewCell: UITableViewCell {
     
     var deleteButton: UIButton = {
         let button = UIButton()
-        
         return button
     }()
     
@@ -65,13 +64,12 @@ class CommentViewCell: UITableViewCell {
             commentLabel.leadingAnchor.constraint(equalTo: username.leadingAnchor),
             commentLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
-            deleteButton.topAnchor.constraint(equalTo: commentLabel.bottomAnchor, constant: 5),
+            deleteButton.topAnchor.constraint(equalTo: commentLabel.bottomAnchor, constant: -10),
             deleteButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            deleteButton.leadingAnchor.constraint(equalTo: username.leadingAnchor),
-            deleteButton.trailingAnchor.constraint(equalTo: deleteLabel.trailingAnchor, constant: 5),
+            deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
             deleteLabel.centerYAnchor.constraint(equalTo: deleteButton.centerYAnchor),
-            deleteLabel.leadingAnchor.constraint(equalTo: username.leadingAnchor)
+            deleteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
         ])
     }
     
@@ -79,6 +77,18 @@ class CommentViewCell: UITableViewCell {
         self.comment = comment
         username.text = comment.username
         commentLabel.text = comment.description
+        if Globals.guest.boolValue ==  true {
+            deleteButton.isHidden = true
+            deleteLabel.isHidden = true
+        }
+        else if Globals.user.username != comment.username {
+            deleteButton.isHidden = true
+            deleteLabel.isHidden = true
+        }
+        else {
+            deleteButton.isHidden = false
+            deleteLabel.isHidden = false
+        }
     }
     
     @objc func deleteComment() {

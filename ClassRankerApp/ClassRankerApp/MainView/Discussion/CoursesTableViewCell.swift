@@ -86,7 +86,6 @@ class CoursesTableViewCell: UITableViewCell {
         } else {
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
         }
-        
         favButton.addTarget(self, action: #selector(isFavorite), for: .touchUpInside)
         
         setUpConstraints()
@@ -125,20 +124,42 @@ class CoursesTableViewCell: UITableViewCell {
         delegate?.isFavoriteCourse(course: currentCourse!, favorite: !favorite)
     }
     
-    func configure(course: Course, index: Int) {
-        currentCourse = course
-        numberLabel.text = course.subject + " " + String(course.number)
-        nameLabel.text = course.title
-        let rating = round(course.rating * 10) / 10.0
+    func configure(sort: String, course: Course, index: Int) {
+        var c = course
+        if Globals.favCourses.contains(course) {
+            c.favorite = true
+        }
+        currentCourse = c
+        numberLabel.text = c.subject + " " + String(c.number)
+        nameLabel.text = c.title
+        var rating = round(c.rating * 10) / 10.0
+        if sort == "Workload" {
+            rating = round(c.workload * 10) / 10.0
+        }
+        if sort == "Difficulty"{
+            rating = round(c.difficulty * 10) / 10.0
+        }
         ratingLabel.text = String(rating)
-        self.favorite = course.favorite ?? false
-        if course.favorite == true {
+        self.favorite = c.favorite ?? false
+        favButton.addTarget(self, action: #selector(isFavorite), for: .touchUpInside)
+        if c.favorite == true {
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
         } else {
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
         }
+        if c.title == "Try some new filters!" {
+            numberLabel.text = ""
+            nameLabel.text = "Try Some New Filters!"
+            ratingLabel.text = ""
+            favButton.isHidden = true
+            self.isUserInteractionEnabled = false
 //        favNumber.text = String(course.favNumber)
 //        rankingLabel.text = String(index) + "."
+        }
+        if c.title != "Try some new filters!" {
+            favButton.isHidden = false
+            self.isUserInteractionEnabled = true
+        }
     }
     
     required init?(coder: NSCoder) {

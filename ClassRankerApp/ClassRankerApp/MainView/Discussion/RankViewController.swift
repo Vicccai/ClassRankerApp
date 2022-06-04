@@ -7,6 +7,7 @@
 import UIKit
 import Alamofire
 import iOSDropDown
+import SwiftUI
 
 class RankViewController: UIViewController {
     
@@ -21,6 +22,8 @@ class RankViewController: UIViewController {
     
     var selectedLevel: Int = 0 {
         didSet {
+            favStar.image = UIImage(named: "Star 1")
+            showFavorites = false
             if !self.suppressObservers {
                 if selectedLevel == 0 {
                     levelButton.setTitle("  Level  ", for: .normal)
@@ -33,10 +36,14 @@ class RankViewController: UIViewController {
                 }
                 getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
             }
+            coursesView.reloadData()
         }
     }
+    
     var selectedDistr: [String] = [] {
         didSet {
+            favStar.image = UIImage(named: "Star 1")
+            showFavorites = false
             if !self.suppressObservers {
                 if selectedDistr == [] {
                     distrButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
@@ -46,11 +53,14 @@ class RankViewController: UIViewController {
                     distrButton.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
                 }
             }
+            coursesView.reloadData()
         }
     }
     
     var selectedSort: String = "" {
         didSet {
+            favStar.image = UIImage(named: "Star 1")
+            showFavorites = false
             if !self.suppressObservers {
                 if selectedSort == "" {
                     sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
@@ -63,6 +73,7 @@ class RankViewController: UIViewController {
                 }
                 getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
             }
+            coursesView.reloadData()
         }
     }
     
@@ -84,9 +95,13 @@ class RankViewController: UIViewController {
         sortButton.setTitle("  Sort by...  ", for: .normal)
         sortButton.backgroundColor = .white
         sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
-        shownCourses = Globals.courses
-        getCourses()
         suppressObservers = false
+        favStar.image = UIImage(named: "Star 1")
+        showFavorites = false
+        coursesView.reloadData()
+        selectedDistr = []
+        selectedLevel = 0
+        selectedSort = ""
     }
     
     var shownCourses: [Course] = [] // courses that are actually shown, combo of search and dropdown
@@ -142,6 +157,13 @@ class RankViewController: UIViewController {
         return tableView
     }()
     
+    var roosterImageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "Dance")
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+    
     var favStar: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "Star 1")
@@ -156,6 +178,63 @@ class RankViewController: UIViewController {
         return button
     }()
     
+    var exitImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "exit")
+        return image
+    }()
+    
+    var exitButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(exitAlert), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func exitAlert(){
+        let alert = UIAlertController(title: "Return to Sign In?", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { (action) in
+            if Globals.guest == false {
+                NetworkManager.logout(user: Globals.user) { user in
+                    print("suceeded")
+                }
+            }
+            Globals.favCourses = []
+            Globals.guest = false
+            Globals.user = User(username: "", session_token: "")
+            self.clearButtonTapped()
+            self.navigationController?.navigationBar.prefersLargeTitles = false
+            self.navigationController?.popToRootViewController(animated: true)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+    
+    class spinnerController: UIViewController {
+        let spinner = UIActivityIndicatorView(style: .large)
+        
+        
+        override func loadView() {
+            view = UIView()
+            view.backgroundColor = UIColor(white: 0, alpha: 0.1)
+        
+            spinner.translatesAutoresizingMaskIntoConstraints = false
+            spinner.startAnimating()
+            view.addSubview(spinner)
+            
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        }
+    }
+    
+    func createSpinnerView() -> RankViewController.spinnerController{
+        let child = spinnerController()
+        addChild(child)
+        child.view.frame = view.frame
+        view.addSubview(child.view)
+        child.didMove(toParent: self)
+        return child
+    }
+
     let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
@@ -165,23 +244,26 @@ class RankViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(calculateFavs), name: NSNotification.Name(rawValue: "FavoritesLoaded"), object: nil)
         
         //get favorites
-        getFavorites()
+        //getFavorites()
         
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        view.isMultipleTouchEnabled = false
         // title stuff
         navigationItem.title = "Courses"
+        
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.largeTitleTextAttributes = [
             .foregroundColor: UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00),
             .font: UIFont(name: "Proxima Nova Bold", size: 35)!
         ]
+        
         navigationItem.backButtonTitle = ""
         
         // search bar stuff
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00), .font : UIFont(name: "ProximaNova-Regular", size: 16)!], for: .normal)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Classes"
+        searchController.searchBar.placeholder = "Search Filtered Classes"
         searchController.searchBar.autocapitalizationType = .none
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
@@ -190,11 +272,10 @@ class RankViewController: UIViewController {
         navigationItem.searchController = searchController
         definesPresentationContext = true
         
-        for subView in [clearButton, levelButton, sortButton, distrButton, coursesView, favFilter, favStar] {
+        for subView in [roosterImageView, clearButton, levelButton, sortButton, distrButton, coursesView, favFilter, favStar, exitButton, exitImage] {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
-        
         navigationItem.hidesBackButton = true
         setupConstraints()
         getCourses()
@@ -212,6 +293,16 @@ class RankViewController: UIViewController {
             favStar.centerXAnchor.constraint(equalTo: favFilter.centerXAnchor),
             favStar.heightAnchor.constraint(equalToConstant: 20),
             favStar.widthAnchor.constraint(equalToConstant: 20),
+            
+            exitButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            exitButton.heightAnchor.constraint(equalToConstant: 40),
+            exitButton.widthAnchor.constraint(equalToConstant: 40),
+            exitButton.trailingAnchor.constraint(equalTo: clearButton.trailingAnchor),
+            
+            exitImage.centerYAnchor.constraint(equalTo: exitButton.centerYAnchor),
+            exitImage.centerXAnchor.constraint(equalTo: exitButton.centerXAnchor),
+            exitImage.heightAnchor.constraint(equalToConstant: 40),
+            exitImage.widthAnchor.constraint(equalToConstant: 40),
             
             levelButton.leadingAnchor.constraint(equalTo: favFilter.trailingAnchor, constant: 10),
             levelButton.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
@@ -232,7 +323,12 @@ class RankViewController: UIViewController {
             coursesView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             coursesView.topAnchor.constraint(equalTo: favFilter.bottomAnchor, constant: padding),
             coursesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            coursesView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding)
+            coursesView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
+            
+            roosterImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 500),
+            roosterImageView.heightAnchor.constraint(equalToConstant: 250),
+            roosterImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -40),
+            roosterImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
     }
 
@@ -241,7 +337,6 @@ class RankViewController: UIViewController {
         getFavorites()
     }
     @objc func calculateFavs() {
-        print(Globals.courses.count)
         for i in 0..<shownCourses.count {
             if Globals.favCourses.contains(shownCourses[i]) {
                 Globals.courses[i].favorite = true
@@ -252,6 +347,8 @@ class RankViewController: UIViewController {
     }
     
     func getCoursesByAttributes(level: Int, distributions: [String], matchAll: Bool, sort: Int) {
+        let child = createSpinnerView()
+        searchController.searchBar.backgroundColor = UIColor(white: 0, alpha: 0)
         NetworkManager.getCourseByAttributes(level: level, distributions: distributions, matchAll: matchAll, sort: sort) { courses in
             self.shownCourses = courses.courses
             for i in 0..<self.shownCourses.count {
@@ -260,6 +357,9 @@ class RankViewController: UIViewController {
                 }
             }
             self.coursesView.reloadData()
+            child.willMove(toParent: nil)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
         }
     }
     
@@ -307,17 +407,20 @@ class RankViewController: UIViewController {
         showFavorites = !showFavorites
         coursesView.reloadData()
     }
+    
     func getFavorites() {
-        NetworkManager.getFavoritesByUser(user: Globals.user) { favorites in
-            Globals.favCourses = favorites.favorites
-            NotificationCenter.default.post(name: Notification.Name("FavoritesLoaded"), object: nil)
+        if Globals.guest.boolValue == false {
+            NetworkManager.getFavoritesByUser(user: Globals.user) { favorites in
+                Globals.favCourses = favorites.favorites
+                NotificationCenter.default.post(name: Notification.Name("FavoritesLoaded"), object: nil)
+            }
         }
     }
     
     func getFinalCourses() -> [Course] {
         var finalCourses = shownCourses
         if showFavorites {
-            finalCourses = finalCourses.filter(Globals.favCourses.contains)
+            finalCourses = Globals.favCourses
         }
         if isFiltering {
             finalCourses = finalCourses.filter(filteredCourses.contains)
@@ -360,31 +463,49 @@ class RankViewController: UIViewController {
 //        guard let courseIndex = shownCourses.firstIndex (where: { course in
 //            course.title == courseName
 //        }) else { return }
-        guard let courseIndex = shownCourses.firstIndex(of: course) else {return}
-        shownCourses[courseIndex].favorite = favorite
-        
+        if Globals.guest.boolValue == true {
+            let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
         //add or remove course from favCourses
-        if favorite { //add
-            NetworkManager.addToFavoritesForUser(user: Globals.user, course: course) { _ in
+        var c = course
+        if !showFavorites && favorite { //add
+            c.favorite = true
+            NetworkManager.addToFavoritesForUser(user: Globals.user, course: c) { _ in
             }
-            Globals.favCourses.append(course)
+            Globals.favCourses.append(c)
         } else { //remove
-            NetworkManager.removeFromFavoritesForUser(user: Globals.user, course: course) { _ in
+            c.favorite = false
+            NetworkManager.removeFromFavoritesForUser(user: Globals.user, course: c) { _ in
             }
-            if let index = Globals.favCourses.firstIndex(of: course) {
+            if let index = Globals.favCourses.firstIndex(of: c) {
                 Globals.favCourses.remove(at: index)
             }
         }
+        if let shownIndex = shownCourses.firstIndex(of: course) {
+            shownCourses[shownIndex].favorite = favorite
+        }
         // refilter here
-        coursesView.reloadRows(at: [IndexPath(row: courseIndex, section: 0)], with: .none)
+        coursesView.reloadData()
     }
     
     func filterContentForSearchText(searchText: String) {
-        filteredCourses = shownCourses.filter({ course in
-            let courseNumber = course.subject + " " + String(course.number)
-            return (courseNumber.lowercased().contains(searchText.lowercased()) ||
-            course.title.lowercased().contains(searchText.lowercased()))
-        })
+        if showFavorites {
+            filteredCourses = Globals.favCourses.filter({ course in
+                let courseNumber = course.subject + " " + String(course.number)
+                return (courseNumber.lowercased().contains(searchText.lowercased()) ||
+                course.title.lowercased().contains(searchText.lowercased()))
+            })
+        }
+        else {
+            filteredCourses = shownCourses.filter({ course in
+                let courseNumber = course.subject + " " + String(course.number)
+                return (courseNumber.lowercased().contains(searchText.lowercased()) ||
+                course.title.lowercased().contains(searchText.lowercased()))
+            })
+        }
         coursesView.reloadData()
     }
 
@@ -410,9 +531,9 @@ extension RankViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.delegate = self
         if isFiltering {
-            cell.configure(course: filteredCourses[indexPath.row], index: indexPath.row)
+            cell.configure(sort: selectedSort, course: filteredCourses[indexPath.row], index: indexPath.row)
         } else {
-            cell.configure(course: getFinalCourses()[indexPath.row], index: indexPath.row)
+            cell.configure(sort: selectedSort, course: getFinalCourses()[indexPath.row], index: indexPath.row)
         }
         return cell
     }

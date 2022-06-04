@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 class NetworkManager {
-    static let host = "http://34.130.42.245"
+    static let host = "http://34.130.29.44"
     
     static func getAllCourses(completion: @escaping (CourseWrapper) -> Void) {
         let endpoint = "\(host)/courses/"
@@ -116,7 +116,7 @@ class NetworkManager {
                 if let userResponse = try? jsonDecoder.decode(Comment.self, from: data) {
                     completion(userResponse)
                 } else {
-                    print("Failed to decode deleteComment")
+                    print("Failed to decode delete Comment")
                 }
                 print(data)
             case .failure(let error):
@@ -167,6 +167,28 @@ class NetworkManager {
                 print(data)
             case .failure(_):
                 failureCompletion()
+            }
+        }
+    }
+    
+    static func logout(user: User, completion: @escaping (User) -> Void) {
+        let endpoint = "\(host)/logout/"
+        let header: HTTPHeaders = [
+            "authorization": user.session_token
+        ]
+        AF.request(endpoint, method: .post, encoding: JSONEncoding.default, headers: header).validate().responseData { response in
+            switch (response.result) {
+            case .success(let data):
+                let jsonDecoder = JSONDecoder()
+                jsonDecoder.dateDecodingStrategy = .iso8601
+                if let userResponse = try? jsonDecoder.decode(User.self, from: data) {
+                    completion(userResponse)
+                } else {
+                    print("Failed to decode logout")
+                }
+                print(data)
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
     }

@@ -64,7 +64,7 @@ struct SelectDistrView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Select Distributions")
+                Text("Select Distribution Codes")
                     .font(Font.custom("Proxima Nova Regular", size: 15))
                     .foregroundColor(.white)
                 Spacer()
@@ -87,21 +87,23 @@ struct SelectDistrView: View {
             .padding(.horizontal)
             ForEach(distributions!, id: \.self) { distribution in
                 HStack {
-                    Button {
-                        if (self.selected.contains(distribution)) {
-                            self.selected.remove(distribution)
-                        } else {
-                            self.selected.insert(distribution)
-                        }
-                    } label: {
-                        if selected.contains(distribution) {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 10, height: 10)
-                        } else {
-                            Circle()
-                                .stroke(Color.white, lineWidth: 1)
-                                .frame(width: 10, height: 10)
+                    if distribution.count < 5{
+                        Button {
+                            if (self.selected.contains(distribution)) {
+                                self.selected.remove(distribution)
+                            } else {
+                                self.selected.insert(distribution)
+                            }
+                        } label: {
+                            if selected.contains(distribution) {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 10, height: 10)
+                            } else {
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1)
+                                    .frame(width: 10, height: 10)
+                            }
                         }
                     }
                     Text(distribution)

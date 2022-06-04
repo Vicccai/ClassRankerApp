@@ -112,24 +112,6 @@ class CreateAccountController: UIViewController {
         return image
     }()
     
-    var loginLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Already have an account?\nLogin!"
-        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
-        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
-        label.textAlignment = .center
-        label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    var loginButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.addTarget(self, action: #selector(login), for: .touchUpInside)
-        return button
-    }()
-    
     var createAccountButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
@@ -158,14 +140,12 @@ class CreateAccountController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        view.isMultipleTouchEnabled = false
         
-        for subView in [titleLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, confirmPasswordBackView, confirmPasswordLabel, confirmPasswordField, confirmPasswordImageView, createAccountButton, createAccountLabel, loginLabel, loginButton, roosterImageView] {
+        for subView in [titleLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, confirmPasswordBackView, confirmPasswordLabel, confirmPasswordField, confirmPasswordImageView, createAccountButton, createAccountLabel, roosterImageView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
-        
-        navigationItem.hidesBackButton = true
-            
         setUpConstraints()
     }
     
@@ -233,14 +213,6 @@ class CreateAccountController: UIViewController {
             createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor),
             createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
             
-            loginButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            loginButton.heightAnchor.constraint(equalTo: createAccountLabel.heightAnchor, constant: 10),
-            loginButton.widthAnchor.constraint(equalToConstant: 200),
-            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            loginLabel.centerXAnchor.constraint(equalTo: loginButton.centerXAnchor),
-            loginLabel.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor),
-            
             roosterImageView.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20),
             roosterImageView.heightAnchor.constraint(equalToConstant: 250),
             roosterImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -40),
@@ -277,18 +249,22 @@ class CreateAccountController: UIViewController {
             present(alert, animated: true, completion: nil)
             return
         }
+        
 
         NetworkManager.registerAccount(username: usernameField.text!, password: passwordField.text!) { user in
-            let loginViewController = LoginController()
-            loginViewController.configure(username: self.usernameField.text!)
-            loginViewController.delegate = self
-            self.navigationController?.pushViewController(loginViewController, animated: true)
+            NetworkManager.login(username: self.usernameField.text!, password: self.passwordField.text!) { user in
+                Globals.user = User(username: user.username, session_token: user.session_token)
+                self.navigationController?.pushViewController(RankViewController(), animated: true)
+            } failureCompletion: {
+                let alert = UIAlertController(title: "Invalid Username or Password", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Try again", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            /*self.navigationController?.pushViewController(loginViewController, animated: true)*/
         } failureCompletion: {
             let alert = UIAlertController(title: "Account already exists", message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
-        
     }
-    
 }

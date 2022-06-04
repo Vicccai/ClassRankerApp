@@ -130,7 +130,7 @@ class DiscussionView: UIStackView {
             let label = UILabel()
             label.text = "Send"
             label.textColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
-            label.font = UIFont(name: "ProximaNova-Regular", size: 14)
+            label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
             return label
         }()
         
@@ -147,6 +147,7 @@ class DiscussionView: UIStackView {
             commentFieldBackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
             commentFieldBackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             commentFieldBackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            commentFieldBackView.heightAnchor.constraint(equalToConstant: 40),
             commentFieldBackView.trailingAnchor.constraint(equalTo: commentButton.leadingAnchor, constant: -10),
             
             commentField.centerYAnchor.constraint(equalTo: commentFieldBackView.centerYAnchor),
@@ -166,7 +167,7 @@ class DiscussionView: UIStackView {
     
     var commentField: UITextField = {
         let field = UITextField()
-        field.font = UIFont(name: "ProximaNova-Regular", size: 14)
+        field.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         field.placeholder = "Add a comment"
         field.autocapitalizationType = .none
         return field
@@ -200,7 +201,7 @@ class DiscussionView: UIStackView {
             commentsView.topAnchor.constraint(equalTo: disTitleView.bottomAnchor),
             commentsView.leadingAnchor.constraint(equalTo: leadingAnchor),
             commentsView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            commentsView.heightAnchor.constraint(equalToConstant: 200),
+            commentsView.heightAnchor.constraint(equalToConstant: 600),
             
             yourCommentView.topAnchor.constraint(equalTo: commentsView.bottomAnchor),
             yourCommentView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -238,17 +239,28 @@ class DiscussionView: UIStackView {
     }
     
     @objc func postComment() {
-        if commentField.text != "" {
-            NetworkManager.postCommentByUser(course: course!, user: Globals.user, description: commentField.text!) { comment in
-                self.comments.insert(comment, at: 0)
-                self.commentsView.reloadData()
-                self.commentField.text = ""
-                self.commentsNumber.text = String(self.comments.count)
+        if commentField.text != ""{
+            if Globals.guest.boolValue == true {
+                let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+                self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+                return
+            }
+            else{
+                NetworkManager.postCommentByUser(course: course!, user: Globals.user, description: commentField.text!) { comment in
+                    self.comments.append(comment)
+                    self.commentsView.reloadData()
+                    self.commentField.text = ""
+                    self.commentsNumber.text = String(self.comments.count)
+                }
             }
         }
     }
     
     func deleteComment(comment: Comment) {
+        if Globals.guest.boolValue == true {
+            return
+        }
         NetworkManager.deleteComment(comment: comment, user: Globals.user) { commentToDelete in
 //            let commentIndex = self.comments.first(where: { comment in
 //                commentToDelete == comment
@@ -280,5 +292,4 @@ extension DiscussionView: UITableViewDataSource {
 }
  
 extension DiscussionView: UITableViewDelegate {
-    
 }

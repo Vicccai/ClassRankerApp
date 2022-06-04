@@ -130,7 +130,7 @@ class DescriptionTableViewCell: UITableViewCell {
     
     var overallLabel: UILabel = {
         let label = UILabel()
-        label.text = "Overall Rating:"
+        label.text = "Overall:"
         label.textColor = .white
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
@@ -145,7 +145,7 @@ class DescriptionTableViewCell: UITableViewCell {
     
     var workloadLabel: UILabel = {
         let label = UILabel()
-        label.text = "Workload Rating:"
+        label.text = "Workload:"
         label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
@@ -160,7 +160,7 @@ class DescriptionTableViewCell: UITableViewCell {
     
     var difficultyLabel: UILabel = {
         let label = UILabel()
-        label.text = "Difficulty Rating:"
+        label.text = "Difficulty:"
         label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
@@ -287,6 +287,12 @@ class DescriptionTableViewCell: UITableViewCell {
     }
     
     @objc func favorite() {
+        if Globals.guest.boolValue == true {
+            let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+            self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+            return
+        }
         if favCourse == false {
             print("hi")
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
@@ -326,6 +332,9 @@ class DescriptionTableViewCell: UITableViewCell {
         let profNames = profArray.map { $0.first_name + " " + $0.last_name }
         profs.text = profNames.joined(separator: " ")
         favCourse = course.favorite ?? false
+        if Globals.favCourses.contains(course) {
+            favCourse = true
+        }
         if favCourse == true {
             print("true")
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)

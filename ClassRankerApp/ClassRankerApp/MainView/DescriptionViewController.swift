@@ -34,12 +34,13 @@ class DescriptionViewController: UIViewController {
         stackview.spacing = 0
         stackview.layer.cornerRadius = 5
         stackview.layer.borderWidth = 1
-        stackview.layer.borderColor = UIColor.black.cgColor
+        stackview.layer.borderColor = UIColor.gray.cgColor
         return stackview
     }()
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        view.isMultipleTouchEnabled = false
         navigationItem.largeTitleDisplayMode = .never
         for subView in [descriptionTableView, discussionStackView] {
             view.addSubview(subView)
@@ -70,7 +71,6 @@ class DescriptionViewController: UIViewController {
     func configure(course: Course) {
         self.course = course
     }
-    
 }
  
 extension DescriptionViewController: UITableViewDataSource {

@@ -13,16 +13,18 @@ struct FilterData {
         "Arts & Sciences",
         "Art, Architecture & Planning",
         "Engineering",
-        "Agriculture and Life Sciences",
-        "Human Ecology"
+        "Agriculture & Life Sciences",
+        "Human Ecology",
+        "Charles H. Dyson",
     ]
     
     static let abbrev: [String : String] = [
         "Arts & Sciences" : "AS",
-        "Art, Architecture & Planning" : "AAP",
-        "Engineering" : "EN",
-        "Agriculture and Life Sciences" : "AG",
-        "Human Ecology" : "HE"
+        "Art, Architecture & Planning" : "AS",
+        "Engineering" : "AS",
+        "Agriculture & Life Sciences" : "AG",
+        "Human Ecology" : "HE",
+        "Charles H. Dyson" : "AG",
     ]
     
     static let levels: [String] = [
@@ -30,45 +32,48 @@ struct FilterData {
     ]
     
     static let sort: [String] = [
-        "Rating", "Difficulty", "Workload", "Popular"
+        "Overall", "Difficulty", "Workload"
     ]
     
     static let sortNumber: [String : Int] = [
         "" : 1,
-        "Rating" : 1,
+        "Overall" : 1,
         "Difficulty" : 2,
         "Workload" : 3,
-        "Popular" : 4
     ]
     
     static let distributions: [String : [String]] = [
         "Arts & Sciences" : [
-            "ALC","BIO","CA","ETM","GLC","HA","HST","KCM","LA","MQR","PBS","PBSS","PHS","SBA","SCD","SDS","SMR","SSC"
+            "Arts, Literature, & Culture", "ALC", "Biological Sciences", "BIO", "Ethics & the Mind", "ETM", "Global Citizenship", "GLC", "Historical Analysis", "HST", "Physical Sciences", "PHS","Social Difference", "SCD", "Social Sciences", "SSC", "Statistics & Data Science", "SDS", "Symbolic & Mathematical Reasoning", "SMR" /*"-- Pre 2020 -- Mathematics and Quantitative Reasoning: MQR", "Cultural Analysis: CA", "Historial Analysis: HA", "Knowledge, Cognition, and Moral Reasoning: KCM", "Literature and the Arts: LA", "Social and Behavorial Analysis: SBA", "Physical and Biological Sciences: PBS", "Physical and Biological Sciences: PBSS",*/
         ],
         "Art, Architecture & Planning" : [
-            "ALC","CA","FL","HA","KCM","LA","MQR","PBS","SBA"
+            "Math/Quantitative Reasoning", "MQR", "SDS", "SMR", "Physical/Biological Sciences", "PBS", "BIO", "PHS", "Humanities (Architecture)", "CA", "HA", "KCM", "LA", "SBA", "Humanities (Architecture/City and Regional Planning)", "ALC", "ETM", "GLC", "HST", "SCD", "SSC"
         ],
         "Engineering" : [
-            "CE"
+            "Cultural Analysis, Literature & the Arts", "CA", "LA", "LAD", "ALC", "SCD", "Historical Analysis", "HA", "HST", "Ethics, Cognition, & Moral Reasoning", "KCM", "ETM", "Social Science & Global Citizenship", "SBA", "SSC", "GLC", "Communications in Engineering", "CE"
         ],
-        "Agriculture and Life Sciences" : [
-            "BIO","BIOLS","BIONLS","CA","D","HA","KCM","LA","OPHLS","SBA"
+        "Agriculture & Life Sciences" : [
+            "Cultural Analysis", "CA", "Human Diversity", "D", "Historical Analysis", "HA", "Knowledge, Cognition, & Moral Reasoning", "KCM", "Literature & the Arts", "LA", "Social & Behavorial Analysis", "SBA"
         ],
         "Human Ecology" : [
-            "CA","D","HA","KCM","LAD","MQR","PBS","SBA"
+            "Physical & Biological Sciences", "PBS","Mathematics & Quantitative Reasoning", "MQR","Human Diversity", "D","Cultural Analysis", "CA","Historical Analysis", "HA","Knowledge, Cognition, & Moral Reasoning", "KCM","Literature, the Arts & Design", "LAD","Social & Behavorial Analysis", "SBA"
+        ],
+        "Charles H. Dyson" : [
+            "Human Diversity", "D", "Cultural Analysis", "CA", "Historical Analysis", "HA", "Knowledge, Cognition & Moral Reasoning", "KCM", "Literature & the Arts", "LA"
         ]
     ]
     
     private static let cellHeight : CGFloat = 34
     
     static let menuHeight: [String : CGFloat] = [
-        "Colleges" : cellHeight * 7,
-        "Levels" : cellHeight * 8,
-        "Sort" : cellHeight * 5.5,
-        "Arts & Sciences" : cellHeight * 20,
-        "Art, Architecture & Planning" : cellHeight * 11,
-        "Engineering" : cellHeight * 8,
-        "Agriculture and Life Sciences" : cellHeight * 12,
-        "Human Ecology" : cellHeight * 10
+        "Colleges" : cellHeight * 8,
+        "Levels" : cellHeight * 8.75,
+        "Sort" : cellHeight * 5,
+        "Arts & Sciences" : cellHeight * 20.75,
+        "Art, Architecture & Planning" : cellHeight * 22.5,
+        "Engineering" : cellHeight * 19.5,
+        "Agriculture & Life Sciences" : cellHeight * 14,
+        "Human Ecology" : cellHeight * 17.25,
+        "Charles H. Dyson": cellHeight * 12.5,
     ]
 }

@@ -22,7 +22,7 @@ class LoginController: UIViewController {
     
     var signInLabel: UILabel = {
         let label = UILabel()
-        label.text = "Please sign in to continue."
+        label.text = "Please log in to continue."
         label.font = UIFont(name: "Proxima Nova Bold", size: 20)
         label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1.00)
         return label
@@ -108,24 +108,6 @@ class LoginController: UIViewController {
         return label
     }()
     
-    var createAccountButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.addTarget(self, action: #selector(createAccount), for: .touchUpInside)
-        return button
-    }()
-    
-    var createAccountLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Don't have an account?\nCreate a new one!"
-        label.font = UIFont(name: "ProximaNova-Regular", size: 14)
-        label.textColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
-        label.textAlignment = .center
-        label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
-        return label
-    }()
-    
     var roosterImageView: UIImageView = {
         let view = UIImageView()
         view.image = UIImage(named: "Roosting")
@@ -137,14 +119,13 @@ class LoginController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        view.isMultipleTouchEnabled = false
         
-        for subView in [titleLabel, signInLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, logInButton, logInLabel, createAccountButton, createAccountLabel, roosterImageView] {
+        for subView in [titleLabel, signInLabel, usernameBackView, usernameLabel, usernameField, usernameImageView, passwordBackView, passwordLabel, passwordField, passwordImageView, logInButton, logInLabel, roosterImageView] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subView)
         }
         
-        navigationItem.hidesBackButton = true
-            
         setUpConstraints()
     }
     
@@ -190,21 +171,13 @@ class LoginController: UIViewController {
             passwordImageView.widthAnchor.constraint(equalToConstant: 20),
             passwordImageView.leadingAnchor.constraint(equalTo: passwordBackView.leadingAnchor, constant: 20),
             
-            logInButton.topAnchor.constraint(equalTo: passwordBackView.bottomAnchor, constant: 50),
+            logInButton.topAnchor.constraint(equalTo: passwordBackView.bottomAnchor, constant: 45),
             logInButton.heightAnchor.constraint(equalToConstant: 40),
             logInButton.widthAnchor.constraint(equalToConstant: 150),
             logInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             logInLabel.centerYAnchor.constraint(equalTo: logInButton.centerYAnchor),
             logInLabel.centerXAnchor.constraint(equalTo: logInButton.centerXAnchor),
-            
-            createAccountButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            createAccountButton.heightAnchor.constraint(equalTo: createAccountLabel.heightAnchor, constant: 10),
-            createAccountButton.widthAnchor.constraint(equalToConstant: 200),
-            createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
-            createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor),
             
             roosterImageView.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 15),
             roosterImageView.heightAnchor.constraint(equalToConstant: 200),
