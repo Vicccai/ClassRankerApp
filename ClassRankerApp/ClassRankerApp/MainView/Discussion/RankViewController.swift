@@ -297,7 +297,7 @@ class RankViewController: UIViewController {
             exitButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
             exitButton.heightAnchor.constraint(equalToConstant: 40),
             exitButton.widthAnchor.constraint(equalToConstant: 40),
-            exitButton.trailingAnchor.constraint(equalTo: clearButton.trailingAnchor),
+            exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
             
             exitImage.centerYAnchor.constraint(equalTo: exitButton.centerYAnchor),
             exitImage.centerXAnchor.constraint(equalTo: exitButton.centerXAnchor),

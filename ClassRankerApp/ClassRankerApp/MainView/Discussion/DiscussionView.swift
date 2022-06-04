@@ -201,7 +201,7 @@ class DiscussionView: UIStackView {
             commentsView.topAnchor.constraint(equalTo: disTitleView.bottomAnchor),
             commentsView.leadingAnchor.constraint(equalTo: leadingAnchor),
             commentsView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            commentsView.heightAnchor.constraint(equalToConstant: 600),
+            commentsView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height/1.4),
             
             yourCommentView.topAnchor.constraint(equalTo: commentsView.bottomAnchor),
             yourCommentView.leadingAnchor.constraint(equalTo: leadingAnchor),

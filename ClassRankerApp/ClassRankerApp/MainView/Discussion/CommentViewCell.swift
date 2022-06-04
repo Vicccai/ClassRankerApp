@@ -69,6 +69,7 @@ class CommentViewCell: UITableViewCell {
             deleteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
             
             deleteLabel.centerYAnchor.constraint(equalTo: deleteButton.centerYAnchor),
+
             deleteLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15)
         ])
     }

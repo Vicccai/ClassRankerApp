@@ -34,7 +34,7 @@ class DescriptionViewController: UIViewController {
         stackview.spacing = 0
         stackview.layer.cornerRadius = 5
         stackview.layer.borderWidth = 1
-        stackview.layer.borderColor = UIColor.gray.cgColor
+        stackview.layer.borderColor = UIColor.white.cgColor
         return stackview
     }()
     
