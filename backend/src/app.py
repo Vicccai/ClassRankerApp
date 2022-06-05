@@ -393,40 +393,63 @@ def list_helper(all, dist, c):
 
 def list_helper_for_two(distribution, sort):
     """
-    Helper function to find courses that fulfills two or less distributions
+    Helper function to find courses that fulfills both two distributions. More optimized than list_helper
     """
     sorted_courses = []
     dist1 = Distribution.query.filter_by(name = distribution[0]).first()
-    if len(distribution) == 2:
-        dist2 = Distribution.query.filter_by(name = distribution[1]).first()
-        if sort == 1 :
-            for c1 in dist1.sortedByRating:
-                for c2 in dist2.sortedByRating:
-                    if(c1.id == c2.id):
-                        sorted_courses.append(c1)
-                        break
-        elif sort == 2:
-            for c1 in dist1.sortedByDifficulty:
-                for c2 in dist2.sortedByDifficulty:
-                    if(c1.id == c2.id):
-                        sorted_courses.append(c1)
-                        break
-        else:
-            for c1 in dist1.sortedByWorkload:
-                for c2 in dist2.sortedByWorkload:
-                    if(c1.id == c2.id):
-                        sorted_courses.append(c1)
-                        break
-    else:
-        if sort == 1 :
-            for c1 in dist1.sortedByRating:
-                sorted_courses.append(c1)
-        elif sort == 2:
-            for c1 in dist1.sortedByDifficulty:
+    dist2 = Distribution.query.filter_by(name = distribution[1]).first()
+    if sort == 1 :
+        for c1 in dist1.sortedByRating:
+            for c2 in dist2.sortedByRating:
+                if(c1.id == c2.id):
                     sorted_courses.append(c1)
-        else:
-            for c1 in dist1.sortedByWorkload:
-                sorted_courses.append(c1)
+                    break
+    elif sort == 2:
+        for c1 in dist1.sortedByDifficulty:
+            for c2 in dist2.sortedByDifficulty:
+                if(c1.id == c2.id):
+                    sorted_courses.append(c1)
+                    break
+    else:
+        for c1 in dist1.sortedByWorkload:
+            for c2 in dist2.sortedByWorkload:
+                if(c1.id == c2.id):
+                    sorted_courses.append(c1)
+                    break
+    return sorted_courses
+
+def list_helper_for_one(distribution, sort):
+    """
+    Helper function to find courses that fulfills one distribution. More optimized than list_helper
+    """
+    dist1 = Distribution.query.filter_by(name = distribution[0]).first()
+    sorted_courses = []
+    if sort == 1 :
+        for c1 in dist1.sortedByRating:
+            sorted_courses.append(c1)
+    elif sort == 2:
+        for c1 in dist1.sortedByDifficulty:
+            sorted_courses.append(c1)
+    else:
+        for c1 in dist1.sortedByWorkload:
+            sorted_courses.append(c1)
+    return sorted_courses
+
+def list_helper_for_any(distribution, sort):
+    """
+    Helper function to find courses that fulfills any distributions. More optimized than list_helper
+    """
+    sorted_courses = []
+    for d in distribution:
+        dist = Distribution.query.filter_by(name = d).first()
+        for c in dist.sortedByRating:
+            sorted_courses.append(c)
+    if sort == 1:
+        sorted_courses.sort(reverse=True, key=sort_by_rating)
+    elif sort == 2:
+        sorted_courses.sort(key=sort_by_difficulty)
+    else:
+        sorted_courses.sort(key=sort_by_workload)
     return sorted_courses
 
 def strip_dist_helper(distribution):
@@ -471,14 +494,30 @@ def get_sorted_courses():
     if level == 0 and distribution == []:
         return json.dumps({"courses": [course_0.serialize()]}), 200
     sorted_courses = []
-    if (all and len(distribution) == 2) or len(distribution) == 1:
+    if len(distribution) == 1:
+        dist_courses = list_helper_for_one(distribution, sort)
+        for c in dist_courses:
+            if(len(sorted_courses) > 200):
+                break
+            if c.course_id != 1 and (c.subject == subject or subject == ""):
+                if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
+                    sorted_courses.append(c) 
+    elif all and len(distribution) == 2:
         dist_courses = list_helper_for_two(distribution, sort)
         for c in dist_courses:
             if(len(sorted_courses) > 200):
                 break
             if c.course_id != 1 and (c.subject == subject or subject == ""):
                 if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
-                    sorted_courses.append(c)
+                    sorted_courses.append(c) 
+    elif not all and distribution != []:
+        dist_courses = list_helper_for_any(distribution, sort)
+        for c in dist_courses:
+            if(len(sorted_courses) > 200):
+                break
+            if c.course_id != 1 and (c.subject == subject or subject == ""):
+                if math.floor(c.number / 1000) == math.floor(level / 1000) or level == 0:
+                    sorted_courses.append(c) 
     else:
         if sort == 1:
             courses = SortedByRating.query.all()
