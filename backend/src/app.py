@@ -410,6 +410,18 @@ def list_helper_for_none(sort):
     else:
         return SortedByWorkload.query.all()
 
+def list_helper_for_one(distribution, sort):
+    """
+    Helper function to find courses that fulfills one distribution
+    """
+    dist = Distribution.query.filter_by(name=distribution[0]).first()
+    if sort == 1:
+        return dist.sortedByRating
+    elif sort == 2:
+        return dist.sortedByDifficulty
+    else:
+        return dist.sortedByWorkload
+
 def strip_dist_helper(distribution):
     """
     Helper function to strip the title from the distribution
@@ -454,6 +466,8 @@ def get_sorted_courses():
     sorted_courses = []
     if len(distribution) == 0:
         dist_courses = list_helper_for_none(sort)
+    elif len(distribution) == 1:
+        dist_courses = list_helper_for_one(distribution,sort)
     elif not all:
         dist_courses = list_helper_for_any(distribution, sort)
     else:
