@@ -47,7 +47,7 @@ struct FilterData {
             "Arts, Literature, & Culture", "ALC", "Biological Sciences", "BIO", "Ethics & the Mind", "ETM", "Global Citizenship", "GLC", "Historical Analysis", "HST", "Physical Sciences", "PHS","Social Difference", "SCD", "Social Sciences", "SSC", "Statistics & Data Science", "SDS", "Symbolic & Mathematical Reasoning", "SMR" /*"-- Pre 2020 -- Mathematics and Quantitative Reasoning: MQR", "Cultural Analysis: CA", "Historial Analysis: HA", "Knowledge, Cognition, and Moral Reasoning: KCM", "Literature and the Arts: LA", "Social and Behavorial Analysis: SBA", "Physical and Biological Sciences: PBS", "Physical and Biological Sciences: PBSS",*/
         ],
         "Art, Architecture & Planning" : [
-            "Math/Quantitative Reasoning", "MQR", "SDS", "SMR", "Physical/Biological Sciences", "PBS", "BIO", "PHS", "Humanities (Architecture)", "CA", "HA", "KCM", "LA", "SBA", "Humanities (Architecture/City and Regional Planning)", "ALC", "ETM", "GLC", "HST", "SCD", "SSC"
+            "Math/Quantitative Reasoning", "MQR", "SDS", "SMR", "Physical/Biological Sciences", "PBS", "BIO", "PHS", "Humanities (Architecture)", "CA", "HA", "KCM", "LA", "SBA", "Humanities (Architecture/Planning)", "ALC", "ETM", "GLC", "HST", "SCD", "SSC"
         ],
         "Engineering" : [
             "Cultural Analysis, Literature & the Arts", "CA", "LA", "LAD", "ALC", "SCD", "Historical Analysis", "HA", "HST", "Ethics, Cognition, & Moral Reasoning", "KCM", "ETM", "Social Science & Global Citizenship", "SBA", "SSC", "GLC", "Communications in Engineering", "CE"

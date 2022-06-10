@@ -99,6 +99,7 @@ class RankViewController: UIViewController {
         favStar.image = UIImage(named: "Star 1")
         showFavorites = false
         coursesView.reloadData()
+        searchController.searchBar.text = ""
         selectedDistr = []
         selectedLevel = 0
         selectedSort = ""
@@ -355,6 +356,10 @@ class RankViewController: UIViewController {
                 if Globals.favCourses.contains(self.shownCourses[i]) {
                     self.shownCourses[i].favorite = true
                 }
+            }
+            let text = self.searchController.searchBar.text
+            if text != "" {
+                self.filterContentForSearchText(searchText: text!)
             }
             self.coursesView.reloadData()
             child.willMove(toParent: nil)
