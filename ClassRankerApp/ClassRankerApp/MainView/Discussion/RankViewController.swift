@@ -20,6 +20,8 @@ class RankViewController: UIViewController {
     
     var showFavorites: Bool = false
     
+    var filteredFirst: Bool = false
+    
     var selectedLevel: Int = 0 {
         didSet {
             favStar.image = UIImage(named: "Star 1")
@@ -98,7 +100,6 @@ class RankViewController: UIViewController {
         suppressObservers = false
         favStar.image = UIImage(named: "Star 1")
         showFavorites = false
-        coursesView.reloadData()
         searchController.searchBar.text = ""
         selectedDistr = []
         selectedLevel = 0
@@ -408,6 +409,9 @@ class RankViewController: UIViewController {
         } else {
             // changing colors back
             favStar.image = UIImage(named: "Star 1")
+            if isFiltering && !filteredFirst{
+                getCoursesByAttributes(level: selectedLevel, distributions: selectedDistr, matchAll: matchAll, sort: FilterData.sortNumber[selectedSort]!)
+            }
         }
         showFavorites = !showFavorites
         coursesView.reloadData()
@@ -427,7 +431,7 @@ class RankViewController: UIViewController {
         if showFavorites {
             finalCourses = Globals.favCourses
         }
-        if isFiltering {
+        if isFiltering && !filteredFirst{
             finalCourses = finalCourses.filter(filteredCourses.contains)
         }
         return finalCourses
@@ -492,12 +496,16 @@ class RankViewController: UIViewController {
         if let shownIndex = shownCourses.firstIndex(of: course) {
             shownCourses[shownIndex].favorite = favorite
         }
+        if let filteredIndex = filteredCourses.firstIndex(of: course) {
+            filteredCourses[filteredIndex].favorite = favorite
+        }
         // refilter here
         coursesView.reloadData()
     }
     
     func filterContentForSearchText(searchText: String) {
         if showFavorites {
+            filteredFirst = false
             filteredCourses = Globals.favCourses.filter({ course in
                 let courseNumber = course.subject + " " + String(course.number)
                 return (courseNumber.lowercased().contains(searchText.lowercased()) ||
@@ -505,6 +513,7 @@ class RankViewController: UIViewController {
             })
         }
         else {
+            filteredFirst = true
             filteredCourses = shownCourses.filter({ course in
                 let courseNumber = course.subject + " " + String(course.number)
                 return (courseNumber.lowercased().contains(searchText.lowercased()) ||
@@ -518,7 +527,7 @@ class RankViewController: UIViewController {
 
 extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFiltering {
+        if isFiltering && !showFavorites{
             return filteredCourses.count
         } else {
             return getFinalCourses().count
@@ -535,7 +544,7 @@ extension RankViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoursesTableViewCell.id) as? CoursesTableViewCell else { return UITableViewCell() }
         cell.delegate = self
-        if isFiltering {
+        if isFiltering && !showFavorites{
             cell.configure(sort: selectedSort, course: filteredCourses[indexPath.row], index: indexPath.row)
         } else {
             cell.configure(sort: selectedSort, course: getFinalCourses()[indexPath.row], index: indexPath.row)
@@ -547,7 +556,7 @@ extension RankViewController: UITableViewDataSource {
 extension RankViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let course: Course
-        if isFiltering {
+        if isFiltering && !showFavorites{
             course = filteredCourses[indexPath.item]
         } else {
             course = getFinalCourses()[indexPath.item]
