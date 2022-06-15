@@ -6,11 +6,12 @@
 import Foundation
 import UIKit
  
-class DescriptionViewController: UIViewController {
+class DescriptionViewController: UIViewController, UITextFieldDelegate {
     
     var course: Course?
     var delegate: RankViewController?
     var comments : [Comment] = []
+    var notChecked: Bool = true
     
     lazy var descriptionTableView: UITableView = {
         let tableView = UITableView()
@@ -33,12 +34,21 @@ class DescriptionViewController: UIViewController {
         stackview.isLayoutMarginsRelativeArrangement = true
         stackview.spacing = 0
         stackview.layer.cornerRadius = 5
-        stackview.layer.borderWidth = 1
-        stackview.layer.borderColor = UIColor.white.cgColor
+        stackview.layer.shadowColor = UIColor.lightGray.cgColor
+        stackview.layer.shadowOpacity = 1
+        stackview.layer.shadowOffset = .zero
+        stackview.layer.shadowRadius = 1
         return stackview
     }()
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         view.isMultipleTouchEnabled = false
         navigationItem.largeTitleDisplayMode = .never
@@ -46,13 +56,40 @@ class DescriptionViewController: UIViewController {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
-        
         discussionStackView.course = course
         discussionStackView.comments = comments
         discussionStackView.commentsNumber.text = String(comments.count)
+        discussionStackView.commentField.delegate = self
         descriptionTableView.delegate = self
-        
         setUpConstraints()
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
+    
+    override func viewDidLayoutSubviews() {
+        if notChecked {
+            discussionStackView.endEditing(true)
+            notChecked = false
+        }
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            if UIScreen.main.bounds.height > 920 {
+                Globals.keyboardHeight = keyboardHeight+80
+            }
+            else if UIScreen.main.bounds.height < 815 {
+                Globals.keyboardHeight = keyboardHeight-15
+            }
+            else {
+                Globals.keyboardHeight = keyboardHeight+20
+            }
+        }
     }
     
     func setUpConstraints() {

@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import UIKit
 
 struct Globals {
     static var courses: [Course] = []
     static var favCourses: [Course] = []
     static var user: User = User(username: "", session_token: "")
     static var guest: DarwinBoolean = false
+    static var keyboardHeight: CGFloat = 0
 }
 
 struct CourseWrapper: Codable {

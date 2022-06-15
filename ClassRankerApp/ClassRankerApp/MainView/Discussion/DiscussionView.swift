@@ -7,11 +7,14 @@
  
 import Foundation
 import UIKit
+import IQKeyboardManagerSwift
  
 class DiscussionView: UIStackView {
     
     var collapsed = true
     var course: Course?
+    var descriptionController: DescriptionViewController?
+    var originalHeight: CGFloat = 0
     
     // ui view for discussion title view
     lazy var disTitleView: UIView = {
@@ -145,7 +148,7 @@ class DiscussionView: UIStackView {
         }
         NSLayoutConstraint.activate([
             commentFieldBackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
-            commentFieldBackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            commentFieldBackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15),
             commentFieldBackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             commentFieldBackView.heightAnchor.constraint(equalToConstant: 40),
             commentFieldBackView.trailingAnchor.constraint(equalTo: commentButton.leadingAnchor, constant: -10),
@@ -170,8 +173,21 @@ class DiscussionView: UIStackView {
         field.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         field.placeholder = "Add a comment"
         field.autocapitalizationType = .none
+        field.addTarget(self, action: #selector(shrinkView), for: .editingDidBegin)
+        field.addTarget(self, action: #selector(expandView), for: .editingDidEnd)
+        field.becomeFirstResponder()
+        field.enablesReturnKeyAutomatically = false
         return field
     }()
+    
+    @objc func shrinkView() {
+        originalHeight = yourCommentView.frame.origin.y
+        yourCommentView.frame.origin.y = Globals.keyboardHeight
+    }
+
+    @objc func expandView() {
+        yourCommentView.frame.origin.y = originalHeight
+    }
 //    var comments = [Comment(id: 12, username: "mariana", description: "yo check out this little star thing"), Comment(id: 15, username: "victor", description: "haha cool so anyway i built this drop down menu entirely from scratch or whatever")]
     
     // comments data
@@ -234,6 +250,7 @@ class DiscussionView: UIStackView {
                     self.commentsView.isHidden = true
                     self.yourCommentView.isHidden = true
             })
+            self.endEditing(true)
             collapsed = true
         }
     }
@@ -241,10 +258,11 @@ class DiscussionView: UIStackView {
     @objc func postComment() {
         if commentField.text != ""{
             if Globals.guest.boolValue == true {
+                self.endEditing(true)
                 let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
                 self.window?.rootViewController?.present(alert, animated: true, completion: nil)
-                return
+                self.endEditing(true)
             }
             else{
                 NetworkManager.postCommentByUser(course: course!, user: Globals.user, description: commentField.text!) { comment in

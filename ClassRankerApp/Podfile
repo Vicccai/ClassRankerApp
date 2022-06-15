@@ -8,6 +8,7 @@ target 'ClassRankerApp' do
   # Pods for ClassRankerApp
   pod 'Alamofire'
   pod 'iOSDropDown'
+  pod 'IQKeyboardManagerSwift'
 end
 
 post_install do |installer|

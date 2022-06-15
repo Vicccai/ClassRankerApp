@@ -19,7 +19,7 @@ class DescriptionTableViewCell: UITableViewCell {
     // basic info
     var nameBackView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(white: 0, alpha: 0)
         view.clipsToBounds = true
         view.layer.cornerRadius = 50
         return view
@@ -56,8 +56,7 @@ class DescriptionTableViewCell: UITableViewCell {
     var favButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "Star 1"), for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -66,7 +65,7 @@ class DescriptionTableViewCell: UITableViewCell {
     // added info
     var restBackView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00)
+        view.backgroundColor = .white
         view.clipsToBounds = true
         view.layer.cornerRadius = 15
         return view
@@ -75,7 +74,7 @@ class DescriptionTableViewCell: UITableViewCell {
     var descrLabel: UILabel = {
         let label = UILabel()
         label.text = "Description"
-        label.textColor = .white
+        label.textColor = .black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
@@ -99,14 +98,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var creditsLabel: UILabel = {
         let label = UILabel()
         label.text = "Credits:"
-        label.textColor = .white
+        label.textColor = UIColor.black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
     
     var credits: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
     }()
@@ -114,14 +113,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var distrLabel: UILabel = {
         let label = UILabel()
         label.text = "Distributions:"
-        label.textColor = .white
+        label.textColor = UIColor.black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
     
     var distrs: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
@@ -131,14 +130,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var overallLabel: UILabel = {
         let label = UILabel()
         label.text = "Overall:"
-        label.textColor = .white
+        label.textColor = UIColor.black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
     
     var overallRating: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = UIColor.black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
@@ -146,14 +145,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var workloadLabel: UILabel = {
         let label = UILabel()
         label.text = "Workload:"
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
     }()
     
     var workloadRating: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
     }()
@@ -161,14 +160,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var difficultyLabel: UILabel = {
         let label = UILabel()
         label.text = "Difficulty:"
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
     }()
     
     var difficultyRating: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         return label
     }()
@@ -176,14 +175,14 @@ class DescriptionTableViewCell: UITableViewCell {
     var profLabel: UILabel = {
         let label = UILabel()
         label.text = "Professors:"
-        label.textColor = .white
+        label.textColor = UIColor.black
         label.font = UIFont(name: "Proxima Nova Bold", size: 17.5)
         return label
     }()
     
     var profs: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(red: 0.84, green: 0.84, blue: 0.84, alpha: 1.00)
+        label.textColor = UIColor.black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
@@ -193,6 +192,7 @@ class DescriptionTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
+        selectionStyle = .none
         for subView in [nameBackView, numberLabel, nameLabel, ratingLabel, favButton, restBackView, descrLabel, descrBackView, descrText, creditsLabel, credits, distrLabel, distrs, overallLabel, overallRating, workloadLabel, workloadRating, difficultyLabel, difficultyRating, profLabel, profs] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
@@ -207,7 +207,7 @@ class DescriptionTableViewCell: UITableViewCell {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            nameBackView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor),
+            nameBackView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: -20),
             nameBackView.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 100),
             nameBackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
             nameBackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
@@ -294,13 +294,11 @@ class DescriptionTableViewCell: UITableViewCell {
             return
         }
         if favCourse == false {
-            print("hi")
             favButton.setImage(UIImage(named: "Star 2"), for: .normal)
             favCourse = true
             doubleDel?.isFavoriteCourse(course: currentCourse!, favorite: true)
         }
         else if favCourse == true {
-            print("hello")
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
             favCourse = false
             doubleDel?.isFavoriteCourse(course: currentCourse!, favorite: false)
