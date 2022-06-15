@@ -17,7 +17,7 @@ To be added...
 
 # Front-end Implemention
 * Developed using Swift, SwiftUI and UIKit
-* Installed Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
+* Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
 * Features 
   * Search bar
   * Filter by college, course level, distribution and rating
