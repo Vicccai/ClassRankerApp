@@ -21,7 +21,7 @@ To be added...
 * Features 
   * Search bar based on course title
   * Filter by college, course level, distribution
-  * Sort by course rating, which include overall, difficulty and workload
+  * Sort by course rating, which includes overall, difficulty and workload
   * User and Guest login
   * Favorite courses, display all favorites, and search favorites
   * Discussion forums for every course
