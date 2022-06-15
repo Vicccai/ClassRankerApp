@@ -19,11 +19,11 @@ To be added...
 * Developed using Swift, SwiftUI and UIKit
 * Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
 * Features 
-  * Search bar based on course titles
+  * Search bar based on course title
   * Filter by college, course level, distribution
-  * Sort by college ratings, which include overall, difficulty and workload
+  * Sort by course rating, which include overall, difficulty and workload
   * User and Guest login
-  * Favorite courses
+  * Favorite courses, display all favorites, and search favorites
   * Discussion forums for every course
   * Course ratings and descriptions
 
@@ -38,4 +38,4 @@ To be added...
 * Containerized with Docker and deployed using Google Cloud virtual machine
 
 # Credits
-Thank you Cornell DTI for letting us scrape CUReviews
+Thank you Cornell DTI for letting us scrape CUReviews and Cornell University for access to the Class Roster API
