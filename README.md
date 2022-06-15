@@ -1,5 +1,5 @@
 # Class Rooster
-Feeling lost? Tired of swapping tabs? Don't wing it. Use Course Rooster!
+Feeling lost? Tired of swapping tabs? Don't wing it. Use Class Rooster!
 
 # Description
 Imagine this: you're looking for a course to fulfill a requirement, but nothing seems to match your interests. You've looked through 30 out of 65 results on Course Roster and you've already opened 10 syllabuses and 7 CUReviews tabs. Preferably, the class you're looking for is easy, but you also want a rewarding experience overall. How much long will it take to find this class? Hours? Not if you use Class Rooster! With Class Rooster, we've optimized this process to find your dream class within a couple of simple clicks. You can filter courses by college, level, requirements, rating, difficulty, and workload. These filters can be mixed and matched and you can even favorite these courses or leave comments. There's no need to wing course registration with Class Rooster!
