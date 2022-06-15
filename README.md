@@ -15,11 +15,16 @@ Mariana Meriles (front end)
 # Screenshots
 To be added... 
 
-# Front-end Implementation
+# Front-end Implemention
 * Developed using Swift, SwiftUI and UIKit
+* Installed Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
 * Features 
+  * Search bar
+  * Filter by college, course level, distribution and rating
   * User and Guest login
-  *
+  * Favorite courses
+  * Discussion forums for every course
+  * Course ratings and descriptions
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
