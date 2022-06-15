@@ -22,7 +22,7 @@ To be added...
   * Search bar based on course title
   * Filter by college, course level, distribution
   * Sort by course rating, which includes overall, difficulty and workload
-  * User and Guest login
+  * User and guest login
   * Favorite courses, display all favorites, and search favorites
   * Discussion forums for every course
   * Each course displays its rating and description
