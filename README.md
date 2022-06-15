@@ -25,7 +25,7 @@ To be added...
   * User and Guest login
   * Favorite courses, display all favorites, and search favorites
   * Discussion forums for every course
-  * Each course display its rating and description
+  * Each course displays its rating and description
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
