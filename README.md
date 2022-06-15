@@ -19,7 +19,7 @@ To be added...
 * Developed using Swift, SwiftUI and UIKit
 * Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
 * Features 
-  * Search bar
+  * Search bar based on course titles
   * Filter by college, course level, distribution
   * Sort by college ratings, which include overall, difficulty and workload
   * User and Guest login
