@@ -16,7 +16,10 @@ Mariana Meriles (front end)
 To be added... 
 
 # Front-end Implementation
-To be added...
+* Developed using Swift, SwiftUI and UIKit
+* Features 
+* * User and Guest login
+* *
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
