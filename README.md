@@ -38,4 +38,4 @@ To be added...
 * Containerized with Docker and deployed using Google Cloud virtual machine
 
 # Credits
-Thank you Cornell DTI for letting us scrape CUReviews and Cornell University for access to the Class Roster API
+Thank you Cornell DTI for letting us scrape CUReviews and Cornell University for access to the Class Roster API. Also thank you Gonzalo Gonzalez for being the best mentor ever!
