@@ -20,7 +20,8 @@ To be added...
 * Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
 * Features 
   * Search bar
-  * Filter by college, course level, distribution and rating
+  * Filter by college, course level, distribution
+  * Sort by college ratings, which include overall, difficulty and workload
   * User and Guest login
   * Favorite courses
   * Discussion forums for every course
