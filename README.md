@@ -13,7 +13,11 @@ Victor Cai (front end),
 Mariana Meriles (front end)
 
 # Screenshots
-To be added... 
+![image](https://user-images.githubusercontent.com/69128074/175114319-f315e77b-aef1-44e0-964a-1842ec151150.png)
+![image](https://user-images.githubusercontent.com/69128074/175114365-ebeff883-8007-426c-9a06-453b0dcb470a.png)
+![image](https://user-images.githubusercontent.com/69128074/175114440-e07b2790-561c-4655-aef1-a65bd8c85907.png)
+![image](https://user-images.githubusercontent.com/69128074/175114475-8ee0f210-cdaa-480e-9653-fe6e728055d4.png)
+
 
 # Front-end Implemention
 * Developed using Swift, SwiftUI and UIKit
