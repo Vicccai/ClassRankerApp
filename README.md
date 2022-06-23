@@ -1,22 +1,34 @@
 # Class Rooster
-Feeling lost? Tired of swapping tabs? Don't wing it. Use Course Rooster!
+Feeling lost? Tired of swapping tabs? Don't wing it. Use Class Rooster!
 
 # Description
-Imagine this: you're looking for a course to fulfill a requirement, but nothing seems to match your interests. You've looked through 30 out of 65 results on Course Roster and you've already opened 10 syllabuses and 7 CUReviews tabs. Preferably, the class you're looking for is easy, but you also want a rewarding experience overall. How much long will it take to find this class? Hours? Not if you use Class Rooster! With Class Rooster, we've optimized this process to find your dream class within a couple of simple clicks. You can filter courses by level, requirements, rating, difficulty, and workload. These filters can be mixed and matched and you can even favorite these courses or leave comments. There's no need to wing course registration with Class Rooster!
+Imagine this: you're looking for a course to fulfill a requirement, but nothing seems to match your interests. You've looked through 30 out of 65 results on Course Roster and you've already opened 10 syllabuses and 7 CUReviews tabs. Preferably, the class you're looking for is easy, but you also want a rewarding experience overall. How much long will it take to find this class? Hours? Not if you use Class Rooster! With Class Rooster, we've optimized this process to find your dream class within a couple of simple clicks. You can filter courses by college, level, requirements, rating, difficulty, and workload. These filters can be mixed and matched and you can even favorite these courses or leave comments. There's no need to wing course registration with Class Rooster!
 
 Members: 
-Jordan Han,
-Bryan Lee,
-Luke Leh,
-Victor Cai,
-Mariana Meriles,
-Young Zheng 
+Young Zheng (full stack),
+Jordan Han (back end),
+Bryan Lee (back end),
+Luke Leh (product design),
+Victor Cai (front end),
+Mariana Meriles (front end)
 
 # Screenshots
-To be added... 
+<img src="https://user-images.githubusercontent.com/69128074/175114319-f315e77b-aef1-44e0-964a-1842ec151150.png" width="500">
+<img src="https://user-images.githubusercontent.com/69128074/175114365-ebeff883-8007-426c-9a06-453b0dcb470a.png" width="500">
+<img src="https://user-images.githubusercontent.com/69128074/175114440-e07b2790-561c-4655-aef1-a65bd8c85907.png" width="500">
+<img src="https://user-images.githubusercontent.com/69128074/175114475-8ee0f210-cdaa-480e-9653-fe6e728055d4.png" width="500">
 
-# Front-end Implementation
-To be added...
+# Front-end Implemention
+* Developed using Swift, SwiftUI and UIKit
+* Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
+* Features 
+  * Search bar based on course title
+  * Filter by college, course level, distribution
+  * Sort by course rating, which includes overall, difficulty and workload
+  * User and guest login
+  * Favorite courses, display all favorites, and search favorites
+  * Discussion forums for every course
+  * Each course displays its rating and description
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
@@ -29,4 +41,4 @@ To be added...
 * Containerized with Docker and deployed using Google Cloud virtual machine
 
 # Credits
-Thank you Cornell DTI for letting us scrape CUReviews
+Thank you Cornell DTI for letting us scrape CUReviews and Cornell University for access to the Class Roster API. Also, thank you Gonzalo Gonzalez for being the best mentor ever!
