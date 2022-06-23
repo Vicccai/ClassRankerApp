@@ -52,44 +52,45 @@ struct SelectSortView: View {
     @State var selected: String
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Sort by...")
-                    .font(Font.custom("Proxima Nova Regular", size: 15))
-                    .foregroundColor(.white)
-                Spacer()
-                Button {
-                    self.update!(selected)
-                    self.dismiss?()
-                } label: {
-                    Text("Done")
-                }
-            }
-            .padding(.horizontal)
-            ForEach(sorts!, id: \.self) { sort in
+        ScrollView {
+            VStack(spacing: 5) {
                 HStack {
-                    Button {
-                        self.selected = sort
-                    } label: {
-                        if sort == selected {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 10, height: 10)
-                        } else {
-                            Circle()
-                                .stroke(Color.white, lineWidth: 1)
-                                .frame(width: 10, height: 10)
-                        }
-                    }
-                    Text(sort)
+                    Text("Sort by...")
+                        .font(Font.custom("Proxima Nova Bold", size: 17))
                         .foregroundColor(.white)
-                        .font(Font.custom("Proxima Nova Regular", size: 15))
                     Spacer()
+                    Button {
+                        self.update!(selected)
+                        self.dismiss?()
+                    } label: {
+                        Text("Done")
+                    }
                 }
                 .padding(.horizontal)
+                ForEach(sorts!, id: \.self) { sort in
+                    HStack {
+                        Button {
+                            self.selected = sort
+                        } label: {
+                            if sort == selected {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 10, height: 10)
+                            } else {
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1)
+                                    .frame(width: 10, height: 10)
+                            }
+                        }
+                        Text(sort)
+                            .foregroundColor(.white)
+                            .font(Font.custom("Proxima Nova Regular", size: 17))
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
             }
+            .padding(.top)
         }
-        .padding(.top)
-        
     }
 }

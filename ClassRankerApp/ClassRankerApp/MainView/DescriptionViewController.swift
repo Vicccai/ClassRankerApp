@@ -80,15 +80,16 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
             let keyboardHeight = keyboardRectangle.height
-            if UIScreen.main.bounds.height > 920 {
-                Globals.keyboardHeight = keyboardHeight+80
+            //if UIScreen.main.bounds.height > 920 {
+            Globals.keyboardHeight = UIScreen.main.bounds.height - keyboardHeight*1.5
+                /*
             }
             else if UIScreen.main.bounds.height < 815 {
                 Globals.keyboardHeight = keyboardHeight-15
             }
             else {
                 Globals.keyboardHeight = keyboardHeight+20
-            }
+            }*/
         }
     }
     
@@ -100,8 +101,8 @@ class DescriptionViewController: UIViewController, UITextFieldDelegate {
             descriptionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         
             discussionStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            discussionStackView.leadingAnchor.constraint(equalTo: descriptionTableView.leadingAnchor, constant: 15),
-            discussionStackView.trailingAnchor.constraint(equalTo: descriptionTableView.trailingAnchor, constant: -15)
+            discussionStackView.leadingAnchor.constraint(equalTo: descriptionTableView.leadingAnchor, constant: 5),
+            discussionStackView.trailingAnchor.constraint(equalTo: descriptionTableView.trailingAnchor, constant: -5)
         ])
     }
     

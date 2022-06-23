@@ -41,7 +41,6 @@ class DiscussionView: UIStackView {
         }()
  
         let view = UIView()
-        view.layer.cornerRadius = 5
 //        view.layer.borderColor = UIColor.black.cgColor
 //        view.layer.borderWidth = 1
         view.backgroundColor = .white
@@ -117,7 +116,6 @@ class DiscussionView: UIStackView {
         var commentFieldBackView: UIView = {
             let view = UIView()
             view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
-            view.layer.cornerRadius = 8
             return view
         }()
         
@@ -139,7 +137,6 @@ class DiscussionView: UIStackView {
         
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 5
 //        view.layer.borderColor = UIColor.black.cgColor
 //        view.layer.borderWidth = 1
         for subView in [commentFieldBackView, commentField, commentButton, sendLabel] {
@@ -171,11 +168,15 @@ class DiscussionView: UIStackView {
     var commentField: UITextField = {
         let field = UITextField()
         field.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
-        field.placeholder = "Add a comment"
+        field.attributedPlaceholder = NSAttributedString(
+            string: "Add a comment",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
         field.autocapitalizationType = .none
         field.addTarget(self, action: #selector(shrinkView), for: .editingDidBegin)
         field.addTarget(self, action: #selector(expandView), for: .editingDidEnd)
         field.becomeFirstResponder()
+        field.textColor = .black
         field.enablesReturnKeyAutomatically = false
         return field
     }()
@@ -260,6 +261,7 @@ class DiscussionView: UIStackView {
             if Globals.guest.boolValue == true {
                 self.endEditing(true)
                 let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+                alert.view.tintColor = .darkGray
                 alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
                 self.window?.rootViewController?.present(alert, animated: true, completion: nil)
                 self.endEditing(true)

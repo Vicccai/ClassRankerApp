@@ -51,7 +51,7 @@ class SelectMenuPresentation: UIPresentationController {
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         presentedView!.layer.masksToBounds = true
-        presentedView!.layer.cornerRadius = 10
+        presentedView!.layer.cornerRadius = 15
     }
     override func containerViewDidLayoutSubviews() {
         super.containerViewDidLayoutSubviews()

@@ -66,7 +66,7 @@ class RankViewController: UIViewController {
             if !self.suppressObservers {
                 if selectedSort == "" {
                     sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
-                    sortButton.setTitle("  Sort by...  ", for: .normal)
+                    sortButton.setTitle("  Sort  ", for: .normal)
                     sortButton.backgroundColor = .white
                 } else {
                     sortButton.setTitleColor(.white, for: .normal)
@@ -94,7 +94,7 @@ class RankViewController: UIViewController {
         levelButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
         distrButton.backgroundColor = .white
         distrButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
-        sortButton.setTitle("  Sort by...  ", for: .normal)
+        sortButton.setTitle("  Sort  ", for: .normal)
         sortButton.backgroundColor = .white
         sortButton.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
         suppressObservers = false
@@ -120,7 +120,7 @@ class RankViewController: UIViewController {
         let button = UIButton()
         button.setTitle("  \(title)  ", for: .normal)
         button.titleLabel?.font =  UIFont(name: "Proxima Nova Regular", size: 15)
-        button.layer.cornerRadius = 10
+        button.layer.cornerRadius = 8
         button.setTitleColor(UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.00), for: .normal)
         button.backgroundColor = .white
         return button
@@ -143,7 +143,7 @@ class RankViewController: UIViewController {
         return button
     }()
     let sortButton: UIButton = {
-        let button = makeButton(title: "Sort by...")
+        let button = makeButton(title: "Sort")
         button.addTarget(self, action: #selector(sortButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -192,8 +192,15 @@ class RankViewController: UIViewController {
         return button
     }()
     
+    var scrollView: UIScrollView = {
+        let view = UIScrollView(frame: .zero)
+        view.backgroundColor = .white
+        return view
+    }()
+    
     @objc func exitAlert(){
         let alert = UIAlertController(title: "Return to Sign In?", message: nil, preferredStyle: .alert)
+        alert.view.tintColor = .darkGray
         alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { (action) in
             if Globals.guest == false {
@@ -214,13 +221,12 @@ class RankViewController: UIViewController {
     class spinnerController: UIViewController {
         let spinner = UIActivityIndicatorView(style: .large)
         
-        
         override func loadView() {
             view = UIView()
-            view.backgroundColor = UIColor(white: 0, alpha: 0.1)
         
             spinner.translatesAutoresizingMaskIntoConstraints = false
             spinner.startAnimating()
+            spinner.color = .gray
             view.addSubview(spinner)
             
             spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -240,8 +246,7 @@ class RankViewController: UIViewController {
     let searchController = UISearchController(searchResultsController: nil)
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        //notifications
+        super.viewDidLoad()        //notifications
         NotificationCenter.default.addObserver(self, selector: #selector(getCourses), name: NSNotification.Name(rawValue: "CoursesLoaded"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(calculateFavs), name: NSNotification.Name(rawValue: "FavoritesLoaded"), object: nil)
         
@@ -262,19 +267,20 @@ class RankViewController: UIViewController {
         navigationItem.backButtonTitle = ""
         
         // search bar stuff
-        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.foregroundColor : UIColor(red: 0.76, green: 0.00, blue: 0.18, alpha: 1.00), .font : UIFont(name: "ProximaNova-Regular", size: 16)!], for: .normal)
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).setTitleTextAttributes([.font : UIFont(name: "ProximaNova-Regular", size: 15)!], for: .normal)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Filtered Classes"
         searchController.searchBar.autocapitalizationType = .none
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
-        searchController.searchBar.searchTextField.backgroundColor = .white
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchController
         definesPresentationContext = true
-        
-        for subView in [roosterImageView, clearButton, levelButton, sortButton, distrButton, coursesView, favFilter, favStar, exitButton, exitImage] {
+        //for subView in [clearButton, levelButton, sortButton, distrButton, favFilter, favStar] {
+        //    scrollView.addSubview(subView)
+        //}
+        //view.addSubview(scrollView)
+        for subView in [roosterImageView, coursesView, exitButton, exitImage,clearButton, levelButton, sortButton, distrButton, favFilter, favStar] {
             view.addSubview(subView)
             subView.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -289,7 +295,7 @@ class RankViewController: UIViewController {
             favFilter.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             favFilter.heightAnchor.constraint(equalToConstant: 27.5),
             favFilter.widthAnchor.constraint(equalToConstant: 27.5),
-            favFilter.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            favFilter.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
             
             favStar.centerYAnchor.constraint(equalTo: favFilter.centerYAnchor),
             favStar.centerXAnchor.constraint(equalTo: favFilter.centerXAnchor),
@@ -327,7 +333,7 @@ class RankViewController: UIViewController {
             coursesView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             coursesView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -padding),
             
-            roosterImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 500),
+            roosterImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.layer.bounds.height/2),
             roosterImageView.heightAnchor.constraint(equalToConstant: 250),
             roosterImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -40),
             roosterImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -474,6 +480,7 @@ class RankViewController: UIViewController {
 //        }) else { return }
         if Globals.guest.boolValue == true {
             let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
@@ -585,3 +592,4 @@ extension RankViewController: UIViewControllerTransitioningDelegate {
         return presenter
     }
 }
+

@@ -62,59 +62,60 @@ struct SelectDistrView: View {
     @State var all: Bool = false
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Select Distribution Codes")
-                    .font(Font.custom("Proxima Nova Regular", size: 15))
-                    .foregroundColor(.white)
-                Spacer()
-                Button {
-                    let abbrev = FilterData.abbrev[college!]!
-                    let distr = selected.map { "\($0)-\(abbrev)" }
-                    update!(distr)
-                    updateMatchAll!(all)
-                    self.dismiss?()
-                } label: {
-                    Text("Done")
-                }
-            }
-            .padding(.horizontal)
-            Picker("Hello", selection: $all) {
-                Text("Match All").tag(true)
-                Text("Match Any").tag(false)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding(.horizontal)
-            ForEach(distributions!, id: \.self) { distribution in
+        ScrollView {
+            VStack(spacing: 5) {
                 HStack {
-                    if distribution.count < 5{
-                        Button {
-                            if (self.selected.contains(distribution)) {
-                                self.selected.remove(distribution)
-                            } else {
-                                self.selected.insert(distribution)
-                            }
-                        } label: {
-                            if selected.contains(distribution) {
-                                Circle()
-                                    .fill(Color.white)
-                                    .frame(width: 10, height: 10)
-                            } else {
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 1)
-                                    .frame(width: 10, height: 10)
-                            }
-                        }
-                    }
-                    Text(distribution)
+                    Text("Select Distribution Codes")
+                        .font(Font.custom("Proxima Nova Bold", size: 17))
                         .foregroundColor(.white)
-                        .font(Font.custom("Proxima Nova Regular", size: 15))
                     Spacer()
+                    Button {
+                        let abbrev = FilterData.abbrev[college!]!
+                        let distr = selected.map { "\($0)-\(abbrev)" }
+                        update!(distr)
+                        updateMatchAll!(all)
+                        self.dismiss?()
+                    } label: {
+                        Text("Done")
+                    }
                 }
                 .padding(.horizontal)
+                Picker("Hello", selection: $all) {
+                    Text("Match All").tag(true)
+                    Text("Match Any").tag(false)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
+                ForEach(distributions!, id: \.self) { distribution in
+                    HStack {
+                        if distribution.count < 5{
+                            Button {
+                                if (self.selected.contains(distribution)) {
+                                    self.selected.remove(distribution)
+                                } else {
+                                    self.selected.insert(distribution)
+                                }
+                            } label: {
+                                if selected.contains(distribution) {
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: 10, height: 10)
+                                } else {
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 1)
+                                        .frame(width: 10, height: 10)
+                                }
+                            }
+                        }
+                        Text(distribution)
+                            .foregroundColor(.white)
+                            .font(Font.custom("Proxima Nova Regular", size: 17))
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
             }
+            .padding(.top)
         }
-        .padding(.top)
-        
     }
 }

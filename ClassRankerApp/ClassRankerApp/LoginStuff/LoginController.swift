@@ -47,8 +47,12 @@ class LoginController: UIViewController {
         let field = UITextField()
         field.autocapitalizationType = .none
         field.backgroundColor = .clear
-        field.placeholder = "username"
+        field.attributedPlaceholder = NSAttributedString(
+            string: "username",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
         field.font = UIFont(name: "Proxima Nova Bold", size: 14)
+        field.textColor = .black
         return field
     }()
     
@@ -78,8 +82,12 @@ class LoginController: UIViewController {
         let field = UITextField()
         field.autocapitalizationType = .none
         field.backgroundColor = .clear
-        field.placeholder = "password"
+        field.attributedPlaceholder = NSAttributedString(
+            string: "password",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
         field.font = UIFont(name: "Proxima Nova Bold", size: 14)
+        field.textColor = .black
         field.isSecureTextEntry = true
         return field
     }()
@@ -131,13 +139,13 @@ class LoginController: UIViewController {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             
             signInLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             signInLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             
-            usernameBackView.topAnchor.constraint(equalTo: signInLabel.bottomAnchor, constant: 50),
+            usernameBackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIScreen.main.bounds.height*0.19),
             usernameBackView.bottomAnchor.constraint(equalTo: usernameField.bottomAnchor, constant: 10),
             usernameBackView.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             usernameBackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
@@ -171,7 +179,7 @@ class LoginController: UIViewController {
             passwordImageView.widthAnchor.constraint(equalToConstant: 20),
             passwordImageView.leadingAnchor.constraint(equalTo: passwordBackView.leadingAnchor, constant: 20),
             
-            logInButton.topAnchor.constraint(equalTo: passwordBackView.bottomAnchor, constant: 45),
+            logInButton.topAnchor.constraint(equalTo: passwordBackView.bottomAnchor, constant: 15),
             logInButton.heightAnchor.constraint(equalToConstant: 40),
             logInButton.widthAnchor.constraint(equalToConstant: 150),
             logInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -179,8 +187,8 @@ class LoginController: UIViewController {
             logInLabel.centerYAnchor.constraint(equalTo: logInButton.centerYAnchor),
             logInLabel.centerXAnchor.constraint(equalTo: logInButton.centerXAnchor),
             
-            roosterImageView.topAnchor.constraint(equalTo: logInButton.bottomAnchor, constant: 15),
-            roosterImageView.heightAnchor.constraint(equalToConstant: 200),
+            roosterImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -55),
+            roosterImageView.heightAnchor.constraint(equalToConstant: 180),
             roosterImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             roosterImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
@@ -189,12 +197,14 @@ class LoginController: UIViewController {
     @objc func logIn() {
         if usernameField.text == "" {
             let alert = UIAlertController(title: "Invalid Login", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Input Username", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
         else if passwordField.text == "" {
             let alert = UIAlertController(title: "Invalid Login", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Input Password", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
@@ -204,6 +214,7 @@ class LoginController: UIViewController {
             self.navigationController?.pushViewController(RankViewController(), animated: true)
         } failureCompletion: {
             let alert = UIAlertController(title: "Invalid Username or Password", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Try again", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

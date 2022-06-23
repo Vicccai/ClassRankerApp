@@ -36,7 +36,11 @@ class CreateAccountController: UIViewController {
         let field = UITextField()
         field.autocapitalizationType = .none
         field.backgroundColor = .clear
-        field.placeholder = "username"
+        field.textColor = .black
+        field.attributedPlaceholder = NSAttributedString(
+            string: "username",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
         field.font = UIFont(name: "Proxima Nova Bold", size: 14)
         return field
     }()
@@ -67,7 +71,11 @@ class CreateAccountController: UIViewController {
         let field = UITextField()
         field.autocapitalizationType = .none
         field.backgroundColor = .clear
-        field.placeholder = "password"
+        field.attributedPlaceholder = NSAttributedString(
+            string: "password",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
+        field.textColor = .black
         field.font = UIFont(name: "Proxima Nova Bold", size: 14)
         field.isSecureTextEntry = true
         return field
@@ -99,7 +107,11 @@ class CreateAccountController: UIViewController {
         let field = UITextField()
         field.autocapitalizationType = .none
         field.backgroundColor = .clear
-        field.placeholder = "password"
+        field.attributedPlaceholder = NSAttributedString(
+            string: "password",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
+        )
+        field.textColor = .black
         field.font = UIFont(name: "Proxima Nova Bold", size: 14)
         field.isSecureTextEntry = true
         return field
@@ -151,10 +163,10 @@ class CreateAccountController: UIViewController {
     
     func setUpConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             
-            usernameBackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
+            usernameBackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIScreen.main.bounds.height*0.14),
             usernameBackView.bottomAnchor.constraint(equalTo: usernameField.bottomAnchor, constant: 10),
             usernameBackView.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             usernameBackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
@@ -205,7 +217,7 @@ class CreateAccountController: UIViewController {
             confirmPasswordImageView.widthAnchor.constraint(equalToConstant: 20),
             confirmPasswordImageView.leadingAnchor.constraint(equalTo: confirmPasswordBackView.leadingAnchor, constant: 20),
             
-            createAccountButton.topAnchor.constraint(equalTo: confirmPasswordBackView.bottomAnchor, constant: 40),
+            createAccountButton.topAnchor.constraint(equalTo: confirmPasswordBackView.bottomAnchor, constant: 15),
             createAccountButton.heightAnchor.constraint(equalToConstant: 40),
             createAccountButton.widthAnchor.constraint(equalToConstant: 150),
             createAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -213,7 +225,7 @@ class CreateAccountController: UIViewController {
             createAccountLabel.centerYAnchor.constraint(equalTo: createAccountButton.centerYAnchor),
             createAccountLabel.centerXAnchor.constraint(equalTo: createAccountButton.centerXAnchor),
             
-            roosterImageView.topAnchor.constraint(equalTo: createAccountButton.bottomAnchor, constant: 20),
+            roosterImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20),
             roosterImageView.heightAnchor.constraint(equalToConstant: 250),
             roosterImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -40),
             roosterImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
@@ -227,24 +239,28 @@ class CreateAccountController: UIViewController {
     @objc func createAccount() {
         if usernameField.text == "" {
             let alert = UIAlertController(title: "Invalid", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Input Username", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
         else if passwordField.text == "" {
             let alert = UIAlertController(title: "Invalid", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Input Password", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
         else if confirmPasswordField.text == "" {
             let alert = UIAlertController(title: "Invalid", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Confirm Password", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
         else if passwordField.text != confirmPasswordField.text {
             let alert = UIAlertController(title: "Invalid: Passwords Do Not Match", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Confirm Password", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
             return
@@ -257,13 +273,15 @@ class CreateAccountController: UIViewController {
                 self.navigationController?.pushViewController(RankViewController(), animated: true)
             } failureCompletion: {
                 let alert = UIAlertController(title: "Invalid Username or Password", message: nil, preferredStyle: .alert)
+                alert.view.tintColor = .darkGray
                 alert.addAction(UIAlertAction(title: "Try again", style: .cancel, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
             /*self.navigationController?.pushViewController(loginViewController, animated: true)*/
         } failureCompletion: {
             let alert = UIAlertController(title: "Account already exists", message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: .cancel, handler: nil))
+            alert.view.tintColor = .darkGray
+            alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }

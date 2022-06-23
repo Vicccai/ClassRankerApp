@@ -67,38 +67,41 @@ struct SelectCollegeView: View {
     @State var selected: String
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("Select College")
-                    .font(Font.custom("Proxima Nova Regular", size: 15))
-                    .foregroundColor(.white)
-                Spacer()
-            }
-            .padding(.horizontal)
-            ForEach(colleges, id: \.self) { college in
+        ScrollView{
+            VStack(spacing: 5){
                 HStack {
-                    Button {
-                        self.selected = college
-                        self.setHeight?(FilterData.menuHeight[college]!)
-                        self.present?(college)
-                    } label: {
-                        if college == selected {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 10, height: 10)
-                        } else {
-                            Circle()
-                                .stroke(Color.white, lineWidth: 1)
-                                .frame(width: 10, height: 10)
-                        }
-                    }
-                    Text(college)
+                    Text("Select College")
+                        .font(Font.custom("Proxima Nova Bold", size: 17))
                         .foregroundColor(.white)
-                        .font(Font.custom("Proxima Nova Regular", size: 15))
                     Spacer()
                 }
                 .padding(.horizontal)
+                ForEach(colleges, id: \.self) { college in
+                    HStack {
+                        Button {
+                            self.selected = college
+                            self.setHeight?(FilterData.menuHeight[college]!)
+                            self.present?(college)
+                        } label: {
+                            if college == selected {
+                                Circle()
+                                    .fill(Color.white)
+                                    .frame(width: 10, height: 10)
+                            } else {
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1)
+                                    .frame(width: 10, height: 10)
+                            }
+                        }
+                        Text(college)
+                            .foregroundColor(.white)
+                            .font(Font.custom("Proxima Nova Regular", size: 17))
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
             }
+            .padding(.top)
         }
     }
 }

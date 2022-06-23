@@ -7,6 +7,7 @@
  
 import Foundation
 import UIKit
+import SwiftUI
  
 class DescriptionTableViewCell: UITableViewCell {
     let cellPadding = CGFloat(30)
@@ -89,6 +90,7 @@ class DescriptionTableViewCell: UITableViewCell {
     
     var descrText: UILabel = {
         let label = UILabel()
+        label.textColor = .black
         label.font = UIFont(name: "ProximaNova-Regular", size: 17.5)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
@@ -189,11 +191,35 @@ class DescriptionTableViewCell: UITableViewCell {
         return label
     }()
     
+    var linkLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Go to CUReviews"
+        label.textColor = UIColor(red: 0.16, green: 0.57, blue: 0.76, alpha: 1.00)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    var linkButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(.white, for: .normal)
+        return button
+    }()
+    
+    @objc func goToWebsite(sender: AnyObject) {
+        var url = "https://www.cureviews.org/course/\(String(describing: currentCourse?.subject))/\(String(describing: currentCourse?.number))"
+        url = url.replacingOccurrences(of: "Optional", with: "")
+        url = url.replacingOccurrences(of: "(", with: "")
+        url = url.replacingOccurrences(of: ")", with: "")
+        url = url.replacingOccurrences(of: "\"", with: "")
+        UIApplication.shared.open(URL(string: url)!)
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)
         selectionStyle = .none
-        for subView in [nameBackView, numberLabel, nameLabel, ratingLabel, favButton, restBackView, descrLabel, descrBackView, descrText, creditsLabel, credits, distrLabel, distrs, overallLabel, overallRating, workloadLabel, workloadRating, difficultyLabel, difficultyRating, profLabel, profs] {
+        for subView in [nameBackView, numberLabel, nameLabel, ratingLabel, favButton, restBackView, descrLabel, descrBackView, descrText, creditsLabel, credits, distrLabel, distrs, overallLabel, overallRating, workloadLabel, workloadRating, difficultyLabel, difficultyRating, profLabel, profs, linkLabel, linkButton] {
             subView.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(subView)
         }
@@ -209,8 +235,8 @@ class DescriptionTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             nameBackView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: -20),
             nameBackView.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 100),
-            nameBackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
-            nameBackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
+            nameBackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            nameBackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
             
             favButton.leadingAnchor.constraint(equalTo: nameBackView.leadingAnchor, constant: 30),
             favButton.centerYAnchor.constraint(equalTo: numberLabel.centerYAnchor),
@@ -276,7 +302,14 @@ class DescriptionTableViewCell: UITableViewCell {
             difficultyRating.topAnchor.constraint(equalTo: difficultyLabel.topAnchor),
             difficultyRating.trailingAnchor.constraint(equalTo: overallRating.trailingAnchor),
             
-            profLabel.topAnchor.constraint(equalTo: difficultyLabel.bottomAnchor, constant: 15),
+            linkButton.topAnchor.constraint(equalTo: difficultyLabel.bottomAnchor, constant: -5),
+            linkButton.leadingAnchor.constraint(equalTo: overallLabel.leadingAnchor),
+            
+            linkLabel.centerXAnchor.constraint(equalTo: linkButton.centerXAnchor),
+            linkLabel.centerYAnchor.constraint(equalTo: linkButton.centerYAnchor),
+            linkLabel.leadingAnchor.constraint(equalTo: linkButton.leadingAnchor),
+            
+            profLabel.topAnchor.constraint(equalTo: linkLabel.bottomAnchor, constant: 15),
             profLabel.leadingAnchor.constraint(equalTo: overallLabel.leadingAnchor),
             
             profs.topAnchor.constraint(equalTo: profLabel.bottomAnchor),
@@ -289,6 +322,7 @@ class DescriptionTableViewCell: UITableViewCell {
     @objc func favorite() {
         if Globals.guest.boolValue == true {
             let alert = UIAlertController(title: "Please Login", message: nil, preferredStyle: .alert)
+            alert.view.tintColor = .darkGray
             alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
             self.window?.rootViewController?.present(alert, animated: true, completion: nil)
             return
@@ -307,6 +341,8 @@ class DescriptionTableViewCell: UITableViewCell {
     
     func configure(course: Course) {
         currentCourse = course
+        currentCourse?.subject = course.subject
+        currentCourse?.number = course.number
         let courseNumber = course.subject + " " + String(course.number)
         numberLabel.text = courseNumber
         nameLabel.text = course.title
@@ -340,5 +376,6 @@ class DescriptionTableViewCell: UITableViewCell {
             print("false")
             favButton.setImage(UIImage(named: "Star 1"), for: .normal)
         }
+        linkButton.addTarget(self, action: #selector(goToWebsite), for: .touchUpInside)
     }
 }

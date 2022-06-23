@@ -63,17 +63,17 @@ struct FilterData {
         ]
     ]
     
-    private static let cellHeight : CGFloat = 34
+    private static let height : CGFloat = UIScreen.main.bounds.height
     
     static let menuHeight: [String : CGFloat] = [
-        "Colleges" : cellHeight * 8,
-        "Levels" : cellHeight * 8.75,
-        "Sort" : cellHeight * 5,
-        "Arts & Sciences" : cellHeight * 20.75,
-        "Art, Architecture & Planning" : cellHeight * 22.5,
-        "Engineering" : cellHeight * 19.5,
-        "Agriculture & Life Sciences" : cellHeight * 14,
-        "Human Ecology" : cellHeight * 17.25,
-        "Charles H. Dyson": cellHeight * 12.5,
+        "Colleges" : height/3,
+        "Levels" : height/3,
+        "Sort" : height/3,
+        "Arts & Sciences" : height/2,
+        "Art, Architecture & Planning" : height/2,
+        "Engineering" : height/2,
+        "Agriculture & Life Sciences" : height/2,
+        "Human Ecology" : height/2,
+        "Charles H. Dyson": height/2,
     ]
 }
