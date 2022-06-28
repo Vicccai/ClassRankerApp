@@ -42,5 +42,12 @@ Mariana Meriles (front end)
 * Implemented http token authentication with bcrypt library
 * Containerized with Docker and deployed using Google Cloud virtual machine
 
+# How to run
+* Clone to repository
+* Open with Xcode
+* Select ClassRankerApp.xcworkspace
+* Select iPhone/iPad device
+* Click run
+
 # Credits
 Thank you Cornell DTI for letting us scrape CUReviews and Cornell University for access to the Class Roster API. Also, thank you Gonzalo Gonzalez for being the best mentor ever!
