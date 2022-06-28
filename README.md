@@ -23,7 +23,7 @@ Mariana Meriles (front end)
 
 # Front-end Implemention
 * Developed using Swift, SwiftUI and UIKit
-* Utilized Alamofire, IQKeyboardManagerSwift and iOSDropDown with CocoaPods
+* Downloaded Alamofire, IQKeyboardManagerSwift and iOSDropDown using CocoaPods
 * Features 
   * Search bar based on course title
   * Filter by college, course level, distribution
