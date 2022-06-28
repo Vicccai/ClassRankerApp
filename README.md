@@ -18,6 +18,7 @@ Mariana Meriles (front end)
 <img src="https://user-images.githubusercontent.com/69128074/175114319-f315e77b-aef1-44e0-964a-1842ec151150.png" width="500">
 <img src="https://user-images.githubusercontent.com/69128074/175114365-ebeff883-8007-426c-9a06-453b0dcb470a.png" width="500">
 <img src="https://user-images.githubusercontent.com/69128074/175114440-e07b2790-561c-4655-aef1-a65bd8c85907.png" width="500">
+<img src="https://user-images.githubusercontent.com/69128074/176251150-8d3548aa-e1ae-4e13-ba98-48dc3583b21f.png" width="500">
 <img src="https://user-images.githubusercontent.com/69128074/175114475-8ee0f210-cdaa-480e-9653-fe6e728055d4.png" width="500">
 
 # Front-end Implemention
