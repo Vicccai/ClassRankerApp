@@ -7,12 +7,12 @@ Imagine this: you're looking for a course to fulfill a requirement, but nothing 
 App Store: https://apps.apple.com/us/app/class-rooster/id1630680209
 
 Members: 
-Young Zheng (full stack),
-Jordan Han (back end),
-Bryan Lee (back end),
-Luke Leh (product design),
-Victor Cai (front end),
-Mariana Meriles (front end)
+Jordan Han (back-end),
+Bryan Lee (back-end),
+Luke Leh (product-design),
+Victor Cai (front-end),
+Mariana Meriles (front-end),
+Young Zheng (full-stack)
 
 # Screenshots
 <img src="https://user-images.githubusercontent.com/69128074/175114319-f315e77b-aef1-44e0-964a-1842ec151150.png" width="500">
