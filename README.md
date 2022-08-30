@@ -32,6 +32,9 @@ Young Zheng (full-stack)
   * Favorite courses, display all favorites, and search favorites
   * Discussion forums for every course
   * Each course displays its rating and description
+  
+# Figma
+https://www.figma.com/file/qPlbhnlE9x49FaDMPc8DeR/Hack-Challenge-SP22?node-id=0%3A1
 
 # Back-end Implementation
 * Developed using Flask, SQLAlchemy and Python
